@@ -1855,6 +1855,24 @@
                     <Var ObjectId="268436058" Name="Crouching" Value="false" />
                 </UserVariables>
             </Area>
+            <Area ID="268436063" Name="Fear_1" CreStamp="1673293638" ModStamp="1673295679" WorldPos="16 1.75 -16" Rotation="0 0 0" Scale="33 5 33" Active="true" Mesh="" UID="16 7442 268436063" AreaType="Fear">
+                <UserVariables>
+                    <Var ObjectId="268436063" Name="Priority" Value="0" />
+                    <Var ObjectId="268436063" Name="Safe" Value="false" />
+                    <Var ObjectId="268436063" Name="NoFear" Value="false" />
+                    <Var ObjectId="268436063" Name="DarknessFear" Value="true" />
+                    <Var ObjectId="268436063" Name="BabyKickRateMultiplier" Value="1" />
+                    <Var ObjectId="268436063" Name="Locked" Value="false" />
+                    <Var ObjectId="268436063" Name="AllowProgressWithToken" Value="true" />
+                    <Var ObjectId="268436063" Name="AllowProgressWithoutToken" Value="false" />
+                    <Var ObjectId="268436063" Name="MaxProgressCount" Value="1" />
+                    <Var ObjectId="268436063" Name="ProgressAmount" Value="1" />
+                    <Var ObjectId="268436063" Name="SafeMusic" Value="fear_system_safe_01" />
+                    <Var ObjectId="268436063" Name="NonAgentRateCap" Value="0.8" />
+                    <Var ObjectId="268436063" Name="CC_Entities" Value="" />
+                    <Var ObjectId="268436063" Name="CC_Funcs" Value="" />
+                </UserVariables>
+            </Area>
         </Objects>
     </Section>
 </HPLMapTrack_Area>

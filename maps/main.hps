@@ -215,104 +215,19 @@ class cScrMap : iScrMap
         // Basic player stuff
         PlayerBody_SetActive(true);
         FearHandler_SetActive(true);
+        FearHandler_SetPaused(false);
         FearHandler_SetAllowLanternReminderHint(true);
         FearHandler_SetDarknessFactorActive(true);
 		FearHandler_SetUpdateInterval(0.1f);
-		FearHandler_SetPermaFailEnabled(false);
+        FearHandler_SetMaxLevel(2.0f);
+        Player_SetMapDeepShadow(0.9f);
+		FearHandler_SetPermaFailEnabled(true);
         Heat_SetActive(false);
 		Player_SetNightVisionBrightness(2.3f);
 		Player_SetNightVisionRadius(5.5f);
         
 		Game_AutoSave();
 	}
-    
-    //-------------------------------------------------------
-    
-	////////////////////////////
-	// Fear stuff
-	void Update(float afTimeStep) 
-	{
-		UpdateLightLevelBarks(afTimeStep);
-	}
-    
-	float mfDeepShadowLevel = 0.35f;
-	bool mbInLight = true;
-    bool mbLightLevelBarkAllowed = true;
-    bool mbLightLevelBarksDelay = true;
-    void UpdateLightLevelBarks(float afTimeStep)
-    {
-        if (Voice_CharacterIsSpeaking("Player")) return;
-        
-        float fLightLevel = Player_GetLightLevel();
-        if (mbInLight)
-        {	
-            if (fLightLevel <= mfDeepShadowLevel)
-            {
-                if (mbLightLevelBarksDelay) return;
-                mbInLight = false;
-                
-                if (mbLightLevelBarkAllowed) 
-                    Map_AddTimer("Timer_LeaveLightBarkDelay",9,"OnTimer_LeaveLightBarkDelay");
-                
-                if (Map_TimerExists("Timer_EnterLightBarkDelay"))
-                {
-                    mbLightLevelBarkAllowed = false;
-                    Map_RemoveTimer("Timer_EnterLightBarkDelay");
-                    Map_AddTimer("Timer_ResetLightBarks",5,"OnTimer_ResetLightBarks");
-                }
-            }
-        }
-        else
-        {
-            if (fLightLevel > mfDeepShadowLevel)
-            {
-                mbInLight = true;
-                
-                if (mbLightLevelBarkAllowed)
-                    Map_AddTimer("Timer_EnterLightBarkDelay",2,"OnTimer_EnterLightBarkDelay");
-                
-                if (Map_TimerExists("Timer_LeaveLightBarkDelay"))
-                {
-                    mbLightLevelBarkAllowed = false;
-                    Map_RemoveTimer("Timer_LeaveLightBarkDelay");
-                    Map_AddTimer("Timer_ResetLightBarks",5,"OnTimer_ResetLightBarks");
-                }
-            }
-        }
-    }
-    
-    void OnTimer_EnterLightBarkDelay(const tString &in asTimer)
-    {
-        if (mbLightLevelBarkAllowed == false) return;
-        
-        if (Map_TimeHasPassed("LightBark",30))
-        {
-            float fLightLevel = Player_GetLightLevel();
-            if ((fLightLevel>mfDeepShadowLevel)&&(FearHandler_GetRate()<0.1f)&&(!Voice_AnySceneIsActive()))
-                Voice_Play("Dialogue_EnteringLightBarks");
-        }
-    }
-    
-    //------------------------------------------------------- 
-    
-    void OnTimer_LeaveLightBarkDelay(const tString &in asTimer)
-    {
-        if (mbLightLevelBarkAllowed == false) return;
-        
-        if (Map_TimeHasPassed("DarknessBark",20))
-        {
-            float fLightLevel = Player_GetLightLevel();
-            if ((fLightLevel<mfDeepShadowLevel)&&(!Voice_AnySceneIsActive()))
-                Voice_Play("Dialogue_LeavingLightBarks");
-        }
-    }
-    
-    //------------------------------------------------------- 
-    
-    void OnTimer_ResetLightBarks(const tString &in asTimer)
-    {
-        mbLightLevelBarkAllowed = true;
-    }
 
 	//-------------------------------------------------------
 
