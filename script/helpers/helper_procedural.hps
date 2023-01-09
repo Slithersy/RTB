@@ -1,0 +1,249 @@
+//-------------------------------------------------
+
+/////////////////////////////////////////
+// MAZE CREATION
+/////////////////////////////////////////
+
+//-------------------------------------------------
+
+array<bool> mvVisitedChunks;
+void CheckFilledArray()
+{
+    if (mvVisitedChunks.length()<65) {
+        while (mvVisitedChunks.length()<65) {
+            mvVisitedChunks.insertLast(false);
+        }
+    }
+}
+
+/**
+ * Resets the chunk array (all visited go false)
+ * 
+ **/
+void Chunk_ResetArray()
+{
+    CheckFilledArray();
+    for (int i=0;i<65;i++) {
+        mvVisitedChunks[i] = false;
+    }
+}
+
+/**
+ * Set if a chunk should be visited
+ * 
+ * @param alChunkNum, number of the chunk.
+ * @param abVisited, whether it was visited.
+ **/
+void Chunk_SetBeenVisited(int alChunkNum, bool abVisited)
+{
+    CheckFilledArray();
+    mvVisitedChunks[cMath_Clamp(alChunkNum, 1, 64)] = abVisited;
+}
+
+/**
+ * Check if a chunk has been visited (already used)
+ * 
+ * @param alChunkNum, number of the chunk.
+ **/
+bool Chunk_HasBeenVisited(int alChunkNum)
+{
+    CheckFilledArray();
+    return mvVisitedChunks[cMath_Clamp(alChunkNum, 1, 64)];
+}
+
+/**
+ * Pick a random neighbouring chunk that hasn't been visited
+ * Returns -1 if there are no close neighbouring chunks
+ * 
+ * @param alChunkNum, number of the chunk.
+ **/
+int Chunk_PickNeighbouringCell(int alChunkNum)
+{
+    CheckFilledArray();
+    
+    // Assign "levels" to each "floor"
+    float fOriginal = (float(alChunkNum)/8);
+    int lLevel = cMath_CeilToInt(fOriginal);
+    array<int> vNotVisitedCloseChunks;
+    //It thinks I'm doing an int and messes up everything... So I'm doing this
+    float fRightside = ((float(alChunkNum)+1)/8);
+    float fLeftside = ((float(alChunkNum)-1)/8);
+    
+    // Only include close chunks that exist and haven't been visited in the array
+    if ((cMath_CeilToInt(fRightside)==lLevel) && (!Chunk_HasBeenVisited(alChunkNum+1))) { //Right side
+        vNotVisitedCloseChunks.insertLast(alChunkNum+1); 
+        cLux_AddDebugMessage("Right - "+(alChunkNum+1));
+    }
+    if ((cMath_CeilToInt(fLeftside)==lLevel) && (!Chunk_HasBeenVisited(alChunkNum-1))) { //Left side
+        vNotVisitedCloseChunks.insertLast(alChunkNum-1); 
+        cLux_AddDebugMessage("Left - "+(alChunkNum-1));
+    }
+    if ((0<alChunkNum) && (alChunkNum<57) && (!Chunk_HasBeenVisited(alChunkNum+8))) { //Up
+        vNotVisitedCloseChunks.insertLast(alChunkNum+8); 
+        cLux_AddDebugMessage("Up - "+(alChunkNum+8));
+    }
+    if ((8<alChunkNum) && (alChunkNum<65) && (!Chunk_HasBeenVisited(alChunkNum-8))) { //Down
+        vNotVisitedCloseChunks.insertLast(alChunkNum-8); 
+        cLux_AddDebugMessage("Down - "+(alChunkNum-8));
+    }
+    
+    // Pick a random chunk
+    if (vNotVisitedCloseChunks.length()>0) {
+        int RandomKey = cMath_RandRectl(0, vNotVisitedCloseChunks.length()-1);
+        return vNotVisitedCloseChunks[RandomKey];
+    } else return -1;
+}
+
+/**
+ * Remove/Add wall between cells
+ * Returns: Wall that got changed
+ * 
+ * @param alChunkNum, number of the first chunk.
+ * @param alChunkNum2, number of the second chunk.
+ * @param abActive, whether to set the wall active or not.
+ **/
+tString Chunk_SetWallBetweenCells(int alChunkNum1=0, int alChunkNum2=0, bool abActive=false)
+{
+    // Check which number is bigger to remove/add it the right way all the time (small_big)
+    int lBigNumber = cMath_Max(alChunkNum1, alChunkNum2);
+    int lSmallNumber = cMath_Min(alChunkNum1, alChunkNum2);
+    if (alChunkNum1==alChunkNum2) {
+        Error("Couldn't set walls between cells because numbers are equal in function call");
+        return "";
+    }
+    
+    
+    // Complicated headache inducing stuff, but it works. I think..
+    if ((((lSmallNumber%8) == 0) || (lSmallNumber == 0)) && ((lBigNumber-8) != lSmallNumber)) { //Right/Left corner walls
+        if (alChunkNum2 == lSmallNumber) {
+            Entity_SetActive("wall4_chunk_"+lBigNumber, abActive);
+            return ("wall4_chunk_"+lBigNumber);
+        } else {
+            Entity_SetActive("wall"+2+"_chunk_"+lSmallNumber, abActive);
+            return ("wall"+2+"_chunk_"+lSmallNumber);
+        }
+    } else if ((lBigNumber>64) || (lSmallNumber<=0)) { //Top/Bottom corner walls
+        if (lSmallNumber>0) {
+            Entity_SetActive("wall"+3+"_chunk_"+lSmallNumber, abActive);
+            return ("wall"+3+"_chunk_"+lSmallNumber);
+        } else {
+            Entity_SetActive("wall"+1+"_chunk_"+lBigNumber, abActive);
+            return ("wall"+1+"_chunk_"+lBigNumber);
+        }
+    } else if (((lBigNumber-lSmallNumber) == 1) && (lSmallNumber>0)) { //Right/Left walls
+        Entity_SetActive("wall"+2+"_chunk_"+lSmallNumber+"_"+lBigNumber, abActive);
+        return ("wall"+2+"_chunk_"+lSmallNumber+"_"+lBigNumber);
+    } else if (((lBigNumber-8) == lSmallNumber) && (lSmallNumber>0)) { //Top/Bottom walls
+        Entity_SetActive("wall"+3+"_chunk_"+lSmallNumber+"_"+lBigNumber, abActive);
+        return ("wall"+3+"_chunk_"+lSmallNumber+"_"+lBigNumber);
+    }
+    
+    return "";
+}
+
+/**
+ * Randomize an int array (Fisher-Yates Shuffle).
+ * Returns: Randomized values array.
+ * 
+ * @param avArray, an array to randomize.
+ * @param afPercentage, How much to randomize from 0.1f-0.99f.
+ **/
+array<int> RandomizeArray(array<int> avArray, float afPercentage=0.99f) {
+    array<int> vArrayCopy = avArray;
+    if (afPercentage<0.1f)
+        return vArrayCopy;
+
+    for (int i = vArrayCopy.length - 1; i > 0; i--) {
+        int lIndex = cMath_FloorToInt(float(cMath_RandRectf(0,afPercentage) * (i + 1)));
+        int temp = vArrayCopy[i];
+        vArrayCopy[i] = vArrayCopy[lIndex];
+        vArrayCopy[lIndex] = temp;
+    }
+    
+    return vArrayCopy;
+}
+
+//-------------------------------------------------
+
+/////////////////////////////////////////
+// BUILDING CREATION
+/////////////////////////////////////////
+
+//-------------------------------------------------
+array<bool> mvUsedChunks;
+
+void Building_CheckFilledArray()
+{
+    if (mvUsedChunks.length()<65) {
+        while (mvUsedChunks.length()<65) {
+            mvUsedChunks.insertLast(false);
+        }
+    }
+}
+
+/**
+ * Resets the building array (all spots become accessible)
+ * 
+ **/
+void Building_ResetArray()
+{
+    Building_CheckFilledArray();
+    for (int i=0;i<65;i++) {
+        mvUsedChunks[i] = false;
+    }
+}
+
+/**
+ * Set if a chunk contains a building
+ * 
+ * @param alChunkNum, number of the chunk.
+ * @param abBuilding, whether it has a building.
+ **/
+void Building_SetBeenVisited(int alChunkNum, bool abBuilding)
+{
+    Building_CheckFilledArray();
+    mvUsedChunks[cMath_Clamp(alChunkNum, 1, 64)] = abBuilding;
+}
+
+/**
+ * Check if a chunk contains a building
+ * 
+ * @param alChunkNum, number of the chunk.
+ **/
+bool Building_HasBeenVisited(int alChunkNum)
+{
+    Building_CheckFilledArray();
+    return mvUsedChunks[cMath_Clamp(alChunkNum, 1, 64)];
+}
+
+//-------------------------------------------------
+
+/////////////////////////////////////////
+// CSTRING FUNCTIONS
+/////////////////////////////////////////
+
+//-------------------------------------------------
+
+/**
+ * Splits string and returns array of strings
+ * 
+ * @param asString, the string.
+ * @param asSeperator, the seperator.
+ **/
+array<tString> cString_Split(const tString &in asString, const tString &in asSeperator)
+{
+    array<tString> vSeperated;
+    
+    tString new_asString = asString;
+    while (cString_GetFirstStringPos(new_asString, asSeperator) != -1) {
+        int lStartPos = cString_GetFirstStringPos(new_asString, asSeperator);
+        vSeperated.insertLast(cString_Sub(new_asString, 0, lStartPos));
+        new_asString = cString_Sub(new_asString, lStartPos + asSeperator.length());
+        
+        if (cString_GetFirstStringPos(new_asString, asSeperator) == -1 ) {
+            vSeperated.insertLast(new_asString);
+        }
+    }
+    
+    return vSeperated;
+}

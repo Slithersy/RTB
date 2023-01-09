@@ -1,0 +1,14 @@
+<ExportedMapObjects>
+    <Compound ID="587202560" Name="Compound_20" CreStamp="0" ModStamp="1673179672" WorldPos="-5.27457 3.25097 -3.4234" Rotation="0 0 0" Scale="1 1 1">
+        <Component ID="318767387" />
+        <Component ID="318767386" />
+        <Component ID="318767385" />
+        <Component ID="318767799" />
+        <Component ID="268436523" />
+    </Compound>
+    <StaticObject ID="318767387" Name="caves_cave_modules_cave_strip_veins_cave_strip_veins_02_7" CreStamp="1538578785" ModStamp="1538578807" WorldPos="-2.87434 5.31893 3.10851" Rotation="1.55463 1.2256 -2.69312" Scale="0.5 0.649423 0.5" FileIndex="-1" Collides="true" CastShadows="true" IsOccluder="true" ColorMul="1 1 1 1" CulledByDistance="true" CulledByFog="true" IllumColor="1 1 1 1" IllumBrightness="1" UID="19 3290 318767387" Filename="static_objects/caves/cave_modules/cave_strip_veins/cave_strip_veins_02.DAE" />
+    <StaticObject ID="318767386" Name="caves_cave_modules_cave_strip_veins_cave_strip_veins_02_6" CreStamp="1538578770" ModStamp="1538578859" WorldPos="-2.71763 5.38176 -2.91318" Rotation="0.796194 1.2971 2.89394" Scale="0.5 0.5 0.5" FileIndex="-1" Collides="true" CastShadows="true" IsOccluder="true" ColorMul="1 1 1 1" CulledByDistance="true" CulledByFog="true" IllumColor="1 1 1 1" IllumBrightness="1" UID="19 3334 318767386" Filename="static_objects/caves/cave_modules/cave_strip_veins/cave_strip_veins_02.DAE" />
+    <StaticObject ID="318767385" Name="caves_cave_modules_cave_strip_veins_cave_strip_veins_02_5" CreStamp="1538578725" ModStamp="1538583722" WorldPos="-0.743206 5.31452 -0.709256" Rotation="2.00924 1.2971 2.89394" Scale="0.668327 0.5 0.5" FileIndex="-1" Collides="true" CastShadows="true" IsOccluder="true" ColorMul="1 1 1 1" CulledByDistance="true" CulledByFog="true" IllumColor="1 1 1 1" IllumBrightness="1" UID="19 3291 318767385" Filename="static_objects/caves/cave_modules/cave_strip_veins/cave_strip_veins_02.DAE" />
+    <StaticObject ID="318767799" Name="caves_cave_ravine_cave_ravine_wall_02_domed_24" CreStamp="1540222340" ModStamp="1573564419" WorldPos="-6.62475 1.12018 -9.9553" Rotation="0.783603 -0.394815 -1.52932" Scale="1.5 1.27213 1.5" FileIndex="-1" Collides="true" CastShadows="true" IsOccluder="false" ColorMul="1 1 1 1" CulledByDistance="true" CulledByFog="true" IllumColor="1 1 1 1" IllumBrightness="1" UID="19 3112 318767799" Filename="static_objects/caves/cave_ravine/cave_ravine_wall_02_domed.dae" />
+    <StaticObject ID="268436523" Name="caves_cave_ravine_cave_ravine_wall_02_domed_22" CreStamp="1539002944" ModStamp="1573564441" WorldPos="-9.80594 1.74337 -7.61148" Rotation="-1.49837 3.82397 -0.030082" Scale="1.5 1.27213 1.5" FileIndex="-1" Collides="true" CastShadows="true" IsOccluder="false" ColorMul="1 1 1 1" CulledByDistance="true" CulledByFog="true" IllumColor="1 1 1 1" IllumBrightness="1" UID="16 3737 268436523" Filename="static_objects/caves/cave_ravine/cave_ravine_wall_02_domed.dae" />
+</ExportedMapObjects>

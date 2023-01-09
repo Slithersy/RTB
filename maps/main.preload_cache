@@ -1,0 +1,28 @@
+<PreloadCache>
+    <Materials>
+        <Material Path="entities/arabic_fort/debris/ab_interior_ceiling_girder_system_01.mat" DebugPos="-5.968230 : 3.186699 : 7.444369" />
+        <Material Path="entities/arabic_fort/debris/ab_interior_plaster_tilable_broken_01.mat" DebugPos="-6.035160 : 3.500002 : 7.365529" />
+        <Material Path="entities/arabic_fort/debris/scaffolding_broken.mat" DebugPos="-5.888835 : 3.186007 : 7.245791" />
+        <Material Path="entities/arabic_fort/door/arabic_fort_door_01.mat" DebugPos="-5.876367 : 1.980630 : 5.828224" />
+        <Material Path="entities/arabic_fort/door/arabic_fort_door_destroyed/barricade_4_less_soot.mat" DebugPos="-15.064627 : 1.503724 : 8.749684" />
+        <Material Path="entities/arabic_fort/door/arabic_fort_door_exit/arabic_fort_door_exit.mat" DebugPos="-10.249142 : 1.761466 : 8.697989" />
+        <Material Path="entities/cave/debris/scatter_rocks/scatter_rock01.mat" DebugPos="-4.774504 : 0.164231 : 5.924563" />
+        <Material Path="entities/cave/debris/scatter_rocks/scatter_rock02.mat" DebugPos="-4.402421 : 0.161637 : 6.944073" />
+        <Material Path="entities/cave/debris/small_rocks/small_rocks.mat" DebugPos="-6.315130 : 3.337250 : 5.603170" />
+        <Material Path="entities/cave/special/cave_ravine_wall.mat" DebugPos="-5.994825 : 2.037069 : 5.804355" />
+        <Material Path="static_objects/arabic_fort/interior/wall/ab_interior_temp.mat" DebugPos="-1.249997 : 1.228551 : 10.500008" />
+        <Material Path="static_objects/archaeology/scaffolding/scaffolding.mat" DebugPos="9.873008 : 2.000000 : 11.256667" />
+        <Material Path="static_objects/beduin/bedouin_town_buildings/bedouin_town_buildings.mat" DebugPos="12.875010 : 2.000000 : 12.250000" />
+        <Material Path="static_objects/beduin/town_walls/town_wall_upper_bricks/town_wall_upper_bricks.mat" DebugPos="-7.504570 : 1.502504 : -13.750000" />
+        <Material Path="static_objects/caves/cave_modules/caves_ground.mat" DebugPos="0.374992 : -0.000500 : -16.000008" />
+        <Material Path="static_objects/caves/cave_modules/rocks_cave_walls.mat" DebugPos="3.726179 : -0.697146 : -9.531521" />
+        <Material Path="static_objects/caves/cave_ravine/cave_ravine_wall_sand.mat" DebugPos="-2.881046 : 2.037069 : 0.539350" />
+        <Material Path="static_objects/darkworld/factory/dwf_ceiling_square_fancy_1.mat" DebugPos="6.749710 : 1.276061 : 5.239373" />
+        <Material Path="static_objects/darkworld/factory/wall/dw_factory_wall_rnd_1.mat" DebugPos="9.218564 : 0.227184 : -6.011659" />
+        <Material Path="static_objects/taureg/walls/makeshift_tunnel.mat" DebugPos="-5.286631 : 1.999984 : 2.733143" />
+        <Material Path="static_objects/taureg/walls/taureg_rocks.mat" DebugPos="-5.070460 : 1.850874 : 3.207790" />
+        <Material Path="static_objects/tth/pillar/tth_pillar_basic_extension.mat" DebugPos="-1.625669 : 1.501512 : -15.995266" />
+        <Material Path="static_objects/tth/tth_ceiling_basic_square_01.mat" DebugPos="6.000000 : 1.500000 : -16.000000" />
+        <Material Path="textures/decals/sand/sand_desert_orange_smooth_patches.mat" DebugPos="7.801500 : -0.041000 : -9.793500" />
+    </Materials>
+</PreloadCache>

@@ -1,0 +1,491 @@
+#include "interfaces/Map_Interface.hps"
+#include "base/Inputhandler_Types.hps"
+
+#include "helpers/helper_map.hps"
+#include "helpers/helper_props.hps"
+#include "helpers/helper_effects.hps"
+#include "helpers/helper_audio.hps"
+#include "helpers/helper_imgui.hps"
+#include "helpers/helper_sequences.hps"
+#include "helpers/helper_game.hps"
+#include "helpers/helper_modules.hps"
+#include "helpers/helper_ai.hps"
+#include "helpers/helper_player.hps"
+#include "helpers/helper_procedural.hps"
+#include "helpers/helper_rotation.hps"
+
+//--------------------------------------------------
+ 
+/*Place any global values here. These must be const variables as they will not be saved*/
+/*This is also the place for enums and classes, but these should be avoided whenever possible*/
+ 
+//--------------------------------------------------
+ 
+class cScrMap : iScrMap
+{
+	//--------------------------------------------
+ 
+	//////////////////////////////////////////////////////////////////////////////////////////
+	// ==============
+	// MAIN CALLBACKS
+	// ==============
+	//{///////////////////////////////////////////////////////////////////////////////////////
+ 
+	//-------------------------------------------------------
+ 
+	////////////////////////////
+	// Set up map environment
+	void Setup()
+	{
+		// Put display name entry in english.lang / Levels
+		GetBase().SetDisplayNameEntry("main-bunker-level");
+        
+        // Basic can can't do
+        Player_SetAllowCheckBaby(false);
+		
+		// Set up color grading etc.
+	}
+	
+	//-------------------------------------------------------
+		
+	void PreloadData()
+	{
+		/////////////////
+		// Preload gui
+		//ImGui_PreloadImage("some_image");
+
+		///////////////
+		// Preload particles
+		//ParticleSystem_Preload("some_particle.ps");
+
+		//////////////
+		// Preload screen effects
+		//Material_Preload("some_material.mat");
+	}
+	
+	//-------------------------------------------------------
+
+	////////////////////////////
+	// Run first time starting map
+    
+    // Enterance
+    int mlChunkStart = 1;
+    tString msFirstRemovedWall = "";
+    
+    array<int> mvStack;
+	void OnStart()
+	{
+        // Give player stuff
+        if (ItemType_GetCountInInventory("Lantern") < 1)
+        {
+            Item_AddToInventory("Lantern");
+            Lantern_SetAmount(10);
+            Item_Equip("Lantern");
+        }
+        
+        Item_AddToInventory("ModernOil");
+        Item_AddToInventory("ModernOil");
+            
+		/////////////////////////
+		// MAZE GENERATION
+        
+        //Reset everything to default
+        Chunk_ResetArray();
+        
+        // Pick starting chunk
+        mlChunkStart = cMath_RandRectl(1, 64);
+        int lNeighbourCell = 1;
+        cLux_AddDebugMessage("Start chunk - "+mlChunkStart);
+        Player_PlaceAtEntity("start_chunk_"+mlChunkStart, true);
+        // Mark as visited
+        Chunk_SetBeenVisited(mlChunkStart, true);
+        
+        // Pick a neighbouring cell that haven't been visited, currently all and set the walls between us and it inactive
+        // Also set it visited
+        lNeighbourCell = Chunk_PickNeighbouringCell(mlChunkStart);
+        if (lNeighbourCell!=-1)
+            msFirstRemovedWall = Chunk_SetWallBetweenCells(mlChunkStart, lNeighbourCell, false);
+            mvStack.insertLast(lNeighbourCell);
+            Chunk_SetBeenVisited(lNeighbourCell, true);
+            
+        // For realism, make a chunk where the door is supposed to be unuseable
+        if ((mlChunkStart+1) == lNeighbourCell) { //Right
+            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart,mlChunkStart-1, true);
+            if (sWall != "") {
+                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], mlChunkStart);
+                Chunk_SetBeenVisited(lChunk, true);
+            }
+        } else if ((mlChunkStart-1) == lNeighbourCell) { //Left
+            tString sWall  = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, true);
+            if (sWall != "") {
+                array<tString> vWallSplit = cString_Split(sWall, "_");
+                if (vWallSplit.size()>3) {
+                    int lChunk = cString_ToInt(vWallSplit[3], mlChunkStart);
+                    Chunk_SetBeenVisited(lChunk, true);
+                }
+            }
+        } else if ((mlChunkStart+8) == lNeighbourCell) { //Up
+            tString sWall  = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, true);
+            if (sWall != "") {
+                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], mlChunkStart);
+                Chunk_SetBeenVisited(lChunk, true);
+            }
+        } else if ((mlChunkStart-8) == lNeighbourCell) { //Down
+            tString sWall  = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, true);
+            if (sWall != "") {
+                array<tString> vWallSplit = cString_Split(sWall, "_");
+                if (vWallSplit.size()>3) {
+                    int lChunk = cString_ToInt(vWallSplit[3], mlChunkStart);
+                    Chunk_SetBeenVisited(lChunk, true);
+                }
+            }
+        }
+            
+        int lSafetyCheck = 0;
+        bool bNonVisistedExist = true;
+        while (bNonVisistedExist) {
+            // If there are unvisited chunks keep looping, otherwise stop
+            bool bShouldStopLoop = true;
+            for (int i=1;i<65;i++) {
+                if (!Chunk_HasBeenVisited(i)) {
+                    bShouldStopLoop = false;
+                    break;
+                }
+            }
+            if (bShouldStopLoop)
+                bNonVisistedExist = false;
+            
+            // from 0.0f - 0.99f how likely is the for loop to skip for more randomization
+            float fSkipChance = 0.65f;
+            // from 0.1f - 0.99f how random do you want the array to be
+            float fRandomizeChance = 0.99f;
+            array<int> vRandomizedStack = RandomizeArray(mvStack, fRandomizeChance);
+            int length = vRandomizedStack.length();
+            
+            // Here the magic happens! (I'm so happy this works) :>
+            for (int i=0;i<length;i++) {
+                if (fSkipChance < cMath_RandRectf(0.0f,1.0f)) {
+                    cLux_AddDebugMessage("Picking neighbour around: "+vRandomizedStack[i]);
+                    int lNewNeighbourCell = Chunk_PickNeighbouringCell(vRandomizedStack[i]);
+                    cLux_AddDebugMessage("Picked: "+lNewNeighbourCell);
+                    if (lNewNeighbourCell!=-1) {
+                        Chunk_SetWallBetweenCells(vRandomizedStack[i], lNewNeighbourCell, false);
+                        mvStack.insertLast(lNewNeighbourCell);
+                        Chunk_SetBeenVisited(lNewNeighbourCell, true);
+                    }
+                }
+            }
+            
+            if (lSafetyCheck>70) {
+                bNonVisistedExist = false;
+                Error("While infinite loop in main!!!");
+            }
+            
+            lSafetyCheck++;
+        }
+        
+		/////////////////////////
+		// START/END GENERATION
+        
+        // Generate starting point, first we check direction of first neighbour to how to rotate the door
+        //"start_chunk_"+mlChunkStart
+        if ((mlChunkStart+1) == lNeighbourCell) { //Right
+            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, true);
+        } else if ((mlChunkStart-1) == lNeighbourCell) { //Left
+            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, true);
+        } else if ((mlChunkStart+8) == lNeighbourCell) { //Up
+            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, true);
+        } else if ((mlChunkStart-8) == lNeighbourCell) { //Down
+            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, true);
+        }
+	}
+
+	//-------------------------------------------------------
+
+	////////////////////////////
+	// Run when entering map
+	void OnEnter()
+	{
+		/////////////////////////
+		// Debug
+		if(cLux_ScriptDebugOn())
+		{
+		}
+        
+        // Basic player stuff
+        PlayerBody_SetActive(true);
+        FearHandler_SetActive(true);
+        FearHandler_SetAllowLanternReminderHint(true);
+        FearHandler_SetDarknessFactorActive(true);
+		FearHandler_SetUpdateInterval(0.1f);
+		FearHandler_SetPermaFailEnabled(false);
+        Heat_SetActive(false);
+		Player_SetNightVisionBrightness(2.3f);
+		Player_SetNightVisionRadius(5.5f);
+        
+		Game_AutoSave();
+	}
+    
+    //-------------------------------------------------------
+    
+	////////////////////////////
+	// Fear stuff
+	void Update(float afTimeStep) 
+	{
+		UpdateLightLevelBarks(afTimeStep);
+	}
+    
+	float mfDeepShadowLevel = 0.35f;
+	bool mbInLight = true;
+    bool mbLightLevelBarkAllowed = true;
+    bool mbLightLevelBarksDelay = true;
+    void UpdateLightLevelBarks(float afTimeStep)
+    {
+        if (Voice_CharacterIsSpeaking("Player")) return;
+        
+        float fLightLevel = Player_GetLightLevel();
+        if (mbInLight)
+        {	
+            if (fLightLevel <= mfDeepShadowLevel)
+            {
+                if (mbLightLevelBarksDelay) return;
+                mbInLight = false;
+                
+                if (mbLightLevelBarkAllowed) 
+                    Map_AddTimer("Timer_LeaveLightBarkDelay",9,"OnTimer_LeaveLightBarkDelay");
+                
+                if (Map_TimerExists("Timer_EnterLightBarkDelay"))
+                {
+                    mbLightLevelBarkAllowed = false;
+                    Map_RemoveTimer("Timer_EnterLightBarkDelay");
+                    Map_AddTimer("Timer_ResetLightBarks",5,"OnTimer_ResetLightBarks");
+                }
+            }
+        }
+        else
+        {
+            if (fLightLevel > mfDeepShadowLevel)
+            {
+                mbInLight = true;
+                
+                if (mbLightLevelBarkAllowed)
+                    Map_AddTimer("Timer_EnterLightBarkDelay",2,"OnTimer_EnterLightBarkDelay");
+                
+                if (Map_TimerExists("Timer_LeaveLightBarkDelay"))
+                {
+                    mbLightLevelBarkAllowed = false;
+                    Map_RemoveTimer("Timer_LeaveLightBarkDelay");
+                    Map_AddTimer("Timer_ResetLightBarks",5,"OnTimer_ResetLightBarks");
+                }
+            }
+        }
+    }
+    
+    void OnTimer_EnterLightBarkDelay(const tString &in asTimer)
+    {
+        if (mbLightLevelBarkAllowed == false) return;
+        
+        if (Map_TimeHasPassed("LightBark",30))
+        {
+            float fLightLevel = Player_GetLightLevel();
+            if ((fLightLevel>mfDeepShadowLevel)&&(FearHandler_GetRate()<0.1f)&&(!Voice_AnySceneIsActive()))
+                Voice_Play("Dialogue_EnteringLightBarks");
+        }
+    }
+    
+    //------------------------------------------------------- 
+    
+    void OnTimer_LeaveLightBarkDelay(const tString &in asTimer)
+    {
+        if (mbLightLevelBarkAllowed == false) return;
+        
+        if (Map_TimeHasPassed("DarknessBark",20))
+        {
+            float fLightLevel = Player_GetLightLevel();
+            if ((fLightLevel<mfDeepShadowLevel)&&(!Voice_AnySceneIsActive()))
+                Voice_Play("Dialogue_LeavingLightBarks");
+        }
+    }
+    
+    //------------------------------------------------------- 
+    
+    void OnTimer_ResetLightBarks(const tString &in asTimer)
+    {
+        mbLightLevelBarkAllowed = true;
+    }
+
+	//-------------------------------------------------------
+
+	////////////////////////////
+	// Run when leaving map
+	void OnLeave()
+	{
+	}
+
+	//-------------------------------------------------------
+
+	////////////////////////////
+	// The player has died.
+	void OnPlayerKilled(int alRecentDeaths, const tString&in asSource)
+	{
+	}
+	
+	//-------------------------------------------------------
+	
+	////////////////////////////////////
+	// Called when player HP reaches 0
+	bool OnDeath(const tString &in asSource)
+	{
+		cLux_AddTodoMessage("DEAD : SOURCE = " + asSource);
+		
+		if (asSource == "SomeReason")
+		{
+			Effect_Fade_Out(1.0f);
+			return true; // return true to completely override base behaviour
+		}
+		
+		// return false for default behaviour
+		return false;
+	}
+	
+	//-------------------------------------------------------
+	
+	////////////////////////////////////
+	// Called when player should respawn (after death)
+	bool OnRespawn(const tString &in asSource)
+	{		
+		// return false for default behaviour (fadeout and death area)
+		return false;
+	}
+
+	//-------------------------------------------------------
+
+	////////////////////////////
+	// To get when player makes input (mostly used for debug)
+	void OnAction(int alAction, bool abPressed) 
+	{
+		if(abPressed==false) return;
+		
+		if(alAction == eAction_Test1)
+		{
+            ///////////////////
+            // ENTERANCE
+            
+            // First remove roof
+            Entity_SetActive("roof_chunk_"+mlChunkStart, false);   
+            /*
+            array<tString> vWallSplit = cString_Split(msFirstRemovedWall, "_");
+            if (vWallSplit.size()>3) { //HAS to be (but just to make sure :>)
+                int lIndexInt = cString_ToInt(vWallSplit[3], mlChunkStart);
+                if (lIndexInt > mlChunkStart) {
+                    if ((mlChunkStart + 1) == lIndexInt) //Right wall
+                        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, false); //Remove left wall
+                    else if ((mlChunkStart - 1) == lIndexInt) //Left wall
+                        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, false); //Remove right wall
+                    else if ((mlChunkStart + 8) == lIndexInt) //Up wall
+                        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, false); //Remove down wall
+                } else {
+                    //Down wall
+                    Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, false); //Remove up wall
+                }
+            }*/
+            
+            // Place Enterance
+            iLuxEntity@ pPlayerStart = Map_GetEntity("start_chunk_"+mlChunkStart, eLuxEntityType_Area);
+            if (pPlayerStart is null)
+            {
+                Error("Could not find the target entity "+"start_chunk_"+mlChunkStart);
+                return;
+            }
+            Player_PlaceAtEntity("start_chunk_"+mlChunkStart, true);
+            
+            iLuxEntity@ pEnterance = Map_GetEntity("Enterance", eLuxEntityType_Area);
+            if (pEnterance is null)
+            {
+                Error("Could not find the target entity Enterance");
+                return;
+            }
+            pEnterance.SetPosition(pPlayerStart.GetPosition());
+            
+            // Set rotation
+            cLux_AddDebugMessage("first - "+Entity_GetRotationEuler("Enterance").y);
+            Entity_FaceToEntity("Enterance", msFirstRemovedWall, false);
+            //Entity_RotateEuler("Enterance", cVector3f(0, mlEnteranceRotation, 0));
+            cLux_AddDebugMessage("second - "+Entity_GetRotationEuler("Enterance").y);
+		}
+	}
+
+	//-------------------------------------------------------
+
+	////////////////////////////
+	// This only used for pure debug purposes when info needs to printed.
+	float DrawDebugOutput(cGuiSet @apSet,iFontData @apFont,float afY)
+	{
+		//afY = cLux_DrawDebugText("My Debug value:"+..., afY);
+		return afY;
+	}
+ 
+	//-------------------------------------------------------
+ 
+	//} END MAIN CALLBACKS
+ 
+ 
+	//////////////////////////////////////////////////////////////////////////////////////////
+	// ==============
+	// MAIN FUNCTIONS
+	// ==============
+	//{///////////////////////////////////////////////////////////////////////////////////////
+ 
+	//-------------------------------------------------------
+ 
+	/*Put any variables that are used in more than one scene here.*/
+ 
+	//-------------------------------------------------------
+ 
+	/*Put any functions that are used in more than one scene here.*/
+ 
+	//-------------------------------------------------------
+ 
+	//} END MAIN FUNCTIONS
+ 
+	//////////////////////////////////////////////////////////////////////////////////////////
+	// ==============
+	// SCENE X *NAME OF SCENE*
+	// ==============
+	//{//////////////////////////////////////////////////////////////////////////////////////
+ 
+		/////////////////////////////////////////
+		// General
+		//{//////////////////////////////////////
+		 
+		//-------------------------------------------------------
+	 
+		/*Put any variables that are used by many events in Scene X here.*/
+	 
+		//-------------------------------------------------------
+	 
+		/*Put any functions that are used in more than one event in Scene X here.*/
+	 
+		//-------------------------------------------------------
+		
+		//} END General	
+	 
+		/////////////////////////////////////////
+		// Event *Name Of Event*
+		//{//////////////////////////////////////
+
+		//-------------------------------------------------------
+
+		/*Put any variables that are only used in Scene X, Event X here.*/
+
+		//-------------------------------------------------------
+
+		/*Put any functions that are only used in Scene X, Event X here.*/
+
+		//-------------------------------------------------------
+
+		//} END Event *Name Of Event*
+	 
+	//} END SCENE X
+ 
+}
