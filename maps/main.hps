@@ -69,7 +69,6 @@ class cScrMap : iScrMap
 	// Run first time starting map
     
     // Enterance
-    int mlChunkStart = 1;
     tString msFirstRemovedWall = "";
     
     array<int> mvStack;
@@ -93,49 +92,50 @@ class cScrMap : iScrMap
         Chunk_ResetArray();
         
         // Pick starting chunk
-        mlChunkStart = cMath_RandRectl(1, 64);
+        lChunkStart = cMath_RandRectl(1, 64);
+        Chunk_SetStartingCell(lChunkStart)
         int lNeighbourCell = 1;
-        cLux_AddDebugMessage("Start chunk - "+mlChunkStart);
-        Player_PlaceAtEntity("start_chunk_"+mlChunkStart, true);
+        cLux_AddDebugMessage("Start chunk - "+lChunkStart);
+        Player_PlaceAtEntity("start_chunk_"+lChunkStart, true);
         // Mark as visited
-        Chunk_SetBeenVisited(mlChunkStart, true);
+        Chunk_SetBeenVisited(lChunkStart, true);
         
         // Pick a neighbouring cell that haven't been visited, currently all and set the walls between us and it inactive
         // Also set it visited
-        lNeighbourCell = Chunk_PickNeighbouringCell(mlChunkStart);
+        lNeighbourCell = Chunk_PickNeighbouringCell(lChunkStart);
         if (lNeighbourCell!=-1)
-            msFirstRemovedWall = Chunk_SetWallBetweenCells(mlChunkStart, lNeighbourCell, false);
+            msFirstRemovedWall = Chunk_SetWallBetweenCells(lChunkStart, lNeighbourCell, false);
             mvStack.insertLast(lNeighbourCell);
             Chunk_SetBeenVisited(lNeighbourCell, true);
             
         // For realism, make a chunk where the door is supposed to be unuseable
-        if ((mlChunkStart+1) == lNeighbourCell) { //Right
-            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart,mlChunkStart-1, true);
+        if ((lChunkStart+1) == lNeighbourCell) { //Right
+            tString sWall = Chunk_SetWallBetweenCells(lChunkStart,lChunkStart-1, true);
             if (sWall != "") {
-                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], mlChunkStart);
+                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], lChunkStart);
                 Chunk_SetBeenVisited(lChunk, true);
             }
-        } else if ((mlChunkStart-1) == lNeighbourCell) { //Left
-            tString sWall  = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, true);
+        } else if ((lChunkStart-1) == lNeighbourCell) { //Left
+            tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart+1, true);
             if (sWall != "") {
                 array<tString> vWallSplit = cString_Split(sWall, "_");
                 if (vWallSplit.size()>3) {
-                    int lChunk = cString_ToInt(vWallSplit[3], mlChunkStart);
+                    int lChunk = cString_ToInt(vWallSplit[3], lChunkStart);
                     Chunk_SetBeenVisited(lChunk, true);
                 }
             }
-        } else if ((mlChunkStart+8) == lNeighbourCell) { //Up
-            tString sWall  = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, true);
+        } else if ((lChunkStart+8) == lNeighbourCell) { //Up
+            tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart-8, true);
             if (sWall != "") {
-                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], mlChunkStart);
+                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], lChunkStart);
                 Chunk_SetBeenVisited(lChunk, true);
             }
-        } else if ((mlChunkStart-8) == lNeighbourCell) { //Down
-            tString sWall  = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, true);
+        } else if ((lChunkStart-8) == lNeighbourCell) { //Down
+            tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart+8, true);
             if (sWall != "") {
                 array<tString> vWallSplit = cString_Split(sWall, "_");
                 if (vWallSplit.size()>3) {
-                    int lChunk = cString_ToInt(vWallSplit[3], mlChunkStart);
+                    int lChunk = cString_ToInt(vWallSplit[3], lChunkStart);
                     Chunk_SetBeenVisited(lChunk, true);
                 }
             }
@@ -184,20 +184,35 @@ class cScrMap : iScrMap
             lSafetyCheck++;
         }
         
-		/////////////////////////
-		// START/END GENERATION
+        ///////////////////
+        // ENTERANCE
         
-        // Generate starting point, first we check direction of first neighbour to how to rotate the door
-        //"start_chunk_"+mlChunkStart
-        if ((mlChunkStart+1) == lNeighbourCell) { //Right
-            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, true);
-        } else if ((mlChunkStart-1) == lNeighbourCell) { //Left
-            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, true);
-        } else if ((mlChunkStart+8) == lNeighbourCell) { //Up
-            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, true);
-        } else if ((mlChunkStart-8) == lNeighbourCell) { //Down
-            tString sWall = Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, true);
+        // First remove roof
+        Entity_SetActive("roof_chunk_"+lChunkStart, false);  
+        Chunk_SetContainsBuilding(lChunkStart, true);
+        
+        // Place Enterance
+        iLuxEntity@ pPlayerStart = Map_GetEntity("start_chunk_"+lChunkStart, eLuxEntityType_Area);
+        if (pPlayerStart is null)
+        {
+            Error("Could not find the target entity "+"start_chunk_"+lChunkStart);
+            return;
         }
+        
+        iLuxEntity@ pEnterance = Map_GetEntity("Enterance", eLuxEntityType_Area);
+        if (pEnterance is null)
+        {
+            Error("Could not find the target entity Enterance");
+            return;
+        }
+        pEnterance.SetPosition(pPlayerStart.GetPosition());
+        
+        // Set rotation
+        Entity_FaceToEntity("Enterance", msFirstRemovedWall, false);
+        
+        
+        ///////////////////
+        // EXIT/BUILDING GENERATION
 	}
 
 	//-------------------------------------------------------
@@ -283,50 +298,6 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
-            ///////////////////
-            // ENTERANCE
-            
-            // First remove roof
-            Entity_SetActive("roof_chunk_"+mlChunkStart, false);   
-            /*
-            array<tString> vWallSplit = cString_Split(msFirstRemovedWall, "_");
-            if (vWallSplit.size()>3) { //HAS to be (but just to make sure :>)
-                int lIndexInt = cString_ToInt(vWallSplit[3], mlChunkStart);
-                if (lIndexInt > mlChunkStart) {
-                    if ((mlChunkStart + 1) == lIndexInt) //Right wall
-                        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, false); //Remove left wall
-                    else if ((mlChunkStart - 1) == lIndexInt) //Left wall
-                        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, false); //Remove right wall
-                    else if ((mlChunkStart + 8) == lIndexInt) //Up wall
-                        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, false); //Remove down wall
-                } else {
-                    //Down wall
-                    Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, false); //Remove up wall
-                }
-            }*/
-            
-            // Place Enterance
-            iLuxEntity@ pPlayerStart = Map_GetEntity("start_chunk_"+mlChunkStart, eLuxEntityType_Area);
-            if (pPlayerStart is null)
-            {
-                Error("Could not find the target entity "+"start_chunk_"+mlChunkStart);
-                return;
-            }
-            Player_PlaceAtEntity("start_chunk_"+mlChunkStart, true);
-            
-            iLuxEntity@ pEnterance = Map_GetEntity("Enterance", eLuxEntityType_Area);
-            if (pEnterance is null)
-            {
-                Error("Could not find the target entity Enterance");
-                return;
-            }
-            pEnterance.SetPosition(pPlayerStart.GetPosition());
-            
-            // Set rotation
-            cLux_AddDebugMessage("first - "+Entity_GetRotationEuler("Enterance").y);
-            Entity_FaceToEntity("Enterance", msFirstRemovedWall, false);
-            //Entity_RotateEuler("Enterance", cVector3f(0, mlEnteranceRotation, 0));
-            cLux_AddDebugMessage("second - "+Entity_GetRotationEuler("Enterance").y);
 		}
 	}
 
@@ -353,54 +324,14 @@ class cScrMap : iScrMap
  
 	//-------------------------------------------------------
  
-	/*Put any variables that are used in more than one scene here.*/
- 
-	//-------------------------------------------------------
- 
-	/*Put any functions that are used in more than one scene here.*/
+    // When you click on the exit ladder
+    void OnExitLadder(const tString &in asEntity)
+    {
+        cLux_AddDebugMessage("Clicked on Exit Ladder");
+    }
  
 	//-------------------------------------------------------
  
 	//} END MAIN FUNCTIONS
- 
-	//////////////////////////////////////////////////////////////////////////////////////////
-	// ==============
-	// SCENE X *NAME OF SCENE*
-	// ==============
-	//{//////////////////////////////////////////////////////////////////////////////////////
- 
-		/////////////////////////////////////////
-		// General
-		//{//////////////////////////////////////
-		 
-		//-------------------------------------------------------
-	 
-		/*Put any variables that are used by many events in Scene X here.*/
-	 
-		//-------------------------------------------------------
-	 
-		/*Put any functions that are used in more than one event in Scene X here.*/
-	 
-		//-------------------------------------------------------
-		
-		//} END General	
-	 
-		/////////////////////////////////////////
-		// Event *Name Of Event*
-		//{//////////////////////////////////////
-
-		//-------------------------------------------------------
-
-		/*Put any variables that are only used in Scene X, Event X here.*/
-
-		//-------------------------------------------------------
-
-		/*Put any functions that are only used in Scene X, Event X here.*/
-
-		//-------------------------------------------------------
-
-		//} END Event *Name Of Event*
-	 
-	//} END SCENE X
  
 }

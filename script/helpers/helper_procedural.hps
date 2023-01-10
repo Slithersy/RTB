@@ -52,6 +52,27 @@ bool Chunk_HasBeenVisited(int alChunkNum)
 }
 
 /**
+ * Set starting chunk
+ * 
+ * @param alChunkNum, number of the chunk.
+ **/
+int mlStartingChunk = 1;
+void Chunk_SetStartingCell(int alChunkNum)
+{
+    mlStartingChunk = alChunkNum;
+}
+
+/**
+ * Set starting chunk
+ * 
+ * @param alChunkNum, number of the chunk.
+ **/
+int Chunk_GetStartingCell()
+{
+    return mlStartingChunk;
+}
+
+/**
  * Pick a random neighbouring chunk that hasn't been visited
  * Returns -1 if there are no close neighbouring chunks
  * 
@@ -199,7 +220,7 @@ void Building_ResetArray()
  * @param alChunkNum, number of the chunk.
  * @param abBuilding, whether it has a building.
  **/
-void Building_SetBeenVisited(int alChunkNum, bool abBuilding)
+void Chunk_SetContainsBuilding(int alChunkNum, bool abBuilding)
 {
     Building_CheckFilledArray();
     mvUsedChunks[cMath_Clamp(alChunkNum, 1, 64)] = abBuilding;
@@ -207,13 +228,82 @@ void Building_SetBeenVisited(int alChunkNum, bool abBuilding)
 
 /**
  * Check if a chunk contains a building
+ * Returns: Bool whether chunk has been visited
  * 
  * @param alChunkNum, number of the chunk.
  **/
-bool Building_HasBeenVisited(int alChunkNum)
+bool Chunk_HasBuilding(int alChunkNum)
 {
     Building_CheckFilledArray();
     return mvUsedChunks[cMath_Clamp(alChunkNum, 1, 64)];
+}
+
+/**
+ * Finds a random unoccupied position for a building to reside in with a distance, priority in corners
+ * Returns int chunk free, -1 if no chunk is found (all available chunks are occupied)
+ * 
+ * @param asAreaName, area containing the building.
+ * @param alChunkNum, number of chunk, places forcefully it. If -1 then it places it randomly in a corner.
+ * @param abFacingRandom, if true the building will face a reasonable random direction, otherwise it'll face the first neighbour (useful for Start).
+ * @param avRemoveWalls, (abBack, abRight, abFront, abLeft, abRoof) which stuff to remove.
+ **/
+int Building_FindRandomPosition(const tString &in asAreaName, int alChunkNum=-1, bool abFacingRandom=true, array<bool> avRemoveWalls=(true, true, true, true, false))
+{
+    Building_CheckFilledArray();
+    
+    if (alChunkNum == -1) {
+        //Place in a random corner some distance away from other buildings if possible
+    }
+    
+    if (alChunkNum > mlChunkStart) {
+        if ((mlChunkStart + 1) == alChunkNum) //Right wall
+            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, avRemoveWalls[3]); //Remove left wall
+        else if ((mlChunkStart - 1) == alChunkNum) //Left wall
+            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, avRemoveWalls[1]); //Remove right wall
+        else if ((mlChunkStart + 8) == alChunkNum) //Up wall
+            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, avRemoveWalls[0]); //Remove down wall
+    } else {
+        //Down wall
+        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, avRemoveWalls[2]); //Remove up wall
+    }
+    
+    return -1;
+}
+
+/**
+ * Places building in a chunk, automatically removing walls/roof around (Unless abHasWalls is false), will replace wall with doorway if intercepting a path that isn't reachable
+ * Returns int chunk placed in, returns -1 if can't place building
+ * 
+ * @param asAreaName, area containing the building.
+ * @param alChunkNum, number of chunk, places forcefully it. If -1 then it places it randomly in a corner.
+ * @param abFacingRandom, if true the building will face a reasonable random direction, otherwise it'll face the first neighbour (useful for Start).
+ * @param abHasWalls, if false then will not change anything about the maze structure
+ **/
+int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool abFacingRandom=true, bool abHasWalls=true)
+{
+    Building_CheckFilledArray();
+    
+    if (alChunkNum == -1) {
+        //Place in a random corner some distance away from other buildings if possible
+    } else {
+        //Place in chunk
+    }
+    
+    /* Make automatic wall removal by checking wall names existence
+    if (alChunkNum > mlChunkStart) {
+        if ((mlChunkStart + 1) == alChunkNum) //Right wall
+            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, avRemoveWalls[3]); //Remove left wall
+        else if ((mlChunkStart - 1) == alChunkNum) //Left wall
+            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, avRemoveWalls[1]); //Remove right wall
+        else if ((mlChunkStart + 8) == alChunkNum) //Up wall
+            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, avRemoveWalls[0]); //Remove down wall
+    } else {
+        //Down wall
+        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, avRemoveWalls[2]); //Remove up wall
+    }
+     * /
+    
+    return -1;
 }
 
 //-------------------------------------------------
