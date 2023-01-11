@@ -114,6 +114,7 @@ class cScrMap : iScrMap
             if (sWall != "") {
                 int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], lChunkStart);
                 Chunk_SetBeenVisited(lChunk, true);
+                Chunk_SetContainsBuilding(lChunk, true);
             }
         } else if ((lChunkStart-1) == lNeighbourCell) { //Left
             tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart+1, true);
@@ -122,6 +123,7 @@ class cScrMap : iScrMap
                 if (vWallSplit.size()>3) {
                     int lChunk = cString_ToInt(vWallSplit[3], lChunkStart);
                     Chunk_SetBeenVisited(lChunk, true);
+                    Chunk_SetContainsBuilding(lChunk, true);
                 }
             }
         } else if ((lChunkStart+8) == lNeighbourCell) { //Up
@@ -129,6 +131,7 @@ class cScrMap : iScrMap
             if (sWall != "") {
                 int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], lChunkStart);
                 Chunk_SetBeenVisited(lChunk, true);
+                Chunk_SetContainsBuilding(lChunk, true);
             }
         } else if ((lChunkStart-8) == lNeighbourCell) { //Down
             tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart+8, true);
@@ -137,6 +140,7 @@ class cScrMap : iScrMap
                 if (vWallSplit.size()>3) {
                     int lChunk = cString_ToInt(vWallSplit[3], lChunkStart);
                     Chunk_SetBeenVisited(lChunk, true);
+                    Chunk_SetContainsBuilding(lChunk, true);
                 }
             }
         }
@@ -213,6 +217,7 @@ class cScrMap : iScrMap
         
         ///////////////////
         // EXIT/BUILDING GENERATION
+        Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool abChangeMaze=true);
 	}
 
 	//-------------------------------------------------------

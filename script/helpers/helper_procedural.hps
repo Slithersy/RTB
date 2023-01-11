@@ -122,8 +122,9 @@ int Chunk_PickNeighbouringCell(int alChunkNum)
  * @param alChunkNum, number of the first chunk.
  * @param alChunkNum2, number of the second chunk.
  * @param abActive, whether to set the wall active or not.
+ * @param abShouldChange, default true, only set false if you only want the name of the wall.
  **/
-tString Chunk_SetWallBetweenCells(int alChunkNum1=0, int alChunkNum2=0, bool abActive=false)
+tString Chunk_SetWallBetweenCells(int alChunkNum1=0, int alChunkNum2=0, bool abActive=false, bool abShouldChange=true)
 {
     // Check which number is bigger to remove/add it the right way all the time (small_big)
     int lBigNumber = cMath_Max(alChunkNum1, alChunkNum2);
@@ -137,25 +138,31 @@ tString Chunk_SetWallBetweenCells(int alChunkNum1=0, int alChunkNum2=0, bool abA
     // Complicated headache inducing stuff, but it works. I think..
     if ((((lSmallNumber%8) == 0) || (lSmallNumber == 0)) && ((lBigNumber-8) != lSmallNumber)) { //Right/Left corner walls
         if (alChunkNum2 == lSmallNumber) {
-            Entity_SetActive("wall4_chunk_"+lBigNumber, abActive);
+            if (abShouldChange)
+                Entity_SetActive("wall4_chunk_"+lBigNumber, abActive);
             return ("wall4_chunk_"+lBigNumber);
         } else {
-            Entity_SetActive("wall"+2+"_chunk_"+lSmallNumber, abActive);
+            if (abShouldChange)
+                Entity_SetActive("wall"+2+"_chunk_"+lSmallNumber, abActive);
             return ("wall"+2+"_chunk_"+lSmallNumber);
         }
     } else if ((lBigNumber>64) || (lSmallNumber<=0)) { //Top/Bottom corner walls
         if (lSmallNumber>0) {
-            Entity_SetActive("wall"+3+"_chunk_"+lSmallNumber, abActive);
+            if (abShouldChange)
+                Entity_SetActive("wall"+3+"_chunk_"+lSmallNumber, abActive);
             return ("wall"+3+"_chunk_"+lSmallNumber);
         } else {
-            Entity_SetActive("wall"+1+"_chunk_"+lBigNumber, abActive);
+            if (abShouldChange)
+                Entity_SetActive("wall"+1+"_chunk_"+lBigNumber, abActive);
             return ("wall"+1+"_chunk_"+lBigNumber);
         }
     } else if (((lBigNumber-lSmallNumber) == 1) && (lSmallNumber>0)) { //Right/Left walls
-        Entity_SetActive("wall"+2+"_chunk_"+lSmallNumber+"_"+lBigNumber, abActive);
+        if (abShouldChange)
+            Entity_SetActive("wall"+2+"_chunk_"+lSmallNumber+"_"+lBigNumber, abActive);
         return ("wall"+2+"_chunk_"+lSmallNumber+"_"+lBigNumber);
     } else if (((lBigNumber-8) == lSmallNumber) && (lSmallNumber>0)) { //Top/Bottom walls
-        Entity_SetActive("wall"+3+"_chunk_"+lSmallNumber+"_"+lBigNumber, abActive);
+        if (abShouldChange)
+            Entity_SetActive("wall"+3+"_chunk_"+lSmallNumber+"_"+lBigNumber, abActive);
         return ("wall"+3+"_chunk_"+lSmallNumber+"_"+lBigNumber);
     }
     
@@ -239,69 +246,201 @@ bool Chunk_HasBuilding(int alChunkNum)
 }
 
 /**
- * Finds a random unoccupied position for a building to reside in with a distance, priority in corners
+ * Finds a random unoccupied chunk for a building to reside in with a distance, only in corners
  * Returns int chunk free, -1 if no chunk is found (all available chunks are occupied)
  * 
- * @param asAreaName, area containing the building.
- * @param alChunkNum, number of chunk, places forcefully it. If -1 then it places it randomly in a corner.
- * @param abFacingRandom, if true the building will face a reasonable random direction, otherwise it'll face the first neighbour (useful for Start).
- * @param avRemoveWalls, (abBack, abRight, abFront, abLeft, abRoof) which stuff to remove.
  **/
-int Building_FindRandomPosition(const tString &in asAreaName, int alChunkNum=-1, bool abFacingRandom=true, array<bool> avRemoveWalls=(true, true, true, true, false))
+int Building_FindRandomChunk()
 {
     Building_CheckFilledArray();
     
-    if (alChunkNum == -1) {
-        //Place in a random corner some distance away from other buildings if possible
-    }
+    int alChunkNum = -1;
+    int lBlockNum = 2; // Number of chunks that will be blocked from our search
+    array<int> BlockedChunks;
+    array<int> AvailableChunks;
+    array<int> CornerChunks;
     
-    if (alChunkNum > mlChunkStart) {
-        if ((mlChunkStart + 1) == alChunkNum) //Right wall
-            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, avRemoveWalls[3]); //Remove left wall
-        else if ((mlChunkStart - 1) == alChunkNum) //Left wall
-            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, avRemoveWalls[1]); //Remove right wall
-        else if ((mlChunkStart + 8) == alChunkNum) //Up wall
-            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, avRemoveWalls[0]); //Remove down wall
-    } else {
-        //Down wall
-        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, avRemoveWalls[2]); //Remove up wall
+    while ((alChunkNum == -1) && (lBlockNum>=0)) {
+        // Find all unavailable chunks
+        for (int Chunk=1;Chunk<65;Chunk++) {
+            if ((Chunk == mlStartingChunk) || (Chunk_HasBuilding(Chunk))) {
+                int lLeft = 0;
+                int lRight = 0;
+                int lUp = 0;
+                int lDown = 0;
+                for (int i=1;i<=lBlockNum;i++) {
+                    //Check left
+                    if (((Chunk-i)%8) != 0)
+                        lLeft++;
+                    //Check right
+                    if (((Chunk+(i*8)) != 0)
+                        lRight++;
+                    //Check up
+                    if ((Chunk+(8*i)) <= 64)
+                        lUp++;
+                    //Check down
+                    if ((Chunk-(8*i)) >= 1)
+                        lDown++;
+                }
+                
+                for (int i=(Chunk-lLeft);i<=(Chunk+lRight);i++) {
+                    BlockedChunks.insertLast(i); //Insert current line into blocked
+                    if (lUp>0) { //Insert all top lines
+                        for (int k=1;k<=lUp;k++) {
+                            BlockedChunks.insertLast(i+(8*k));
+                        }
+                    }
+                    if (lUp>0) { //Insert all bottom lines
+                        for (int k=1;k<=lDown;k++) {
+                            BlockedChunks.insertLast(i-(8*k));
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Find all the available chunks and place in AvailableChunks
+        for (int Chunk=1;Chunk<65;Chunk++) {
+            if (!BlockedChunks[Chunk])
+                AvailableChunks.insertLast(Chunk);
+        }
+        if (AvailableChunks.length()==0) {
+            lBlockNum = lBlockNum - 1; 
+            continue;
+        }
+        
+        // Save all the chunks with a corner
+        for (int i=0;i<AvailableChunks.length();i++) {
+            int Chunk = AvailableChunks[i]
+            int lHorizontalCount = 0;
+            int lVerticalCount = 0;
+            //Left/Right
+            if ((!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk-1, false, false))) ||
+                    (!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk+1, false, false))))
+                lHorizontalCount++;
+            //Up/Down
+            if ((!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk-8, false, false))) ||
+                    (!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk+8, false, false))))
+                lVerticalCount++;
+                
+            if ((lHorizontalCount<=1) && (lVerticalCount<=1))
+                CornerChunks.insertLast(Chunk);
+        }
+        
+        if (CornerChunks.size()>0) {
+            // Picking a random corner chunk
+            return CornerChunks[cMath_RandRectl(0, CornerChunks.length()-1)];
+        } else {
+            lBlockNum = lBlockNum - 1; 
+            continue;
+        }
     }
     
     return -1;
 }
 
 /**
- * Places building in a chunk, automatically removing walls/roof around (Unless abHasWalls is false), will replace wall with doorway if intercepting a path that isn't reachable
+ * Places building in a chunk (Currently doesn't support holes/objects)
  * Returns int chunk placed in, returns -1 if can't place building
  * 
  * @param asAreaName, area containing the building.
  * @param alChunkNum, number of chunk, places forcefully it. If -1 then it places it randomly in a corner.
- * @param abFacingRandom, if true the building will face a reasonable random direction, otherwise it'll face the first neighbour (useful for Start).
- * @param abHasWalls, if false then will not change anything about the maze structure
+ * @param abChangeMaze, if false then will not change anything about the maze structure
  **/
-int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool abFacingRandom=true, bool abHasWalls=true)
+int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool abChangeMaze=true)
 {
     Building_CheckFilledArray();
     
+    // Get Chunk
     if (alChunkNum == -1) {
         //Place in a random corner some distance away from other buildings if possible
-    } else {
-        //Place in chunk
+        alChunkNum = (Building_FindRandomChunk());
+        if (alChunkNum == -1)
+            return -1;
     }
     
-    /* Make automatic wall removal by checking wall names existence
-    if (alChunkNum > mlChunkStart) {
-        if ((mlChunkStart + 1) == alChunkNum) //Right wall
-            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-1, avRemoveWalls[3]); //Remove left wall
-        else if ((mlChunkStart - 1) == alChunkNum) //Left wall
-            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+1, avRemoveWalls[1]); //Remove right wall
-        else if ((mlChunkStart + 8) == alChunkNum) //Up wall
-            Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart-8, avRemoveWalls[0]); //Remove down wall
-    } else {
-        //Down wall
-        Chunk_SetWallBetweenCells(mlChunkStart, mlChunkStart+8, avRemoveWalls[2]); //Remove up wall
+    // Assign chunk as occupied
+    Chunk_SetContainsBuilding(alChunkNum, true);
+    
+    iLuxEntity@ pDoor;
+    iLuxEntity@ pDoor2;
+    if (abChangeMaze) {
+        //Make doors static
+        pDoor = cLux_GetCurrentMap().GetEntityByName(asAreaName+"Wall1_1", eLuxEntityType_LastEnum, "");
+        if (pDoor is not null)
+        {
+            pDoor.GetBody(0).SetMass(0);
+        } else Error("Could not find the target entity "+asAreaName+"Wall1_1");
+        
+        pDoor2 = cLux_GetCurrentMap().GetEntityByName(asAreaName+"Wall1_5", eLuxEntityType_LastEnum, "");
+        if (pDoor2 is not null)
+        {
+            pDoor2.GetBody(0).SetMass(0);
+        } else Error("Could not find the target entity "+asAreaName+"Wall1_5");
     }
-     * /
+    
+    // Get position in 3D space to teleport area to
+    iLuxEntity@ pPlayerStart = Map_GetEntity("start_chunk_"+alChunkNum, eLuxEntityType_Area);
+    if (pPlayerStart is null)
+    {
+        Error("Could not find the target entity "+"start_chunk_"+alChunkNum);
+        return;
+    }
+    
+    iLuxEntity@ pBuilding = Map_GetEntity(asAreaName, eLuxEntityType_Area);
+    if (pBuilding is null)
+    {
+        Error("Could not find the target entity "+pBuilding);
+        return;
+    }
+    // Place building in chunk 
+    pBuilding.SetPosition(pPlayerStart.GetPosition());
+    
+    if (abChangeMaze) {
+        
+        // Remove roof
+        Entity_SetActive("roof_chunk_"+alChunkNum, false); 
+        
+        // Check & Save where doors need to be added
+        array<bool> vLeftRightUpDown = {false, false, false , false}; // True if to add
+        tString sLeftWallName = Chunk_SetWallBetweenCells(Chunk, Chunk-1, false, false);
+        tString sRightWallName = Chunk_SetWallBetweenCells(Chunk, Chunk+1, false, false);
+        tString sUpWallName = Chunk_SetWallBetweenCells(Chunk, Chunk+8, false, false);
+        tString sDownWallName = Chunk_SetWallBetweenCells(Chunk, Chunk-8, false, false);
+        // Left
+        if (!Entity_IsActive(sLeftWallName)) {
+            vLeftRightUpDown[0] = true;
+        }
+        // Right
+        if (!Entity_IsActive(sRightWallName)) {
+            vLeftRightUpDown[1] = true;
+        }
+        // Up
+        if (!Entity_IsActive(sUpWallName)) {
+            vLeftRightUpDown[2] = true;
+        }
+        // Up
+        if (!Entity_IsActive(sDownWallName)) {
+            vLeftRightUpDown[3] = true;
+        }
+        
+        // Rotate appropriately
+        //Down - Left we can skip as it's default
+        if (vLeftRightUpDown[0] and vLeftRightUpDown[2]) { //Left - Up
+            Entity_FaceToEntity(asAreaName, sLeftWallName, false);
+        } else if (vLeftRightUpDown[2] and vLeftRightUpDown[1]) { //Up - Right
+            Entity_FaceToEntity(asAreaName, sUpWallName, false);
+        } else if (vLeftRightUpDown[1] and vLeftRightUpDown[3]) { //Right - Down
+            Entity_FaceToEntity(asAreaName, sRightWallName, false);
+        }
+        
+        if (pDoor is not null)
+            pDoor.GetBody(0).SetMass(10);
+        if (pDoor2 is not null)
+            pDoor2.GetBody(0).SetMass(10);
+
+        return alChunkNum;
+    }
     
     return -1;
 }
