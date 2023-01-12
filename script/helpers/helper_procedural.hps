@@ -314,22 +314,26 @@ int Building_FindRandomChunk()
             int Chunk = AvailableChunks[i];
             int lHorizontalCount = 0;
             int lVerticalCount = 0;
+            tString sLeftWall = Chunk_SetWallBetweenCells(Chunk, Chunk-1, false, false);
+            tString sRightWall = Chunk_SetWallBetweenCells(Chunk, Chunk+1, false, false);
+            tString sUpWall = Chunk_SetWallBetweenCells(Chunk, Chunk+8, false, false);
+            tString sDownWall = Chunk_SetWallBetweenCells(Chunk, Chunk-8, false, false);
             //Left/Right
-            if (((Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk-1, false, false))) &&
-                    (!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk+1, false, false)))) ||
-                ((!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk-1, false, false))) &&
-                    (Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk+1, false, false)))))
+            if (Entity_IsActive(sLeftWall) && (!Entity_IsActive(sRightWall)))
+                lHorizontalCount++;
+            if ((!Entity_IsActive(sLeftWall)) && Entity_IsActive(sRightWall))
                 lHorizontalCount++;
             //Up/Down
-            if (((Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk-8, false, false))) &&
-                    (!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk+8, false, false)))) ||
-                ((!Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk-8, false, false))) &&
-                    (Entity_IsActive(Chunk_SetWallBetweenCells(Chunk, Chunk+8, false, false)))))
+            if (Entity_IsActive(sUpWall) && (!Entity_IsActive(sDownWall)))
+                lVerticalCount++;
+            if ((!Entity_IsActive(sUpWall)) && Entity_IsActive(sDownWall))
                 lVerticalCount++;
                 
             if ((lHorizontalCount<=1) && (lVerticalCount<=1))
                 CornerChunks.insertLast(Chunk);
         }
+        
+        // TO DO, LIKE IN CHUNK 25, IT WENT OUTSIDE THE MAP, SO FIX IT A BIT MORE, ROTATED LEFT TO UP
         
         if (CornerChunks.size()>0) {
             // Picking a random corner chunk
@@ -383,7 +387,7 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool 
         // Remove roof
         Entity_SetActive("roof_chunk_"+alChunkNum, false); 
         // Remove all walls
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
         Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
         Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
         Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
