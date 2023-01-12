@@ -92,8 +92,8 @@ class cScrMap : iScrMap
         Chunk_ResetArray();
         
         // Pick starting chunk
-        lChunkStart = cMath_RandRectl(1, 64);
-        Chunk_SetStartingCell(lChunkStart)
+        int lChunkStart = cMath_RandRectl(1, 64);
+        Chunk_SetStartingCell(lChunkStart);
         int lNeighbourCell = 1;
         cLux_AddDebugMessage("Start chunk - "+lChunkStart);
         Player_PlaceAtEntity("start_chunk_"+lChunkStart, true);
@@ -217,7 +217,6 @@ class cScrMap : iScrMap
         
         ///////////////////
         // EXIT/BUILDING GENERATION
-        Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool abChangeMaze=true);
 	}
 
 	//-------------------------------------------------------
@@ -303,6 +302,7 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
+            Building_PlaceInChunk("GeneratorRoom");
 		}
 	}
 
