@@ -217,6 +217,11 @@ class cScrMap : iScrMap
         
         ///////////////////
         // EXIT/BUILDING GENERATION
+        Building_PlaceInChunk("Exit", -1, 1.0f);
+        Building_PlaceInChunk("GeneratorRoom");
+        
+        // Generate Assets
+        Building_PlaceInChunk("LightArea_1", -1, 0.2f, 0.8f);
 	}
 
 	//-------------------------------------------------------

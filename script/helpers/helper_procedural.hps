@@ -246,11 +246,13 @@ bool Chunk_HasBuilding(int alChunkNum)
 }
 
 /**
- * Finds a random unoccupied chunk for a building to reside in with a distance, only in corners
+ * Finds a random unoccupied chunk for a building to reside in with a distance, only in corners or dead ends
  * Returns int chunk free, -1 if no chunk is found (all available chunks are occupied)
  * 
+ * @param afDeadEndChance, from 0.0f-1.0f how likely is it to use a dead end chunk.
+ * @param afPlaceHallways, from 0.0f-1.0f how likely is it to use a hallway chunk (Don't use for normal buildings, only for asset buildings).
  **/
-int Building_FindRandomChunk()
+int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0.0f)
 {
     Building_CheckFilledArray();
     
@@ -259,7 +261,13 @@ int Building_FindRandomChunk()
     array<int> BlockedChunks;
     array<int> AvailableChunks;
     array<int> CornerChunks;
+    array<int> DeadEndChunks;
+    array<int> HallWayChunks;
     
+    float fChanceChecker = cMath_RandRectl(1, 99);
+    fChanceChecker = fChanceChecker/100;
+    float fChanceChecker2 = cMath_RandRectl(1, 99);
+    fChanceChecker2 = fChanceChecker2/100;
     while ((alChunkNum == -1) && (lBlockNum>=0)) {
         // Find all unavailable chunks
         for (int Chunk=1;Chunk<65;Chunk++) {
@@ -306,6 +314,11 @@ int Building_FindRandomChunk()
         }
         if (AvailableChunks.length()==0) {
             lBlockNum = lBlockNum - 1; 
+            array<int> EmptyArray;
+            BlockedChunks = EmptyArray;
+            AvailableChunks = EmptyArray;
+            CornerChunks = EmptyArray;
+            DeadEndChunks = EmptyArray;
             continue;
         }
         
@@ -319,27 +332,60 @@ int Building_FindRandomChunk()
             tString sUpWall = Chunk_SetWallBetweenCells(Chunk, Chunk+8, false, false);
             tString sDownWall = Chunk_SetWallBetweenCells(Chunk, Chunk-8, false, false);
             //Left/Right
-            if (Entity_IsActive(sLeftWall) && (!Entity_IsActive(sRightWall)))
+            if (Entity_IsActive(sLeftWall))
                 lHorizontalCount++;
-            if ((!Entity_IsActive(sLeftWall)) && Entity_IsActive(sRightWall))
+            if (Entity_IsActive(sRightWall))
                 lHorizontalCount++;
             //Up/Down
-            if (Entity_IsActive(sUpWall) && (!Entity_IsActive(sDownWall)))
+            if (Entity_IsActive(sUpWall))
                 lVerticalCount++;
-            if ((!Entity_IsActive(sUpWall)) && Entity_IsActive(sDownWall))
+            if (Entity_IsActive(sDownWall))
                 lVerticalCount++;
                 
-            if ((lHorizontalCount<=1) && (lVerticalCount<=1))
+            if ((lHorizontalCount==1) && (lVerticalCount==1))
                 CornerChunks.insertLast(Chunk);
+            if (((lHorizontalCount==2) && (lVerticalCount==1)) || ((lHorizontalCount==1) && (lVerticalCount==2)))
+                DeadEndChunks.insertLast(Chunk);
+            if  (afPlaceHallways>0.0f && (((lHorizontalCount==2) && (lVerticalCount==0)) || ((lHorizontalCount==0) && (lVerticalCount==2))))
+                HallWayChunks.insertLast(Chunk);
         }
         
-        // TO DO, LIKE IN CHUNK 25, IT WENT OUTSIDE THE MAP, SO FIX IT A BIT MORE, ROTATED LEFT TO UP
+        if (afPlaceHallways>0.0f) {
+            // Pick a random hallway chunk with chance
+            if (fChanceChecker2 < afPlaceHallways) {
+                int lRanIndex = cMath_RandRectl(0, HallWayChunks.length()-1);
+                return HallWayChunks[lRanIndex];
+            }
+        }
         
+        if (DeadEndChunks.size()>0) {
+            // Pick a random dead end chunk with chance
+            if ((fChanceChecker < afDeadEndChance) || CornerChunks.size()==0 || afPlaceHallways>0.0f) {
+                int lRanIndex = cMath_RandRectl(0, DeadEndChunks.length()-1);
+                return DeadEndChunks[lRanIndex];
+            }
+        } else if (afPlaceHallways>0.0f) {
+            lBlockNum = lBlockNum - 1; 
+            array<int> EmptyArray;
+            BlockedChunks = EmptyArray;
+            AvailableChunks = EmptyArray;
+            CornerChunks = EmptyArray;
+            DeadEndChunks = EmptyArray;
+            HallWayChunks = EmptyArray;
+            continue;
+        }
         if (CornerChunks.size()>0) {
             // Picking a random corner chunk
-            return CornerChunks[cMath_RandRectl(0, CornerChunks.length()-1)];
+            int lRanIndex = cMath_RandRectl(0, CornerChunks.length()-1);
+            return CornerChunks[lRanIndex];
         } else {
             lBlockNum = lBlockNum - 1; 
+            array<int> EmptyArray;
+            BlockedChunks = EmptyArray;
+            AvailableChunks = EmptyArray;
+            CornerChunks = EmptyArray;
+            DeadEndChunks = EmptyArray;
+            HallWayChunks = EmptyArray;
             continue;
         }
     }
@@ -353,16 +399,17 @@ int Building_FindRandomChunk()
  * 
  * @param asAreaName, area containing the building.
  * @param alChunkNum, number of chunk, places forcefully it. If -1 then it places it randomly in a corner.
- * @param abChangeMaze, if false then will not change anything about the maze structure
+ * @param afDeadEndChance, from 0.0f-1.0f how likely is it to use a dead end chunk.
+ * @param afPlaceHallways, from 0.0f-1.0f how likely is it to use a hallway chunk (Don't use for normal buildings, only for asset buildings).
  **/
-int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool abChangeMaze=true)
+int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float afDeadEndChance=0.3f, float afPlaceHallways=0.0f)
 {
     Building_CheckFilledArray();
     
     // Get Chunk
     if (alChunkNum == -1) {
         //Place in a random corner some distance away from other buildings if possible
-        alChunkNum = (Building_FindRandomChunk());
+        alChunkNum = (Building_FindRandomChunk(afDeadEndChance, afPlaceHallways));
         if (alChunkNum == -1)
             return -1;
     }
@@ -372,25 +419,17 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool 
 
     iLuxEntity@ pDoor = cLux_GetCurrentMap().GetEntityByName(asAreaName+"_Wall1_1", eLuxEntityType_LastEnum, "");
     iLuxEntity@ pDoor2 = cLux_GetCurrentMap().GetEntityByName(asAreaName+"_Wall1_5", eLuxEntityType_LastEnum, "");
-    if (abChangeMaze) {
+    if (afPlaceHallways<0.01f) {
         //Make doors static
         if (!(pDoor is null))
         {
             pDoor.GetBody(0).SetMass(0);
-        } else Error("Could not find the target entity "+asAreaName+"Wall1_1");
+        } else Error("Could not find the target entity "+asAreaName+"_Wall1_1");
         
         if (!(pDoor2 is null))
         {
             pDoor2.GetBody(0).SetMass(0);
-        } else Error("Could not find the target entity "+asAreaName+"Wall1_5");
-        
-        // Remove roof
-        Entity_SetActive("roof_chunk_"+alChunkNum, false); 
-        // Remove all walls
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
+        } else Error("Could not find the target entity "+asAreaName+"_Wall1_5");
     }
     
     // Get position in 3D space to teleport area to
@@ -410,34 +449,35 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool 
     // Place building in chunk 
     pBuilding.SetPosition(pPlayerStart.GetPosition());
     
-    if (abChangeMaze) {
+    // Check & Save where doors need to be added
+    array<bool> vLeftRightUpDown = {false, false, false , false}; // True if to add
+    tString sLeftWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, false);
+    tString sRightWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, false);
+    tString sUpWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, false);
+    tString sDownWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, false);
+    // Left
+    if (!Entity_IsActive(sLeftWallName)) {
+        vLeftRightUpDown[0] = true;
+    }
+    // Right
+    if (!Entity_IsActive(sRightWallName)) {
+        vLeftRightUpDown[1] = true;
+    }
+    // Up
+    if (!Entity_IsActive(sUpWallName)) {
+        vLeftRightUpDown[2] = true;
+    }
+    // Down
+    if (!Entity_IsActive(sDownWallName)) {
+        vLeftRightUpDown[3] = true;
+    }
         
-        // Check & Save where doors need to be added
-        array<bool> vLeftRightUpDown = {false, false, false , false}; // True if to add
-        tString sLeftWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, false);
-        tString sRightWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, false);
-        tString sUpWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, false);
-        tString sDownWallName = Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, false);
-        // Left
-        if (!Entity_IsActive(sLeftWallName)) {
-            vLeftRightUpDown[0] = true;
-        }
-        // Right
-        if (!Entity_IsActive(sRightWallName)) {
-            vLeftRightUpDown[1] = true;
-        }
-        // Up
-        if (!Entity_IsActive(sUpWallName)) {
-            vLeftRightUpDown[2] = true;
-        }
-        // Up
-        if (!Entity_IsActive(sDownWallName)) {
-            vLeftRightUpDown[3] = true;
-        }
-        
+    if (afPlaceHallways<0.01f) {
         // Rotate appropriately
-        //Down - Left we can skip as it's default
-        if (vLeftRightUpDown[0] and vLeftRightUpDown[2]) { //Left - Up
+        if (vLeftRightUpDown[3] and vLeftRightUpDown[0]) { //Down - Left
+                    //Down - Left we can skip as it's default
+                    cLux_AddDebugMessage("Down to Left");
+        } else if (vLeftRightUpDown[0] and vLeftRightUpDown[2]) { //Left - Up
             Entity_FaceToEntity(asAreaName, sLeftWallName, false);
             cLux_AddDebugMessage("Left to Up");
         } else if (vLeftRightUpDown[2] and vLeftRightUpDown[1]) { //Up - Right
@@ -446,12 +486,85 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, bool 
         } else if (vLeftRightUpDown[1] and vLeftRightUpDown[3]) { //Right - Down
             Entity_FaceToEntity(asAreaName, sRightWallName, false);
             cLux_AddDebugMessage("Right to Down");
+        // Now we move to dead ends, we'll also replace the left door with a wall while at it
+        } else if (vLeftRightUpDown[0]) { //Left
+            Entity_SetActive(asAreaName+"_Wall1_5", false);
+            Entity_SetActive(asAreaName+"_Wall1_6", false);
+            Entity_SetActive(asAreaName+"_Wall1_7", false);
+            Entity_SetActive(asAreaName+"_Wall1_8", false);
+            Entity_SetActive(asAreaName+"_Wall1_11", true);
+            Entity_FaceToEntity(asAreaName, sLeftWallName, false);
+            cLux_AddDebugMessage("Left");
+        } else if (vLeftRightUpDown[1]) { //Right
+            Entity_SetActive(asAreaName+"_Wall1_5", false);
+            Entity_SetActive(asAreaName+"_Wall1_6", false);
+            Entity_SetActive(asAreaName+"_Wall1_7", false);
+            Entity_SetActive(asAreaName+"_Wall1_8", false);
+            Entity_SetActive(asAreaName+"_Wall1_11", true);
+            Entity_FaceToEntity(asAreaName, sRightWallName, false);
+            cLux_AddDebugMessage("Right");
+        } else if (vLeftRightUpDown[2]) { //Up
+            Entity_SetActive(asAreaName+"_Wall1_5", false);
+            Entity_SetActive(asAreaName+"_Wall1_6", false);
+            Entity_SetActive(asAreaName+"_Wall1_7", false);
+            Entity_SetActive(asAreaName+"_Wall1_8", false);
+            Entity_SetActive(asAreaName+"_Wall1_11", true);
+            Entity_FaceToEntity(asAreaName, sUpWallName, false);
+            cLux_AddDebugMessage("Up");
+        } else if (vLeftRightUpDown[3]) { //Down
+            Entity_SetActive(asAreaName+"_Wall1_5", false);
+            Entity_SetActive(asAreaName+"_Wall1_6", false);
+            Entity_SetActive(asAreaName+"_Wall1_7", false);
+            Entity_SetActive(asAreaName+"_Wall1_8", false);
+            Entity_SetActive(asAreaName+"_Wall1_11", true);
+            Entity_FaceToEntity(asAreaName, sDownWallName, false);
+            cLux_AddDebugMessage("Down");
         }
+        
+        // Remove roof
+        Entity_SetActive("roof_chunk_"+alChunkNum, false); 
+        // Remove all walls
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
         
         if (!(pDoor is null))
             pDoor.GetBody(0).SetMass(10);
         if (!(pDoor2 is null))
             pDoor2.GetBody(0).SetMass(10);
+
+        return alChunkNum;
+    } else {
+        // Rotate appropriately
+        if (vLeftRightUpDown[0] and vLeftRightUpDown[1]) { //Left - Right
+                Entity_FaceToEntity(asAreaName, sLeftWallName, false);
+                cLux_AddDebugMessage("Left - Right");
+        } else if (vLeftRightUpDown[2] and vLeftRightUpDown[3]) { //Up - Down
+            Entity_FaceToEntity(asAreaName, sUpWallName, false);
+            cLux_AddDebugMessage("Up - Down");
+        // Now we move to dead ends, we'll also replace the left door with a wall while at it
+        } else if (vLeftRightUpDown[0]) { //Left
+            Entity_FaceToEntity(asAreaName, sLeftWallName, false);
+            cLux_AddDebugMessage("Left");
+        } else if (vLeftRightUpDown[1]) { //Right
+            Entity_FaceToEntity(asAreaName, sRightWallName, false);
+            cLux_AddDebugMessage("Right");
+        } else if (vLeftRightUpDown[2]) { //Up
+            Entity_FaceToEntity(asAreaName, sUpWallName, false);
+            cLux_AddDebugMessage("Up");
+        } else if (vLeftRightUpDown[3]) { //Down
+            Entity_FaceToEntity(asAreaName, sDownWallName, false);
+            cLux_AddDebugMessage("Down");
+        }
+        
+        // Remove roof
+        //Entity_SetActive("roof_chunk_"+alChunkNum, false); 
+        // Remove all walls
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
 
         return alChunkNum;
     }
