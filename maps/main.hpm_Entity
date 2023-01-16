@@ -18492,7 +18492,7 @@
                     <Var ObjectId="268435809" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435810" Name="02_04_cannon_breakable_floor_plank_1_1" CreStamp="1673482909" ModStamp="1673697806" WorldPos="-18.3357 0.0155136 2" Rotation="-1.75368 -2.84735e-15 -1.5708" Scale="1 1 1" FileIndex="52" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7409 268435810">
+            <Entity ID="268435810" Name="02_04_cannon_breakable_floor_plank_1_1" CreStamp="1673482909" ModStamp="1673908792" WorldPos="-18.3357 0.0155136 2" Rotation="-1.75368 -2.84735e-15 -1.5708" Scale="1 1 1" FileIndex="52" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7409 268435810">
                 <UserVariables>
                     <Var ObjectId="268435810" Name="Note" Value="" />
                     <Var ObjectId="268435810" Name="EventInstanceTag" Value="" />
@@ -18531,7 +18531,7 @@
                     <Var ObjectId="268435810" Name="ConnectedEntity" Value="" />
                     <Var ObjectId="268435810" Name="ConnectedEntityInvertState" Value="false" />
                     <Var ObjectId="268435810" Name="ConnectedEntityStatesUsed" Value="0" />
-                    <Var ObjectId="268435810" Name="ParentAttachEntity" Value="LightArea_2" />
+                    <Var ObjectId="268435810" Name="ParentAttachEntity" Value="LampArea_2" />
                     <Var ObjectId="268435810" Name="ParentAttachUseRotation" Value="true" />
                     <Var ObjectId="268435810" Name="ParentAttachBody" Value="" />
                     <Var ObjectId="268435810" Name="ParentAttachSocket" Value="" />
@@ -19296,7 +19296,7 @@
                     <Var ObjectId="268435821" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435827" Name="02_04_cannon_breakable_floor_plank_1_2" CreStamp="1673697842" ModStamp="1673697859" WorldPos="-21.8433 0.0155136 -4.60323" Rotation="0.143758 1.2006e-15 -1.5708" Scale="1 1 1" FileIndex="52" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7728 268435827">
+            <Entity ID="268435827" Name="02_04_cannon_breakable_floor_plank_1_2" CreStamp="1673697842" ModStamp="1673908799" WorldPos="-21.8433 0.0155136 -4.60323" Rotation="0.143758 1.2006e-15 -1.5708" Scale="1 1 1" FileIndex="52" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7728 268435827">
                 <UserVariables>
                     <Var ObjectId="268435827" Name="Note" Value="" />
                     <Var ObjectId="268435827" Name="EventInstanceTag" Value="" />
@@ -19335,7 +19335,7 @@
                     <Var ObjectId="268435827" Name="ConnectedEntity" Value="" />
                     <Var ObjectId="268435827" Name="ConnectedEntityInvertState" Value="false" />
                     <Var ObjectId="268435827" Name="ConnectedEntityStatesUsed" Value="0" />
-                    <Var ObjectId="268435827" Name="ParentAttachEntity" Value="LightArea_4" />
+                    <Var ObjectId="268435827" Name="ParentAttachEntity" Value="LampArea_4" />
                     <Var ObjectId="268435827" Name="ParentAttachUseRotation" Value="true" />
                     <Var ObjectId="268435827" Name="ParentAttachBody" Value="" />
                     <Var ObjectId="268435827" Name="ParentAttachSocket" Value="" />
@@ -19992,20 +19992,6 @@
                     <Var ObjectId="268435837" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435838" Name="corpse_malick_1" CreStamp="1673698803" ModStamp="1673711944" WorldPos="-21.75 0 -2.25" Rotation="0 1.48672 0" Scale="1 1 1" FileIndex="109" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7395 268435838">
-                <UserVariables>
-                    <Var ObjectId="268435838" Name="Note" Value="" />
-                    <Var ObjectId="268435838" Name="CastShadows" Value="true" />
-                    <Var ObjectId="268435838" Name="IsAffectedByDecal" Value="true" />
-                    <Var ObjectId="268435838" Name="ColorMul" Value="1 1 1 1" />
-                    <Var ObjectId="268435838" Name="ColorBrightness" Value="1" />
-                    <Var ObjectId="268435838" Name="IllumColor" Value="1 1 1 1" />
-                    <Var ObjectId="268435838" Name="IllumBrightness" Value="1" />
-                    <Var ObjectId="268435838" Name="IsOccluder" Value="false" />
-                    <Var ObjectId="268435838" Name="CollideGroup" Value="" />
-                    <Var ObjectId="268435838" Name="RenderLayer" Value="0" />
-                </UserVariables>
-            </Entity>
             <Entity ID="268435839" Name="herbert_key_1" CreStamp="1673698847" ModStamp="1673698847" WorldPos="-18.75 0 14.75" Rotation="0 0 0" Scale="1 1 1" FileIndex="112" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7386 268435839">
                 <UserVariables>
                     <Var ObjectId="268435839" Name="Note" Value="" />
@@ -20440,15 +20426,15 @@
                     <Var ObjectId="268435848" Name="RenderLayer" Value="0" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435849" Name="machine_01_simplecoll_1" CreStamp="1673702041" ModStamp="1673889747" WorldPos="-17.302 0 6.06359" Rotation="0 1.5708 0" Scale="0.6 0.6 0.6" FileIndex="134" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7399 268435849">
+            <Entity ID="268435849" Name="machine_01_simplecoll_1" CreStamp="1673702041" ModStamp="1673899438" WorldPos="-17.302 0 6.06359" Rotation="0 1.5708 0" Scale="0.6 0.6 0.6" FileIndex="134" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7399 268435849">
                 <UserVariables>
                     <Var ObjectId="268435849" Name="Note" Value="" />
                     <Var ObjectId="268435849" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435849" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435849" Name="UserVar" Value="" />
-                    <Var ObjectId="268435849" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435849" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435849" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435849" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435849" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435849" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435849" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435849" Name="InteractionDisabled" Value="false" />
@@ -20507,15 +20493,15 @@
                     <Var ObjectId="268435849" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435850" Name="portal_vitae_station_1" CreStamp="1673711998" ModStamp="1673889747" WorldPos="-16.552 1 6.06359" Rotation="2.03448 -1.5702 1.10728" Scale="0.3 0.3 0.3" FileIndex="71" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7404 268435850">
+            <Entity ID="268435850" Name="portal_vitae_station_1" CreStamp="1673711998" ModStamp="1673899436" WorldPos="-16.552 1 6.06359" Rotation="2.03448 -1.5702 1.10728" Scale="0.3 0.3 0.3" FileIndex="71" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7404 268435850">
                 <UserVariables>
                     <Var ObjectId="268435850" Name="Note" Value="" />
                     <Var ObjectId="268435850" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435850" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435850" Name="UserVar" Value="" />
-                    <Var ObjectId="268435850" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435850" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435850" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435850" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435850" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435850" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435850" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435850" Name="InteractionDisabled" Value="false" />
@@ -20574,15 +20560,15 @@
                     <Var ObjectId="268435850" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435851" Name="machine_01_simplecoll_2" CreStamp="1673712117" ModStamp="1673889747" WorldPos="-15.802 0 6.06359" Rotation="-0 1.57164 -0" Scale="0.6 0.6 0.6" FileIndex="134" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7384 268435851">
+            <Entity ID="268435851" Name="machine_01_simplecoll_2" CreStamp="1673712117" ModStamp="1673899435" WorldPos="-15.802 0 6.06359" Rotation="-0 1.57164 -0" Scale="0.6 0.6 0.6" FileIndex="134" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7384 268435851">
                 <UserVariables>
                     <Var ObjectId="268435851" Name="Note" Value="" />
                     <Var ObjectId="268435851" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435851" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435851" Name="UserVar" Value="" />
-                    <Var ObjectId="268435851" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435851" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435851" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435851" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435851" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435851" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435851" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435851" Name="InteractionDisabled" Value="false" />
@@ -20641,15 +20627,15 @@
                     <Var ObjectId="268435851" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435852" Name="machine_02_1" CreStamp="1673712164" ModStamp="1673889747" WorldPos="-14.802 0 6.06359" Rotation="0 0 0" Scale="1 1 1" FileIndex="72" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7381 268435852">
+            <Entity ID="268435852" Name="machine_02_1" CreStamp="1673712164" ModStamp="1673899434" WorldPos="-14.802 0 6.06359" Rotation="0 0 0" Scale="1 1 1" FileIndex="72" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7381 268435852">
                 <UserVariables>
                     <Var ObjectId="268435852" Name="Note" Value="" />
                     <Var ObjectId="268435852" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435852" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435852" Name="UserVar" Value="" />
-                    <Var ObjectId="268435852" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435852" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435852" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435852" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435852" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435852" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435852" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435852" Name="InteractionDisabled" Value="false" />
@@ -20775,7 +20761,7 @@
                     <Var ObjectId="268435853" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435854" Name="shipwreck_button_red_1" CreStamp="1673888579" ModStamp="1673889747" WorldPos="-16.1936 0.850102 6.17719" Rotation="1.0472 -0 0" Scale="1.4 1.4 1.4" FileIndex="163" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7383 268435854">
+            <Entity ID="268435854" Name="shipwreck_button_red_1" CreStamp="1673888579" ModStamp="1673899427" WorldPos="-16.1936 0.850102 6.17719" Rotation="1.0472 -0 0" Scale="1.4 1.4 1.4" FileIndex="163" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7383 268435854">
                 <UserVariables>
                     <Var ObjectId="268435854" Name="Note" Value="" />
                     <Var ObjectId="268435854" Name="EventInstanceTag" Value="" />
@@ -20783,7 +20769,7 @@
                     <Var ObjectId="268435854" Name="UserVar" Value="" />
                     <Var ObjectId="268435854" Name="DisableBreakable" Value="false" />
                     <Var ObjectId="268435854" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435854" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435854" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435854" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435854" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435854" Name="InteractionDisabled" Value="false" />
@@ -20913,15 +20899,15 @@
                     <Var ObjectId="268435855" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435856" Name="01_02_pipe_medium2_1" CreStamp="1673888714" ModStamp="1673889747" WorldPos="-17.0218 1.47245 6.06359" Rotation="-1.35965 -1.57045 -1.78194" Scale="0.4 0.4 0.468448" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7376 268435856">
+            <Entity ID="268435856" Name="01_02_pipe_medium2_1" CreStamp="1673888714" ModStamp="1673899441" WorldPos="-17.0218 1.47245 6.06359" Rotation="-1.35965 -1.57045 -1.78194" Scale="0.4 0.4 0.468448" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7376 268435856">
                 <UserVariables>
                     <Var ObjectId="268435856" Name="Note" Value="" />
                     <Var ObjectId="268435856" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435856" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435856" Name="UserVar" Value="" />
-                    <Var ObjectId="268435856" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435856" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435856" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435856" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435856" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435856" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435856" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435856" Name="InteractionDisabled" Value="false" />
@@ -20980,13 +20966,13 @@
                     <Var ObjectId="268435856" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435857" Name="04_01_lever_blacksmokers_1" CreStamp="1673888727" ModStamp="1673891755" WorldPos="-15.7934 0.981023 6.42335" Rotation="-0.785398 -0 0" Scale="0.8 0.8 0.8" FileIndex="166" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7378 268435857">
+            <Entity ID="268435857" Name="04_01_lever_blacksmokers_1" CreStamp="1673888727" ModStamp="1673900580" WorldPos="-15.7934 0.981023 6.42335" Rotation="-0.785398 -0 0" Scale="0.8 0.8 0.8" FileIndex="166" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7378 268435857">
                 <UserVariables>
                     <Var ObjectId="268435857" Name="Note" Value="" />
                     <Var ObjectId="268435857" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435857" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435857" Name="UserVar" Value="" />
-                    <Var ObjectId="268435857" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435857" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435857" Name="FullGameSave" Value="false" />
                     <Var ObjectId="268435857" Name="StaticPhysics" Value="false" />
                     <Var ObjectId="268435857" Name="QuickSave" Value="false" />
@@ -21041,8 +21027,8 @@
                     <Var ObjectId="268435857" Name="MaxLimitStuck" Value="true" />
                     <Var ObjectId="268435857" Name="InteractionDisablesStuck" Value="false" />
                     <Var ObjectId="268435857" Name="MiddleAngleAmount" Value="0" />
-                    <Var ObjectId="268435857" Name="AutoMoveToAngle" Value="True" />
-                    <Var ObjectId="268435857" Name="AutoMoveGoal" Value="Middle" />
+                    <Var ObjectId="268435857" Name="AutoMoveToAngle" Value="true" />
+                    <Var ObjectId="268435857" Name="AutoMoveGoal" Value="Min" />
                     <Var ObjectId="268435857" Name="JointResetFix" Value="false" />
                     <Var ObjectId="268435857" Name="ConnectedProp" Value="" />
                     <Var ObjectId="268435857" Name="Invert" Value="false" />
@@ -21056,13 +21042,13 @@
                     <Var ObjectId="268435857" Name="DisabledIfStuck" Value="false" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435858" Name="pipe_turn_broken_slim_1" CreStamp="1673889141" ModStamp="1673891712" WorldPos="-17.302 1.13524 6.06359" Rotation="-0 3.14159 -0" Scale="0.8 0.8 0.8" FileIndex="167" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7375 268435858">
+            <Entity ID="268435858" Name="pipe_turn_broken_slim_1" CreStamp="1673889141" ModStamp="1673899444" WorldPos="-17.302 1.13524 6.06359" Rotation="-0 3.14159 -0" Scale="0.8 0.8 0.8" FileIndex="167" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7375 268435858">
                 <UserVariables>
                     <Var ObjectId="268435858" Name="Note" Value="" />
                     <Var ObjectId="268435858" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435858" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435858" Name="UserVar" Value="" />
-                    <Var ObjectId="268435858" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435858" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435858" Name="FullGameSave" Value="false" />
                     <Var ObjectId="268435858" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435858" Name="QuickSave" Value="false" />
@@ -21122,13 +21108,13 @@
                     <Var ObjectId="268435858" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435859" Name="pipe_turn_broken_slim_2" CreStamp="1673889212" ModStamp="1673891714" WorldPos="-15.802 1.13524 6.06359" Rotation="0 0 0" Scale="0.8 0.8 0.8" FileIndex="167" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7374 268435859">
+            <Entity ID="268435859" Name="pipe_turn_broken_slim_2" CreStamp="1673889212" ModStamp="1673899439" WorldPos="-15.802 1.13524 6.06359" Rotation="0 0 0" Scale="0.8 0.8 0.8" FileIndex="167" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7374 268435859">
                 <UserVariables>
                     <Var ObjectId="268435859" Name="Note" Value="" />
                     <Var ObjectId="268435859" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435859" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435859" Name="UserVar" Value="" />
-                    <Var ObjectId="268435859" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435859" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435859" Name="FullGameSave" Value="false" />
                     <Var ObjectId="268435859" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435859" Name="QuickSave" Value="false" />
@@ -21188,15 +21174,15 @@
                     <Var ObjectId="268435859" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435860" Name="01_02_pipe_medium2_2" CreStamp="1673889234" ModStamp="1673889747" WorldPos="-16.802 1.47245 6.06359" Rotation="-2.93045 4.71239 -1.78194" Scale="0.4 0.4 0.0805755" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7370 268435860">
+            <Entity ID="268435860" Name="01_02_pipe_medium2_2" CreStamp="1673889234" ModStamp="1673899458" WorldPos="-16.802 1.47245 6.06359" Rotation="-2.93045 4.71239 -1.78194" Scale="0.4 0.4 0.0805755" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7370 268435860">
                 <UserVariables>
                     <Var ObjectId="268435860" Name="Note" Value="" />
                     <Var ObjectId="268435860" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435860" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435860" Name="UserVar" Value="" />
-                    <Var ObjectId="268435860" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435860" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435860" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435860" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435860" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435860" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435860" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435860" Name="InteractionDisabled" Value="false" />
@@ -21255,15 +21241,15 @@
                     <Var ObjectId="268435860" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435861" Name="01_02_pipe_medium2_3" CreStamp="1673889251" ModStamp="1673889747" WorldPos="-16.552 1.47245 6.06359" Rotation="-2.93045 -1.5708 -1.78194" Scale="0.4 0.4 0.0805755" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7368 268435861">
+            <Entity ID="268435861" Name="01_02_pipe_medium2_3" CreStamp="1673889251" ModStamp="1673899456" WorldPos="-16.552 1.47245 6.06359" Rotation="-2.93045 -1.5708 -1.78194" Scale="0.4 0.4 0.0805755" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7368 268435861">
                 <UserVariables>
                     <Var ObjectId="268435861" Name="Note" Value="" />
                     <Var ObjectId="268435861" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435861" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435861" Name="UserVar" Value="" />
-                    <Var ObjectId="268435861" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435861" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435861" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435861" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435861" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435861" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435861" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435861" Name="InteractionDisabled" Value="false" />
@@ -21322,15 +21308,15 @@
                     <Var ObjectId="268435861" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435862" Name="01_02_pipe_medium2_4" CreStamp="1673889252" ModStamp="1673889747" WorldPos="-16.302 1.47245 6.06359" Rotation="-2.93045 -1.5708 -1.78194" Scale="0.4 0.4 0.0805755" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7369 268435862">
+            <Entity ID="268435862" Name="01_02_pipe_medium2_4" CreStamp="1673889252" ModStamp="1673899454" WorldPos="-16.302 1.47245 6.06359" Rotation="-2.93045 -1.5708 -1.78194" Scale="0.4 0.4 0.0805755" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7369 268435862">
                 <UserVariables>
                     <Var ObjectId="268435862" Name="Note" Value="" />
                     <Var ObjectId="268435862" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435862" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435862" Name="UserVar" Value="" />
-                    <Var ObjectId="268435862" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435862" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435862" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435862" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435862" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435862" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435862" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435862" Name="InteractionDisabled" Value="false" />
@@ -21389,15 +21375,15 @@
                     <Var ObjectId="268435862" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435863" Name="01_02_pipe_medium2_5" CreStamp="1673889271" ModStamp="1673889747" WorldPos="-16.802 1.47245 6.01351" Rotation="3.14159 3.14159 -1.5708" Scale="0.4 0.4 0.0519342" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7373 268435863">
+            <Entity ID="268435863" Name="01_02_pipe_medium2_5" CreStamp="1673889271" ModStamp="1673899452" WorldPos="-16.802 1.47245 6.01351" Rotation="3.14159 3.14159 -1.5708" Scale="0.4 0.4 0.0519342" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7373 268435863">
                 <UserVariables>
                     <Var ObjectId="268435863" Name="Note" Value="" />
                     <Var ObjectId="268435863" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435863" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435863" Name="UserVar" Value="" />
-                    <Var ObjectId="268435863" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435863" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435863" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435863" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435863" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435863" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435863" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435863" Name="InteractionDisabled" Value="false" />
@@ -21456,15 +21442,15 @@
                     <Var ObjectId="268435863" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435864" Name="01_02_pipe_medium2_6" CreStamp="1673889295" ModStamp="1673889747" WorldPos="-16.552 1.47245 6.01351" Rotation="-3.14159 3.14159 -1.5708" Scale="0.4 0.4 0.0519342" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7372 268435864">
+            <Entity ID="268435864" Name="01_02_pipe_medium2_6" CreStamp="1673889295" ModStamp="1673899449" WorldPos="-16.552 1.47245 6.01351" Rotation="-3.14159 3.14159 -1.5708" Scale="0.4 0.4 0.0519342" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7372 268435864">
                 <UserVariables>
                     <Var ObjectId="268435864" Name="Note" Value="" />
                     <Var ObjectId="268435864" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435864" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435864" Name="UserVar" Value="" />
-                    <Var ObjectId="268435864" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435864" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435864" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435864" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435864" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435864" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435864" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435864" Name="InteractionDisabled" Value="false" />
@@ -21523,15 +21509,15 @@
                     <Var ObjectId="268435864" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268435865" Name="01_02_pipe_medium2_7" CreStamp="1673889296" ModStamp="1673889747" WorldPos="-16.302 1.47245 6.01351" Rotation="-3.14159 3.14159 -1.5708" Scale="0.4 0.4 0.0519342" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7371 268435865">
+            <Entity ID="268435865" Name="01_02_pipe_medium2_7" CreStamp="1673889296" ModStamp="1673899447" WorldPos="-16.302 1.47245 6.01351" Rotation="-3.14159 3.14159 -1.5708" Scale="0.4 0.4 0.0519342" FileIndex="165" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7371 268435865">
                 <UserVariables>
                     <Var ObjectId="268435865" Name="Note" Value="" />
                     <Var ObjectId="268435865" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268435865" Name="CollideGroup" Value="" />
                     <Var ObjectId="268435865" Name="UserVar" Value="" />
-                    <Var ObjectId="268435865" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268435865" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268435865" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268435865" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268435865" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268435865" Name="QuickSave" Value="false" />
                     <Var ObjectId="268435865" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268435865" Name="InteractionDisabled" Value="false" />
@@ -21656,15 +21642,15 @@
                     <Var ObjectId="268435867" Name="Threat_DeactivationCallback" Value="" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268436041" Name="GeneralLamp_1" CreStamp="1673890820" ModStamp="1673890887" WorldPos="-15.75 3.75 7.5" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7411 268436041">
+            <Entity ID="268436041" Name="GeneralLamp_1" CreStamp="1673890820" ModStamp="1673899603" WorldPos="-15.75 3.75 7.5" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7411 268436041">
                 <UserVariables>
                     <Var ObjectId="268436041" Name="Note" Value="" />
                     <Var ObjectId="268436041" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268436041" Name="CollideGroup" Value="" />
                     <Var ObjectId="268436041" Name="UserVar" Value="" />
-                    <Var ObjectId="268436041" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268436041" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268436041" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268436041" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268436041" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268436041" Name="QuickSave" Value="false" />
                     <Var ObjectId="268436041" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268436041" Name="InteractionDisabled" Value="false" />
@@ -21727,15 +21713,15 @@
                     <Var ObjectId="268436041" Name="FlickerOffAlpha" Value="0" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268436043" Name="GeneralLamp_2" CreStamp="1673890890" ModStamp="1673890924" WorldPos="-20.25 3 7.25" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7413 268436043">
+            <Entity ID="268436043" Name="GeneralLamp_2" CreStamp="1673890890" ModStamp="1673908773" WorldPos="-20.25 3 7.25" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7413 268436043">
                 <UserVariables>
                     <Var ObjectId="268436043" Name="Note" Value="" />
                     <Var ObjectId="268436043" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268436043" Name="CollideGroup" Value="" />
                     <Var ObjectId="268436043" Name="UserVar" Value="" />
-                    <Var ObjectId="268436043" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268436043" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268436043" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268436043" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268436043" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268436043" Name="QuickSave" Value="false" />
                     <Var ObjectId="268436043" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268436043" Name="InteractionDisabled" Value="false" />
@@ -21766,7 +21752,7 @@
                     <Var ObjectId="268436043" Name="ConnectedEntity" Value="" />
                     <Var ObjectId="268436043" Name="ConnectedEntityInvertState" Value="false" />
                     <Var ObjectId="268436043" Name="ConnectedEntityStatesUsed" Value="0" />
-                    <Var ObjectId="268436043" Name="ParentAttachEntity" Value="LightArea_1" />
+                    <Var ObjectId="268436043" Name="ParentAttachEntity" Value="LampArea_1" />
                     <Var ObjectId="268436043" Name="ParentAttachUseRotation" Value="true" />
                     <Var ObjectId="268436043" Name="ParentAttachBody" Value="" />
                     <Var ObjectId="268436043" Name="ParentAttachSocket" Value="" />
@@ -21798,15 +21784,15 @@
                     <Var ObjectId="268436043" Name="FlickerOffAlpha" Value="0" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268436044" Name="GeneralLamp_3" CreStamp="1673890926" ModStamp="1673890935" WorldPos="-20.25 3 2.75" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7406 268436044">
+            <Entity ID="268436044" Name="GeneralLamp_3" CreStamp="1673890926" ModStamp="1673908778" WorldPos="-20.25 3 2.75" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7406 268436044">
                 <UserVariables>
                     <Var ObjectId="268436044" Name="Note" Value="" />
                     <Var ObjectId="268436044" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268436044" Name="CollideGroup" Value="" />
                     <Var ObjectId="268436044" Name="UserVar" Value="" />
-                    <Var ObjectId="268436044" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268436044" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268436044" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268436044" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268436044" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268436044" Name="QuickSave" Value="false" />
                     <Var ObjectId="268436044" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268436044" Name="InteractionDisabled" Value="false" />
@@ -21837,7 +21823,7 @@
                     <Var ObjectId="268436044" Name="ConnectedEntity" Value="" />
                     <Var ObjectId="268436044" Name="ConnectedEntityInvertState" Value="false" />
                     <Var ObjectId="268436044" Name="ConnectedEntityStatesUsed" Value="0" />
-                    <Var ObjectId="268436044" Name="ParentAttachEntity" Value="LightArea_2" />
+                    <Var ObjectId="268436044" Name="ParentAttachEntity" Value="LampArea_2" />
                     <Var ObjectId="268436044" Name="ParentAttachUseRotation" Value="true" />
                     <Var ObjectId="268436044" Name="ParentAttachBody" Value="" />
                     <Var ObjectId="268436044" Name="ParentAttachSocket" Value="" />
@@ -21869,15 +21855,15 @@
                     <Var ObjectId="268436044" Name="FlickerOffAlpha" Value="0" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268436045" Name="GeneralLamp_4" CreStamp="1673890937" ModStamp="1673890942" WorldPos="-20.25 3 -1.75" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7410 268436045">
+            <Entity ID="268436045" Name="GeneralLamp_4" CreStamp="1673890937" ModStamp="1673908783" WorldPos="-20.25 3 -1.75" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7410 268436045">
                 <UserVariables>
                     <Var ObjectId="268436045" Name="Note" Value="" />
                     <Var ObjectId="268436045" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268436045" Name="CollideGroup" Value="" />
                     <Var ObjectId="268436045" Name="UserVar" Value="" />
-                    <Var ObjectId="268436045" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268436045" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268436045" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268436045" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268436045" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268436045" Name="QuickSave" Value="false" />
                     <Var ObjectId="268436045" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268436045" Name="InteractionDisabled" Value="false" />
@@ -21908,7 +21894,7 @@
                     <Var ObjectId="268436045" Name="ConnectedEntity" Value="" />
                     <Var ObjectId="268436045" Name="ConnectedEntityInvertState" Value="false" />
                     <Var ObjectId="268436045" Name="ConnectedEntityStatesUsed" Value="0" />
-                    <Var ObjectId="268436045" Name="ParentAttachEntity" Value="LightArea_3" />
+                    <Var ObjectId="268436045" Name="ParentAttachEntity" Value="LampArea_3" />
                     <Var ObjectId="268436045" Name="ParentAttachUseRotation" Value="true" />
                     <Var ObjectId="268436045" Name="ParentAttachBody" Value="" />
                     <Var ObjectId="268436045" Name="ParentAttachSocket" Value="" />
@@ -21940,15 +21926,15 @@
                     <Var ObjectId="268436045" Name="FlickerOffAlpha" Value="0" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268436046" Name="GeneralLamp_5" CreStamp="1673890944" ModStamp="1673890949" WorldPos="-20.25 3 -6.25" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7417 268436046">
+            <Entity ID="268436046" Name="GeneralLamp_5" CreStamp="1673890944" ModStamp="1673908802" WorldPos="-20.25 3 -6.25" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7417 268436046">
                 <UserVariables>
                     <Var ObjectId="268436046" Name="Note" Value="" />
                     <Var ObjectId="268436046" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268436046" Name="CollideGroup" Value="" />
                     <Var ObjectId="268436046" Name="UserVar" Value="" />
-                    <Var ObjectId="268436046" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268436046" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268436046" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268436046" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268436046" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268436046" Name="QuickSave" Value="false" />
                     <Var ObjectId="268436046" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268436046" Name="InteractionDisabled" Value="false" />
@@ -21979,7 +21965,7 @@
                     <Var ObjectId="268436046" Name="ConnectedEntity" Value="" />
                     <Var ObjectId="268436046" Name="ConnectedEntityInvertState" Value="false" />
                     <Var ObjectId="268436046" Name="ConnectedEntityStatesUsed" Value="0" />
-                    <Var ObjectId="268436046" Name="ParentAttachEntity" Value="LightArea_4" />
+                    <Var ObjectId="268436046" Name="ParentAttachEntity" Value="LampArea_4" />
                     <Var ObjectId="268436046" Name="ParentAttachUseRotation" Value="true" />
                     <Var ObjectId="268436046" Name="ParentAttachBody" Value="" />
                     <Var ObjectId="268436046" Name="ParentAttachSocket" Value="" />
@@ -22011,15 +21997,15 @@
                     <Var ObjectId="268436046" Name="FlickerOffAlpha" Value="0" />
                 </UserVariables>
             </Entity>
-            <Entity ID="268436047" Name="GeneralLamp_6" CreStamp="1673890951" ModStamp="1673890957" WorldPos="-20.25 3 -10.75" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7412 268436047">
+            <Entity ID="268436047" Name="GeneralLamp_6" CreStamp="1673890951" ModStamp="1673908808" WorldPos="-20.25 3 -10.75" Rotation="0 1.5708 0" Scale="1.5 1 1.5" FileIndex="168" Active="true" Important="false" Static="false" CulledByDistance="true" CulledByFog="true" UID="16 7412 268436047">
                 <UserVariables>
                     <Var ObjectId="268436047" Name="Note" Value="" />
                     <Var ObjectId="268436047" Name="EventInstanceTag" Value="" />
                     <Var ObjectId="268436047" Name="CollideGroup" Value="" />
                     <Var ObjectId="268436047" Name="UserVar" Value="" />
-                    <Var ObjectId="268436047" Name="DisableBreakable" Value="false" />
+                    <Var ObjectId="268436047" Name="DisableBreakable" Value="true" />
                     <Var ObjectId="268436047" Name="FullGameSave" Value="false" />
-                    <Var ObjectId="268436047" Name="StaticPhysics" Value="false" />
+                    <Var ObjectId="268436047" Name="StaticPhysics" Value="true" />
                     <Var ObjectId="268436047" Name="QuickSave" Value="false" />
                     <Var ObjectId="268436047" Name="EffectsActive" Value="true" />
                     <Var ObjectId="268436047" Name="InteractionDisabled" Value="false" />
@@ -22050,7 +22036,7 @@
                     <Var ObjectId="268436047" Name="ConnectedEntity" Value="" />
                     <Var ObjectId="268436047" Name="ConnectedEntityInvertState" Value="false" />
                     <Var ObjectId="268436047" Name="ConnectedEntityStatesUsed" Value="0" />
-                    <Var ObjectId="268436047" Name="ParentAttachEntity" Value="LightArea_5" />
+                    <Var ObjectId="268436047" Name="ParentAttachEntity" Value="LampArea_5" />
                     <Var ObjectId="268436047" Name="ParentAttachUseRotation" Value="true" />
                     <Var ObjectId="268436047" Name="ParentAttachBody" Value="" />
                     <Var ObjectId="268436047" Name="ParentAttachSocket" Value="" />

@@ -222,7 +222,7 @@ class cScrMap : iScrMap
         
         // Generate Assets
         for (int i=1;i<=5;i++) {
-            Building_PlaceInChunk("LightArea_"+i, -1, 0.2f, 0.8f);
+            Building_PlaceInChunk("LampArea_"+i, -1, 0.2f, 0.8f);
         }
 	}
 
@@ -309,7 +309,6 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
-            Building_PlaceInChunk("GeneratorRoom");
 		}
 	}
 
