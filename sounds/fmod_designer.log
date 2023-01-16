@@ -1,0 +1,33 @@
+Warning: libpng warning: Interlace handling should be turned on when using png_read_image
+Warning: libpng warning: Interlace handling should be turned on when using png_read_image
+Warning: libpng warning: Interlace handling should be turned on when using png_read_image
+Warning: libpng warning: Interlace handling should be turned on when using png_read_image
+Warning: libpng warning: Interlace handling should be turned on when using png_read_image
+Warning: QPainter::begin: Paint device returned engine == 0, type: 1
+Warning: QPainter::setPen: Painter not active
+Warning: QPainter::setBrush: Painter not active
+Warning: QPainter::setRenderHint: Painter must be active to set rendering hints
+Warning: QPainter::setPen: Painter not active
+Warning: libpng warning: Interlace handling should be turned on when using png_read_image
+Debug: 
+Building project 'custom'...
+Debug: Building project G:\Steam\steamapps\common\Amnesia Rebirth\mods\RTB\sounds\custom.fev...
+Debug: Unique sound defs 1/2
+Debug: Retrieving sound file info...
+Debug: Retrieving reverb info...
+Debug: FEV file written ok
+Debug: Unique Envelope Points: 0 of 0
+Debug: Unique Strings: 111 characters of 111
+Debug: Caching sound file details for ''...
+Debug: saved_sounds\lever_pull.ogg
+Debug: saved_sounds\lever_stop.ogg
+Debug: Building 'custom_bank00.fsb'
+Debug: Encoded G:\Steam\steamapps\common\Amnesia Rebirth\mods\RTB\sounds\saved_sounds\lever_stop.ogg
+Debug: Encoded G:\Steam\steamapps\common\Amnesia Rebirth\mods\RTB\sounds\saved_sounds\lever_pull.ogg
+Debug: Writing FSB...
+Debug: Finished building FSB
+Debug: 
+Debug: 
+Summary of build:
+SUCCESS: G:/Steam/steamapps/common/Amnesia Rebirth/mods/RTB/sounds/custom.fev
+SUCCESS: custom_bank00.fsb
