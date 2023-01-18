@@ -218,10 +218,10 @@ class cScrMap : iScrMap
         ///////////////////
         // EXIT/BUILDING GENERATION
         Building_PlaceInChunk("Exit", -1, 1.0f);
-        Building_PlaceInChunk("GeneratorRoom");
-        Building_PlaceInChunk("KeyRoom");
-        Building_PlaceInChunk("MedRoom");
-        Building_PlaceInChunk("ArmoryRoom");
+        Building_PlaceInChunk("GeneratorRoom", -1);
+        Building_PlaceInChunk("KeyRoom", -1, 1.0f, 0.0f);
+        Building_PlaceInChunk("MedRoom", -1);
+        Building_PlaceInChunk("ArmoryRoom", -1);
         
         // Generate Assets
         for (int i=1;i<=5;i++) {
@@ -325,8 +325,11 @@ class cScrMap : iScrMap
             Sound_CreateAtEntity("Sound_GeneralLamp_4", "custom/generator/light_buzz", "GeneralLamp_4", 1.2f, true, 1.0f);
             Sound_CreateAtEntity("Sound_GeneralLamp_5", "custom/generator/light_buzz", "GeneralLamp_5", 1.2f, true, 1.0f);
             Sound_CreateAtEntity("Sound_GeneralLamp_6", "custom/generator/light_buzz", "GeneralLamp_6", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("Sound_GeneralLamp_7", "custom/generator/light_buzz", "GeneralLamp_7", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("Sound_GeneralLamp_8", "custom/generator/light_buzz", "GeneralLamp_8", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("Sound_GeneralLamp_9", "custom/generator/light_buzz", "GeneralLamp_9", 1.2f, true, 1.0f);
             Sound_CreateAtEntity("gen_LightOn2", "custom/generator/light_switch", "GeneratorRoom_SoundSpawner_2", 0.0f, false, 1.0f);
-            Map_AddTimer("Timer_GeneratorStop", 5.0f, "Timer_GeneratorStop");
+            Map_AddTimer("Timer_GeneratorStop", 30.0f, "Timer_GeneratorStop");
         }
 		Sequence_End();
 	}
