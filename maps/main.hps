@@ -219,6 +219,9 @@ class cScrMap : iScrMap
         // EXIT/BUILDING GENERATION
         Building_PlaceInChunk("Exit", -1, 1.0f);
         Building_PlaceInChunk("GeneratorRoom");
+        Building_PlaceInChunk("KeyRoom");
+        Building_PlaceInChunk("MedRoom");
+        Building_PlaceInChunk("ArmoryRoom");
         
         // Generate Assets
         for (int i=1;i<=5;i++) {
@@ -254,6 +257,104 @@ class cScrMap : iScrMap
         
 		Game_AutoSave();
 	}
+    
+    //-------------------------------------------------------
+    //GENERATOR SEQUENCE
+    //-------------------------------------------------------
+    
+    float mfChanceOfFailure = 0.3f;
+    bool mbGenLeverOn = false;
+    void GeneratorLevelInteract(const tString &in asEntity)
+    {
+        if ((Lever_GetState(asEntity) == 1) && (!mbGenLeverOn)) {
+            Seq_GeneratorStart("");
+            mbGenLeverOn = true;
+            Entity_SetInteractionDisabled("Generator_Lever", true);
+        }
+    }
+    
+	cSequenceStatesData mSequenceGeneratorStart;
+	void Seq_GeneratorStart(const tString &in asTimer)
+	{
+		Sequence_Begin("Seq_GeneratorStart", mSequenceGeneratorStart);
+		if (Sequence_DoStepAndWait(1.0f))
+		{
+            ParticleSystem_CreateAtEntity("gen_spark1", "elec_spark_medium_oneshot.ps", "GeneratorRoom_ParticleSpawner_1", true);
+            Sound_CreateAtEntity("gen_spark1_noise", "custom/generator/spark", "GeneratorRoom_ParticleSpawner_1", 0.0f, false, 1.0f);
+            
+            int lRanInt = cMath_RandRectl(0, 100);
+            float fRanFloat = lRanInt/100.0f;
+            cLux_AddDebugMessage(""+fRanFloat+" is lower than "+mfChanceOfFailure);
+            if (fRanFloat < mfChanceOfFailure) {
+                Lever_SetStuckState("Generator_Lever", -1, true);
+                Map_AddTimer("Timer_AllowLeverUse", 1.0f, "Timer_AllowLeverUse");
+                Sequence_Stop();
+            }
+		}
+		else if (Sequence_DoStepAndWait(0.7f))
+		{
+            ParticleSystem_CreateAtEntity("gen_spark2", "elec_spark_medium_oneshot.ps", "GeneratorRoom_ParticleSpawner_2", true);
+            Sound_CreateAtEntity("gen_spark2_noise", "custom/generator/spark", "GeneratorRoom_ParticleSpawner_2", 0.0f, false, 1.0f);
+            
+            int lRanInt = cMath_RandRectl(0, 100);
+            float fRanFloat = lRanInt/100.0f;
+            if (fRanFloat < mfChanceOfFailure) {
+                Lever_SetStuckState("Generator_Lever", -1, true);
+                Map_AddTimer("Timer_AllowLeverUse", 1.0f, "Timer_AllowLeverUse");
+                Sequence_Stop();
+            }
+        }
+		else if (Sequence_DoStepAndWait(0.7f))
+		{
+            ParticleSystem_CreateAtEntity("gen_spark3", "elec_spark_medium_oneshot.ps", "GeneratorRoom_ParticleSpawner_3", true);
+            Sound_CreateAtEntity("gen_spark3_noise", "custom/generator/spark", "GeneratorRoom_ParticleSpawner_3", 0.0f, false, 1.0f);
+        }
+		else if (Sequence_DoStepAndWait(2.f))
+		{
+            Lamp_SetLit("generator_light", true, true);
+            Lamp_SetLit("GeneralLamp_1", true, true);
+            Sound_CreateAtEntity("Sound_GeneralLamp_1", "custom/generator/light_buzz", "GeneralLamp_1", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("GeneratorStart", "custom/generator/generator_on", "GeneratorRoom_SoundSpawner", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("gen_LightOn1", "custom/generator/light_on", "GeneratorRoom_SoundSpawner_2", 0.0f, false, 1.0f);
+        }
+		else if (Sequence_DoStepAndWait(3.f))
+		{
+            Lamp_SetLit("GeneralLamp_*", true, true);
+            Sound_CreateAtEntity("Sound_GeneralLamp_2", "custom/generator/light_buzz", "GeneralLamp_2", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("Sound_GeneralLamp_3", "custom/generator/light_buzz", "GeneralLamp_3", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("Sound_GeneralLamp_4", "custom/generator/light_buzz", "GeneralLamp_4", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("Sound_GeneralLamp_5", "custom/generator/light_buzz", "GeneralLamp_5", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("Sound_GeneralLamp_6", "custom/generator/light_buzz", "GeneralLamp_6", 1.2f, true, 1.0f);
+            Sound_CreateAtEntity("gen_LightOn2", "custom/generator/light_switch", "GeneratorRoom_SoundSpawner_2", 0.0f, false, 1.0f);
+            Map_AddTimer("Timer_GeneratorStop", 5.0f, "Timer_GeneratorStop");
+        }
+		Sequence_End();
+	}
+    
+    void Timer_GeneratorStop(const tString &in asTimer)
+    {
+        Sound_Stop("GeneratorStart", 0.5f);
+        Sound_Stop("Sound_GeneralLamp_*", 0.5f);
+        Sound_CreateAtEntity("Sound_GeneralLampOff_1", "custom/generator/light_off", "GeneralLamp_1", 0.4f, false, 1.0f);
+        Sound_CreateAtEntity("Sound_GeneralLampOff_2", "custom/generator/light_off", "GeneralLamp_2", 0.4f, false, 1.0f);
+        Sound_CreateAtEntity("Sound_GeneralLampOff_3", "custom/generator/light_off", "GeneralLamp_3", 0.4f, false, 1.0f);
+        Sound_CreateAtEntity("Sound_GeneralLampOff_4", "custom/generator/light_off", "GeneralLamp_4", 0.4f, false, 1.0f);
+        Sound_CreateAtEntity("Sound_GeneralLampOff_5", "custom/generator/light_off", "GeneralLamp_5", 0.4f, false, 1.0f);
+        Sound_CreateAtEntity("Sound_GeneralLampOff_6", "custom/generator/light_off", "GeneralLamp_6", 0.4f, false, 1.0f);
+        Sound_CreateAtEntity("gen_LightOff", "custom/generator/light_switch", "GeneratorRoom_SoundSpawner_2", 0.0f, false, 1.0f);
+        
+        Lamp_SetLit("generator_light", false, true);
+        Lamp_SetLit("GeneralLamp_*", false, true);
+        Lever_SetStuckState("Generator_Lever", -1, true);
+        Map_AddTimer("Timer_AllowLeverUse", 1.0f, "Timer_AllowLeverUse");
+    }
+    
+    void Timer_AllowLeverUse(const tString &in asTimer)
+    {
+        Lever_SetStuckState("Generator_Lever", 0, false);
+        Entity_SetInteractionDisabled("Generator_Lever", false);
+        mbGenLeverOn = false;
+    }
 
 	//-------------------------------------------------------
 
