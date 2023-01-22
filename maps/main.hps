@@ -84,6 +84,11 @@ class cScrMap : iScrMap
         
         Item_AddToInventory("ModernOil");
         Item_AddToInventory("ModernOil");
+        Item_AddToInventory("ModernOil");
+        Item_AddToInventory("ModernOil");
+        // Remove bracelet and add watch instead
+        Item_AddToInventory("Watch");
+        Item_RemoveFromInventory(ItemType_GetFirstInInventory("CurseMedallion"));
             
 		/////////////////////////
 		// MAZE GENERATION
@@ -262,7 +267,7 @@ class cScrMap : iScrMap
     //GENERATOR SEQUENCE
     //-------------------------------------------------------
     
-    float mfChanceOfFailure = 0.3f;
+    float mfChanceOfFailure = 0.2f;
     bool mbGenLeverOn = false;
     void GeneratorLevelInteract(const tString &in asEntity)
     {
@@ -270,6 +275,15 @@ class cScrMap : iScrMap
             Seq_GeneratorStart("");
             mbGenLeverOn = true;
             Entity_SetInteractionDisabled("Generator_Lever", true);
+        }
+    }
+    
+    bool bPlayedVoice = false;
+    void PlayTryAgainHint()
+    {
+        if (!bPlayedVoice) {
+            Voice_Play("Dialogue_TryGen");
+            bPlayedVoice = true;
         }
     }
     
@@ -288,6 +302,7 @@ class cScrMap : iScrMap
             if (fRanFloat < mfChanceOfFailure) {
                 Lever_SetStuckState("Generator_Lever", -1, true);
                 Map_AddTimer("Timer_AllowLeverUse", 1.0f, "Timer_AllowLeverUse");
+                PlayTryAgainHint();
                 Sequence_Stop();
             }
 		}
@@ -301,6 +316,7 @@ class cScrMap : iScrMap
             if (fRanFloat < mfChanceOfFailure) {
                 Lever_SetStuckState("Generator_Lever", -1, true);
                 Map_AddTimer("Timer_AllowLeverUse", 1.0f, "Timer_AllowLeverUse");
+                PlayTryAgainHint();
                 Sequence_Stop();
             }
         }
@@ -330,6 +346,16 @@ class cScrMap : iScrMap
             Sound_CreateAtEntity("Sound_GeneralLamp_9", "custom/generator/light_buzz", "GeneralLamp_9", 1.2f, true, 1.0f);
             Sound_CreateAtEntity("gen_LightOn2", "custom/generator/light_switch", "GeneratorRoom_SoundSpawner_2", 0.0f, false, 1.0f);
             Map_AddTimer("Timer_GeneratorStop", 30.0f, "Timer_GeneratorStop");
+            
+            if (!mbKeyRoomInteracted)
+                Prop_MoveLinearTo("KeyDoor_Blocker_1","KeyDoor_Blocker_2",70,70,0.2f,true);
+        }
+		else if (Sequence_DoStepAndWait(2.f))
+		{
+            if (!mbKeyRoomInteracted) {
+                SwingDoor_SetLocked("KeyRoom_Wall1_1", false, true);
+                Entity_SetActive("KeyBlock", false);
+            }
         }
 		Sequence_End();
 	}
@@ -350,6 +376,12 @@ class cScrMap : iScrMap
         Lamp_SetLit("GeneralLamp_*", false, true);
         Lever_SetStuckState("Generator_Lever", -1, true);
         Map_AddTimer("Timer_AllowLeverUse", 1.0f, "Timer_AllowLeverUse");
+        
+        if (!mbKeyRoomInteracted) {
+            SwingDoor_SetLocked("KeyRoom_Wall1_1", true, true);
+            Prop_MoveLinearTo("KeyDoor_Blocker_1","KeyDoor_Blocker_3",70,70,0.2f,true);
+            Entity_SetActive("KeyBlock", true);
+        }
     }
     
     void Timer_AllowLeverUse(const tString &in asTimer)
@@ -357,6 +389,44 @@ class cScrMap : iScrMap
         Lever_SetStuckState("Generator_Lever", 0, false);
         Entity_SetInteractionDisabled("Generator_Lever", false);
         mbGenLeverOn = false;
+    }
+    
+    bool mbKeyRoomInteracted = false;
+    void KeyRoomInteract(const tString &in asEntity)
+    {
+        if (!SwingDoor_GetLocked(asEntity))
+            mbKeyRoomInteracted = true;
+    }
+    
+    //-------------------------------------------------------
+    //EXIT SEQUENCE
+    //-------------------------------------------------------
+
+    void ExitDoor_OnInteract(const tString &in asEntity)
+    {
+        if (ItemType_GetFirstInInventory("ArsenalKey")!="") {
+            Entity_SetActive("ExitBlock", false);
+            SwingDoor_SetLocked("Exit_Wall1_1", false, true);
+
+            Item_RemoveFromInventory(ItemType_GetFirstInInventory("ArsenalKey"));
+            Entity_SetActive("ArsenalKey_Attached", true);
+            Prop_AlignRotation("ArsenalKey_Attached", "ArsenalKey_AttachedRotated", 10.f, 5.f, 0.25f, true);
+
+            Sound_CreateAtEntity("Sound_DoorUnlock", "level_entity_shared/doors/relic_door/relic_door_unlock", asEntity);
+            
+            iLuxEntity@ pDoor = cLux_GetCurrentMap().GetEntityByName("Exit_Wall1_1", eLuxEntityType_LastEnum, "");
+            if (!(pDoor is null))
+            {
+                pDoor.GetBody(0).SetMass(10);
+                pDoor.GetBody(1).SetMass(0);
+            } else Error("Could not find the target entity "+"Exit_Wall1_1");
+        }
+    }
+    
+    // When you click on the exit ladder
+    void OnExitLadder(const tString &in asEntity)
+    {
+        cLux_AddDebugMessage("Clicked on Exit Ladder");
     }
 
 	//-------------------------------------------------------
@@ -438,13 +508,6 @@ class cScrMap : iScrMap
 	//{///////////////////////////////////////////////////////////////////////////////////////
  
 	//-------------------------------------------------------
- 
-    // When you click on the exit ladder
-    void OnExitLadder(const tString &in asEntity)
-    {
-        cLux_AddDebugMessage("Clicked on Exit Ladder");
-    }
- 
 	//-------------------------------------------------------
  
 	//} END MAIN FUNCTIONS

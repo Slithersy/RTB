@@ -1,0 +1,21 @@
+<LANGUAGE>
+    <CATEGORY Name="Voices_main">
+        <Entry Name="comments_dialogue_trydoor_002_player_001">Come on, damn you!</Entry>
+        <Entry Name="comments_dialogue_randomreactions_001_player_001">What was that?</Entry>
+        <Entry Name="comments_dialogue_randomreactions_002_player_001">Shit!</Entry>
+        <Entry Name="comments_dialogue_randomreactions_003_player_001">Uh...</Entry>
+        <Entry Name="comments_dialogue_randomreactions_004_player_001">Jesus!</Entry>
+        <Entry Name="comments_dialogue_randomreactions_005_player_001">God in heaven!</Entry>
+        <Entry Name="comments_dialogue_randomreactions_006_player_001">Ahh!</Entry>
+        <Entry Name="comments_dialogue_randomreactions_007_player_001">*indrawn breath*</Entry>
+        <Entry Name="comments_dialogue_randomreactions_008_player_001">Christ!</Entry>
+        <Entry Name="comments_dialogue_randomreactions_009_player_001">Ah!</Entry>
+        <Entry Name="comments_dialogue_randomreactionsghoul_001_player_001">Fuck.</Entry>
+        <Entry Name="comments_dialogue_randomreactionsghoul_002_player_001">What the hell is that?</Entry>
+        <Entry Name="comments_dialogue_randomreactionsghoul_003_player_001">Oh Christ.</Entry>
+        <Entry Name="comments_dialogue_randomreactionsghoul_004_player_001">*indrawn breath*</Entry>
+        <Entry Name="comments_dialogue_randomreactionsghoul_005_player_001">Leave me alone!</Entry>
+        <Entry Name="comments_dialogue_randomreactionsghoul_006_player_001">Aaaah, no.</Entry>
+        <Entry Name="comments_dialogue_randomreactionsghoul_007_player_001">Shit, shit.</Entry>
+    </CATEGORY>
+</LANGUAGE>

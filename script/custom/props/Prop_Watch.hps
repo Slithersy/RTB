@@ -1,0 +1,72 @@
+#include "custom/props/Prop_Pickup.hps"
+#include "custom/helpers/helper_player_custom.hps"
+#include "helpers/helper_player.hps"
+#include "helpers/helper_modules.hps"
+#include "helpers/helper_rotation.hps"
+#include "custom/helpers/helper_modules_custom.hps"
+
+
+//------------------------------------------------------------
+
+class cScrPropWatch : cScrPropPickup
+{
+	//------------------------------------------------------------
+	
+	void _Global_CopyFromItemEntity() override
+	{
+		cScrPropPickup::_Global_CopyFromItemEntity();
+		
+		tString sSource = cScript_GetGlobalArgString(0);
+        cScript_SetGlobalArgBool(0, mbTimerOn);
+        cScript_SetGlobalArgFloat(1, mfTimePassed);
+		cScript_RunGlobalFunc(sSource, "cScrPropWatch", "_Global_CopyValues");
+	}
+	
+	//------------------------------------------------------------
+	
+	// Called to transfer values from another of these entities
+	// e.g. when spawning something from the inventory
+	
+	void _Global_CopyValues()
+	{
+		if (Item_GetHeldEntity(eItemHandlerHand_Right)==mBaseObj.GetName()) return;
+		
+        mbTimerOn 				= cScript_GetGlobalArgBool(0);
+		mfTimePassed 			= cScript_GetGlobalArgFloat(1);
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_OnItemTakenOut()
+	{
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_OnItemStartPutAway()
+	{
+	}
+    
+    //------------------------------------------------------------
+	
+	void OnUpdate(float afTimeStep)
+	{
+		cScrPropPickup::OnUpdate(afTimeStep);
+		
+        cLux_AddDebugMessage("Works");
+		//////////////////////////////
+		// Update state
+		if (Item_GetHeldEntity(eItemHandlerHand_Left)==mBaseObj.GetName())
+		{
+            Error("Test");
+            Entity_SetRotationEuler(mBaseObj.GetName(), cVector3f(10,10,10));
+        }
+	}
+	
+	//------------------------------------------------------------
+	// Properties
+	
+	cVector3f mvLastPos;
+	bool mbTimerOn=false;
+	float mfTimePassed=0.0f;
+}

@@ -265,9 +265,9 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
     array<int> HallWayChunks;
     
     float fChanceChecker = cMath_RandRectl(1, 99);
-    fChanceChecker = fChanceChecker/100;
+    fChanceChecker = fChanceChecker/100.0f;
     float fChanceChecker2 = cMath_RandRectl(1, 99);
-    fChanceChecker2 = fChanceChecker2/100;
+    fChanceChecker2 = fChanceChecker2/100.0f;
     while ((alChunkNum == -1) && (lBlockNum>=0)) {
         // Find all unavailable chunks
         for (int Chunk=1;Chunk<65;Chunk++) {
@@ -341,7 +341,7 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
                 lVerticalCount++;
             if (Entity_IsActive(sDownWall))
                 lVerticalCount++;
-                
+
             if ((lHorizontalCount==1) && (lVerticalCount==1))
                 CornerChunks.insertLast(Chunk);
             if (((lHorizontalCount==2) && (lVerticalCount==1)) || ((lHorizontalCount==1) && (lVerticalCount==2)))
@@ -374,11 +374,11 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
             HallWayChunks = EmptyArray;
             continue;
         }
-        if (CornerChunks.size()>0) {
+        if ((CornerChunks.size()>0) && (lBlockNum!=0)) {
             // Picking a random corner chunk
             int lRanIndex = cMath_RandRectl(0, CornerChunks.length()-1);
             return CornerChunks[lRanIndex];
-        } else {
+        } else if (afPlaceHallways>0.0f) {
             lBlockNum = lBlockNum - 1; 
             array<int> EmptyArray;
             BlockedChunks = EmptyArray;
@@ -387,6 +387,8 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
             DeadEndChunks = EmptyArray;
             HallWayChunks = EmptyArray;
             continue;
+        } else {
+            return -1;
         }
     }
     
@@ -424,11 +426,17 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float
         if (!(pDoor is null))
         {
             pDoor.GetBody(0).SetMass(0);
+            pDoor.GetBody(1).SetMass(0);
+            if (!(pDoor.GetBody(2) is null))
+                pDoor.GetBody(2).SetMass(0);
         } else Error("Could not find the target entity "+asAreaName+"_Wall1_1");
         
         if (!(pDoor2 is null))
         {
             pDoor2.GetBody(0).SetMass(0);
+            pDoor2.GetBody(1).SetMass(0);
+            if (!(pDoor2.GetBody(2) is null))
+                pDoor2.GetBody(2).SetMass(0);
         } else Error("Could not find the target entity "+asAreaName+"_Wall1_5");
     }
     
@@ -529,17 +537,27 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float
         Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
         Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
         
+        //Make doors static
         if (!(pDoor is null))
-            pDoor.GetBody(0).SetMass(10);
+        {
+            pDoor.GetBody(1).SetMass(10);
+            if (!(pDoor.GetBody(2) is null))
+                pDoor.GetBody(2).SetMass(10);
+        } else Error("Could not find the target entity "+asAreaName+"_Wall1_1");
+        
         if (!(pDoor2 is null))
-            pDoor2.GetBody(0).SetMass(10);
+        {
+            pDoor2.GetBody(1).SetMass(10);
+            if (!(pDoor2.GetBody(2) is null))
+                pDoor2.GetBody(2).SetMass(10);
+        } else Error("Could not find the target entity "+asAreaName+"_Wall1_5");
 
         return alChunkNum;
     } else {
         // Rotate appropriately
         if (vLeftRightUpDown[0] and vLeftRightUpDown[1]) { //Left - Right
-                Entity_FaceToEntity(asAreaName, sLeftWallName, false);
-                cLux_AddDebugMessage("Left - Right");
+            Entity_FaceToEntity(asAreaName, sLeftWallName, false);
+            cLux_AddDebugMessage("Left - Right");
         } else if (vLeftRightUpDown[2] and vLeftRightUpDown[3]) { //Up - Down
             Entity_FaceToEntity(asAreaName, sUpWallName, false);
             cLux_AddDebugMessage("Up - Down");

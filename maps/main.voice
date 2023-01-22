@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<VoiceData>
+ <Characters>
+  <Character ID="0" Name="Player" DisplayName="Tasi" Actor="Alix" AutoGenVoice="True" AutoGenVoiceFile="" AutoGenVoiceSoundFreq="1" WorldSpace="True" AffectedByReverb="True" TextToSpeechVoice="Microsoft Zira Desktop" DefaultCriteria="" EntryType="World" Volume="0.7" ReverbVolume="1" SpeakerSpread="40" EntitySource="" MinDist="0" MaxDist="0" MinFreq="22000" MaxFreq="22000" MaxListeningDist="-1" FrequencyFilter="None" />
+ </Characters>
+ <Effects />
+ <Scenes>
+  <Scene ID="1" Name="Comments" FocusPrio="1" ForceMaxVolume="False" DefaultCriteria="" Volume="1" ReverbVolume="0.9" />
+ </Scenes>
+ <Sections>
+  <Section Name="Generator" Desc="When trying generator" />
+  <Section Name="Exploration" Desc="Random reactions" />
+ </Sections>
+ <Subjects>
+  <Subject Desc="Tasi tries the door to the radio room. Random line played each time." Name="Dialogue_TryGen" UseSingleRandomLine="True" SceneId="1" EffectId="-1" Section="Generator">
+   <Line CharacterId="0" Prio="-1" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Come on, damn you!" FileName="comments_dialogue_trydoor_002_player_001" Timestamp="2023-01-19 08:37" />
+   </Line>
+  </Subject>
+  <Subject Desc="Random reactions to weird shit - strange noises, brief shadows etc. Should be whispered. (May be overkill, but here for safety.)" Name="Dialogue_RandomReactions" UseSingleRandomLine="True" SceneId="1" EffectId="-1" Section="Exploration">
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="What was that?" FileName="comments_dialogue_randomreactions_001_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Shit!" FileName="comments_dialogue_randomreactions_002_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Uh..." FileName="comments_dialogue_randomreactions_003_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Jesus!" FileName="comments_dialogue_randomreactions_004_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="God in heaven!" FileName="comments_dialogue_randomreactions_005_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Ahh!" FileName="comments_dialogue_randomreactions_006_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="*indrawn breath*" FileName="comments_dialogue_randomreactions_007_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Christ!" FileName="comments_dialogue_randomreactions_008_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Ah!" FileName="comments_dialogue_randomreactions_009_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+  </Subject>
+  <Subject Desc="Random reactions to things that have definitely been caused by the monster. Should be whispered." Name="Dialogue_RandomReactionsGhoul" UseSingleRandomLine="True" SceneId="1" EffectId="-1" Section="Exploration">
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Fuck." FileName="comments_dialogue_randomreactionsghoul_001_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="What the hell is that?" TextOffset="1.12" FileName="comments_dialogue_randomreactionsghoul_002_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Oh Christ." FileName="comments_dialogue_randomreactionsghoul_003_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="*indrawn breath*" FileName="comments_dialogue_randomreactionsghoul_004_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="-1" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Leave me alone!" FileName="comments_dialogue_randomreactionsghoul_005_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Aaaah, no." FileName="comments_dialogue_randomreactionsghoul_006_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+   <Line CharacterId="0" Prio="0" TextStatus="ToTranslators" AudioStatus="Final" PlayOnce="True">
+    <Sound Text="Shit, shit." FileName="comments_dialogue_randomreactionsghoul_007_player_001" Timestamp="2019-07-18 03:27" />
+   </Line>
+  </Subject>
+ </Subjects>
+</VoiceData>
