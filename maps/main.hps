@@ -483,6 +483,52 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
+            int Chunk = 28;
+            int lBlockNum = 1;
+            array<int> BlockedChunks;
+            // Find all unavailable chunks
+            int lLeft = 0;
+            int lRight = 0;
+            int lUp = 0;
+            int lDown = 0;
+            for (int i=1;i<=lBlockNum;i++) {
+                //Check left
+                if (Chunk_GetLevel(Chunk-i) == Chunk_GetLevel(Chunk))
+                    lLeft++;
+                //Check right
+                if (Chunk_GetLevel(Chunk+i) == Chunk_GetLevel(Chunk))
+                    lRight++;
+                //Check up
+                if ((Chunk+(8*i)) <= 64)
+                    lUp++;
+                //Check down
+                if ((Chunk-(8*i)) >= 1)
+                    lDown++;
+            }
+            
+            for (int i=(Chunk-lLeft);i<=(Chunk+lRight);i++) {
+                BlockedChunks.insertLast(i); //Insert current line into blocked
+                if (lUp>0) { //Insert all top lines
+                    for (int k=1;k<=lUp;k++) {
+                        BlockedChunks.insertLast(i+(8*k));
+                    }
+                }
+                if (lDown>0) { //Insert all bottom lines
+                    for (int k=1;k<=lDown;k++) {
+                        BlockedChunks.insertLast(i-(8*k));
+                    }
+                }
+            }
+            
+            cLux_AddDebugMessage("lLeft: "+ lLeft);
+            cLux_AddDebugMessage("lRight: "+ lRight);
+            cLux_AddDebugMessage("lUp: "+ lUp);
+            cLux_AddDebugMessage("lDown: "+ lDown);
+            
+            for (int Chunk=1;Chunk<65;Chunk++) {
+                if (BlockedChunks.find(Chunk) >= 0)
+                    cLux_AddDebugMessage("Blocked chunk: "+ Chunk);
+            }
 		}
 	}
 

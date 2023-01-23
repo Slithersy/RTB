@@ -191,6 +191,16 @@ array<int> RandomizeArray(array<int> avArray, float afPercentage=0.99f) {
     return vArrayCopy;
 }
 
+/**
+ * Get level of line the chunk is in
+ * Returns: int level
+ * 
+ * @param alChunk, the chunk number.
+ **/
+int Chunk_GetLevel(int alChunk) {
+    return cMath_CeilToInt(alChunk/8.0f);
+}
+
 //-------------------------------------------------
 
 /////////////////////////////////////////
@@ -278,10 +288,10 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
                 int lDown = 0;
                 for (int i=1;i<=lBlockNum;i++) {
                     //Check left
-                    if (((Chunk-i)%8) != 0)
+                    if (Chunk_GetLevel(Chunk-i) == Chunk_GetLevel(Chunk))
                         lLeft++;
                     //Check right
-                    if (((Chunk+i+1)%8) != 0)
+                    if (Chunk_GetLevel(Chunk+i) == Chunk_GetLevel(Chunk))
                         lRight++;
                     //Check up
                     if ((Chunk+(8*i)) <= 64)
@@ -298,7 +308,7 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
                             BlockedChunks.insertLast(i+(8*k));
                         }
                     }
-                    if (lUp>0) { //Insert all bottom lines
+                    if (lDown>0) { //Insert all bottom lines
                         for (int k=1;k<=lDown;k++) {
                             BlockedChunks.insertLast(i-(8*k));
                         }
@@ -357,10 +367,15 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
                 return HallWayChunks[lRanIndex];
             }
         }
-        
+        cLux_AddDebugMessage("1. Trying to place in dead end. Size is "+DeadEndChunks.size());
         if (DeadEndChunks.size()>0) {
             // Pick a random dead end chunk with chance
-            if ((fChanceChecker < afDeadEndChance) || CornerChunks.size()==0 || afPlaceHallways>0.0f) {
+            if (!(fChanceChecker < afDeadEndChance))
+                cLux_AddDebugMessage("2. Chance failed");
+            if (!(CornerChunks.size()==0 && afDeadEndChance>0.0f))
+                cLux_AddDebugMessage("2. No corners or dead end chance is less or equal to 0, cahnce "+afDeadEndChance);
+            if ((fChanceChecker < afDeadEndChance) || (CornerChunks.size()==0 && afDeadEndChance>0.0f) || (afPlaceHallways>0.0f)) {
+                cLux_AddDebugMessage("2. Picked random dead end chunk");
                 int lRanIndex = cMath_RandRectl(0, DeadEndChunks.length()-1);
                 return DeadEndChunks[lRanIndex];
             }
@@ -374,11 +389,17 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
             HallWayChunks = EmptyArray;
             continue;
         }
+        cLux_AddDebugMessage("3. Cornersize is "+CornerChunks.size());
+        cLux_AddDebugMessage("3. Blocknum is "+lBlockNum);
+        
+        cLux_AddDebugMessage("4. if lBlockNum is not 0 and afPlaceHallways is 0 then reduce blocknum");
+        cLux_AddDebugMessage("4. afPlaceHallways is "+afPlaceHallways);
         if ((CornerChunks.size()>0) && (lBlockNum!=0)) {
+            cLux_AddDebugMessage("3. Picking random corner chunk");
             // Picking a random corner chunk
             int lRanIndex = cMath_RandRectl(0, CornerChunks.length()-1);
             return CornerChunks[lRanIndex];
-        } else if (afPlaceHallways>0.0f) {
+        } else if ((afPlaceHallways>0.0f) || ((lBlockNum!=0) && afPlaceHallways<0.01f)) {
             lBlockNum = lBlockNum - 1; 
             array<int> EmptyArray;
             BlockedChunks = EmptyArray;
@@ -388,10 +409,12 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
             HallWayChunks = EmptyArray;
             continue;
         } else {
+            cLux_AddDebugMessage("5. Returned peacefully");
             return -1;
         }
     }
     
+    cLux_AddDebugMessage("6. Returned after while??");
     return -1;
 }
 
@@ -407,6 +430,8 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
 int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float afDeadEndChance=0.3f, float afPlaceHallways=0.0f)
 {
     Building_CheckFilledArray();
+    
+    cLux_AddDebugMessage("Trying to place down "+asAreaName);
     
     // Get Chunk
     if (alChunkNum == -1) {
@@ -532,10 +557,10 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float
         // Remove roof
         Entity_SetActive("roof_chunk_"+alChunkNum, false); 
         // Remove all walls
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
-        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
+        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
         
         //Make doors static
         if (!(pDoor is null))

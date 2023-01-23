@@ -49,18 +49,29 @@ class cScrPropWatch : cScrPropPickup
     
     //------------------------------------------------------------
 	
+    bool bCalledRotationSet = false;
 	void OnUpdate(float afTimeStep)
 	{
 		cScrPropPickup::OnUpdate(afTimeStep);
-		
-        cLux_AddDebugMessage("Works");
+        if (!bCalledRotationSet) {
+            cLux_AddDebugMessage("4");
+            cBoneState@ pBone = mBaseObj.GetMeshEntity().GetBoneStateFromName("Root");
+            cMatrixf mtxBone = pBone.GetWorldMatrix();
+            
+            float fdeg2Rad = (cMath_Pi / 180.0f);
+            cMatrixf mtxRotation = cMath_MatrixRotateXYZ(cVector3f(190.0f*fdeg2Rad, 220.0f*fdeg2Rad, 50.0f*fdeg2Rad));
+            cMatrixf mtxNew = cMath_MatrixMul(mtxBone, mtxRotation);
+            pBone.SetWorldMatrix(mtxNew);
+            pBone.SetWorldPosition(pBone.GetWorldPosition()+cVector3f(-0.003,-0.001,0.003));
+            
+            bCalledRotationSet = true;
+        }
 		//////////////////////////////
 		// Update state
-		if (Item_GetHeldEntity(eItemHandlerHand_Left)==mBaseObj.GetName())
-		{
-            Error("Test");
-            Entity_SetRotationEuler(mBaseObj.GetName(), cVector3f(10,10,10));
-        }
+		//if (Item_GetHeldEntity(eItemHandlerHand_Left)==mBaseObj.GetName())
+		//{
+        //Entity_SetRotationEuler(mBaseObj.GetName(), cVector3f(10,0,0));
+        //}
 	}
 	
 	//------------------------------------------------------------
