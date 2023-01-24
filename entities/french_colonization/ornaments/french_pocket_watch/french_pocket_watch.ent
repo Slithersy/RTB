@@ -2,8 +2,8 @@
     <ModelData>
         <Entities />
         <Mesh Filename="mods/StructureTest/entities/nonexclusive/watch/french_pocket_watch.fbx">
-            <SubMesh ID="0" Name="french_pocket_watch" CreStamp="0" ModStamp="0" WorldPos="0 0 0" Rotation="0 0 0" Scale="1 1 1" TriCount="751" Material="entities/french_colonization/ornaments/french_pocket_watch/french_pocket_watch.mat" Static="true" />
-            <SubMesh ID="1" Name="seconds_needle" CreStamp="0" ModStamp="0" WorldPos="0 0 0" Rotation="0 0 0" Scale="1 1 1" TriCount="28" Material="entities/french_colonization/ornaments/french_pocket_watch/french_pocket_watch.mat" Static="true" />
+            <SubMesh ID="0" Name="french_pocket_watch" CreStamp="0" ModStamp="0" WorldPos="0 0 0" Rotation="0 0 0" Scale="2 2 2" TriCount="751" Material="entities/french_colonization/ornaments/french_pocket_watch/french_pocket_watch.mat" Static="true" />
+            <SubMesh ID="1" Name="seconds_needle" CreStamp="0" ModStamp="0" WorldPos="0 0 0" Rotation="0 0 0" Scale="2 2 2" TriCount="28" Material="entities/french_colonization/ornaments/french_pocket_watch/french_pocket_watch.mat" Static="true" />
         </Mesh>
         <Bones>
             <Bone ID="2" Name="french_pocket_watch" />

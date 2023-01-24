@@ -1,9 +1,11 @@
 #include "custom/props/Prop_Pickup.hps"
 #include "custom/helpers/helper_player_custom.hps"
+#include "custom/helpers/helper_modules_custom.hps"
+#include "custom/helpers/helper_menu.hps"
 #include "helpers/helper_player.hps"
 #include "helpers/helper_modules.hps"
-#include "helpers/helper_rotation.hps"
-#include "custom/helpers/helper_modules_custom.hps"
+#include "helpers/helper_procedural.hps"
+#include "base/InputHandler_Types.hps"
 
 
 //------------------------------------------------------------
@@ -18,7 +20,7 @@ class cScrPropWatch : cScrPropPickup
 		
 		tString sSource = cScript_GetGlobalArgString(0);
         cScript_SetGlobalArgBool(0, mbTimerOn);
-        cScript_SetGlobalArgFloat(1, mfTimePassed);
+        cScript_SetGlobalArgFloat(1, mfTimeStarted);
 		cScript_RunGlobalFunc(sSource, "cScrPropWatch", "_Global_CopyValues");
 	}
 	
@@ -32,52 +34,109 @@ class cScrPropWatch : cScrPropPickup
 		if (Item_GetHeldEntity(eItemHandlerHand_Right)==mBaseObj.GetName()) return;
 		
         mbTimerOn 				= cScript_GetGlobalArgBool(0);
-		mfTimePassed 			= cScript_GetGlobalArgFloat(1);
+		mfTimeStarted 			= cScript_GetGlobalArgFloat(1);
 	}
 	
 	//------------------------------------------------------------
 	
 	void _Global_OnItemTakenOut()
 	{
+        Sound_CreateAtEntity("Watch_TakeOut", "custom/watch/takeout", mBaseObj.GetName(), 0.0f, false, 0.7f);
 	}
 	
 	//------------------------------------------------------------
 	
 	void _Global_OnItemStartPutAway()
 	{
+        if (mbTimerOn)
+            StopTimer();
 	}
     
     //------------------------------------------------------------
 	
     bool bCalledRotationSet = false;
+    bool bLeftTriggered = false;
+    float fLeftClickCooldown = 0.0f;
+    cMatrixf mtxEmpty;
+    cMatrixf mtxDefault;
 	void OnUpdate(float afTimeStep)
 	{
 		cScrPropPickup::OnUpdate(afTimeStep);
+        cBoneState@ pSecBone = mBaseObj.GetMeshEntity().GetBoneStateFromName("Seconds");
+        cMatrixf mtxSecBone = pSecBone.GetLocalMatrix();
+        
+        if (fLeftClickCooldown>0.1f) {
+            if (cInput_IsTriggered(eAction_MenuLeftMouse) && !bLeftTriggered && !MainMenu_IsShowing() && !Player_IsInteracting()) {
+                cLux_AddDebugMessage("Left click");
+                if (mbTimerOn) {
+                    StopTimer();
+                } else {
+                    Sound_CreateAtEntity("Watch_TimerStart", "custom/watch/timer_start", mBaseObj.GetName(), 0.0f, false, 0.7f);
+                    StartTimer();
+                }
+                
+                fLeftClickCooldown = 0.0f;
+                bLeftTriggered = true;
+            } else if (!cInput_IsTriggered(eAction_MenuLeftMouse)) bLeftTriggered = false;
+        }
+        fLeftClickCooldown = fLeftClickCooldown + 0.005f;
+
+        float fTimePassed = (Watch_GetRunTime() - mfTimeStarted);
+        if ((fTimePassed >= 60.0f) && mbTimerOn)
+            StopTimer();
+            
         if (!bCalledRotationSet) {
-            cLux_AddDebugMessage("4");
             cBoneState@ pBone = mBaseObj.GetMeshEntity().GetBoneStateFromName("Root");
-            cMatrixf mtxBone = pBone.GetWorldMatrix();
+            cMatrixf mtxBone = pBone.GetLocalMatrix();
             
             float fdeg2Rad = (cMath_Pi / 180.0f);
             cMatrixf mtxRotation = cMath_MatrixRotateXYZ(cVector3f(190.0f*fdeg2Rad, 220.0f*fdeg2Rad, 50.0f*fdeg2Rad));
             cMatrixf mtxNew = cMath_MatrixMul(mtxBone, mtxRotation);
-            pBone.SetWorldMatrix(mtxNew);
-            pBone.SetWorldPosition(pBone.GetWorldPosition()+cVector3f(-0.003,-0.001,0.003));
+            pBone.SetMatrix(mtxNew); //Down forward ,Back, Right up
+            pBone.SetPosition(pBone.GetLocalPosition()+cVector3f(0,-0.01,0.012));
+            mBaseObj.SetMeshScaleMul(cVector3f(1.2f, 1.2f, 1.2f));
             
             bCalledRotationSet = true;
         }
-		//////////////////////////////
-		// Update state
-		//if (Item_GetHeldEntity(eItemHandlerHand_Left)==mBaseObj.GetName())
-		//{
-        //Entity_SetRotationEuler(mBaseObj.GetName(), cVector3f(10,0,0));
-        //}
+        
+        cLux_AddDebugMessage(""+fTimePassed);
+        float fdeg2Rad = (cMath_Pi / 180.0f);
+        if (mbTimerOn) {
+            if (mtxDefault == mtxEmpty)
+                mtxDefault = mtxSecBone;
+            pSecBone.SetMatrix(mtxDefault);
+            cMatrixf mtxRotationY = cMath_MatrixRotateY(-0.00173f);
+            cMatrixf mtxNew = cMath_MatrixMul(mtxSecBone, mtxRotationY);
+            pSecBone.SetMatrix(mtxNew);
+        } else {
+            if (mtxDefault != mtxEmpty) {
+                pSecBone.SetMatrix(mtxDefault);
+            }
+        }
 	}
+    
+	void StartTimer()
+	{
+        Sound_CreateAtEntity("Watch_TimerTick", "custom/watch/timer_tick", mBaseObj.GetName(), 0.0f, false, 0.7f);
+        mfTimeStarted = Watch_GetRunTime();
+        
+        mbTimerOn = true;
+    }
+    
+	void StopTimer()
+	{
+        Sound_Stop("Watch_TimerStart", 0.3f);
+        Sound_Stop("Watch_TimerTick", 0.3f);
+        Sound_CreateAtEntity("Watch_TimerEnd", "custom/watch/timer_end", mBaseObj.GetName(), 0.0f, false, 0.7f);
+        
+        mfTimeStarted = 0.0f;
+        mbTimerOn = false;
+    }
 	
 	//------------------------------------------------------------
 	// Properties
 	
 	cVector3f mvLastPos;
 	bool mbTimerOn=false;
-	float mfTimePassed=0.0f;
+	float mfTimeStarted=0.0f;
 }

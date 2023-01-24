@@ -1,3 +1,5 @@
+#include "helpers/helper_rotation.hps"
+
 //-------------------------------------------------
 
 /////////////////////////////////////////
@@ -268,7 +270,10 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
     
     int alChunkNum = -1;
     int lBlockNum = 2; // Number of chunks that will be blocked from our search
-    array<int> BlockedChunks;
+    array<bool> BlockedChunks;
+    while (BlockedChunks.length()<65) {
+        BlockedChunks.insertLast(false);
+    }
     array<int> AvailableChunks;
     array<int> CornerChunks;
     array<int> DeadEndChunks;
@@ -302,15 +307,18 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
                 }
                 
                 for (int i=(Chunk-lLeft);i<=(Chunk+lRight);i++) {
-                    BlockedChunks.insertLast(i); //Insert current line into blocked
+                    BlockedChunks[i] = true; //Insert current line into blocked
+                    cLux_AddDebugMessage("Because of chunk: "+Chunk+" Blocked: "+i);
                     if (lUp>0) { //Insert all top lines
                         for (int k=1;k<=lUp;k++) {
-                            BlockedChunks.insertLast(i+(8*k));
+                            BlockedChunks[i+(8*k)] = true;
+                            cLux_AddDebugMessage("Because of chunk: "+Chunk+" Blocked: "+(i+(8*k)));
                         }
                     }
                     if (lDown>0) { //Insert all bottom lines
                         for (int k=1;k<=lDown;k++) {
-                            BlockedChunks.insertLast(i-(8*k));
+                            BlockedChunks[i-(8*k)] = true;
+                            cLux_AddDebugMessage("Because of chunk: "+Chunk+" Blocked: "+(i-(8*k)));
                         }
                     }
                 }
@@ -319,13 +327,26 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
         
         // Find all the available chunks and place in AvailableChunks
         for (int Chunk=1;Chunk<65;Chunk++) {
-            if (BlockedChunks.find(Chunk) < 0)
+            if (!BlockedChunks[Chunk])
                 AvailableChunks.insertLast(Chunk);
         }
+        
+        if (AvailableChunks.length()==0) {
+            cLux_AddDebugMessage("No available chunks, reducing lBlockNum from "+lBlockNum+" to "+(lBlockNum-1));
+            for (int i=0;i<BlockedChunks.length();i++) {
+                if (BlockedChunks[i])
+                    cLux_AddDebugMessage("blockedchunk: "+i);
+            }
+        }
+        
         if (AvailableChunks.length()==0) {
             lBlockNum = lBlockNum - 1; 
             array<int> EmptyArray;
-            BlockedChunks = EmptyArray;
+            array<bool> EmptyBoolArray;
+            BlockedChunks = EmptyBoolArray;
+            while (BlockedChunks.length()<65) {
+                BlockedChunks.insertLast(false);
+            }
             AvailableChunks = EmptyArray;
             CornerChunks = EmptyArray;
             DeadEndChunks = EmptyArray;
@@ -362,7 +383,7 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
         
         if ((afPlaceHallways>0.0f) && (HallWayChunks.size()>0)) {
             // Pick a random hallway chunk with chance
-            if (fChanceChecker2 < afPlaceHallways) {
+            if ((fChanceChecker2 < afPlaceHallways) || (DeadEndChunks.size()==0 && afDeadEndChance>0.0f)) {
                 int lRanIndex = cMath_RandRectl(0, HallWayChunks.length()-1);
                 return HallWayChunks[lRanIndex];
             }
@@ -374,7 +395,7 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
                 cLux_AddDebugMessage("2. Chance failed");
             if (!(CornerChunks.size()==0 && afDeadEndChance>0.0f))
                 cLux_AddDebugMessage("2. No corners or dead end chance is less or equal to 0, cahnce "+afDeadEndChance);
-            if ((fChanceChecker < afDeadEndChance) || (CornerChunks.size()==0 && afDeadEndChance>0.0f) || (afPlaceHallways>0.0f)) {
+            if ((fChanceChecker < afDeadEndChance) || ((CornerChunks.size()==0 || (lBlockNum==0)) && afDeadEndChance>0.0f) || (afPlaceHallways>0.0f)) {
                 cLux_AddDebugMessage("2. Picked random dead end chunk");
                 int lRanIndex = cMath_RandRectl(0, DeadEndChunks.length()-1);
                 return DeadEndChunks[lRanIndex];
@@ -382,7 +403,11 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
         } else if (afPlaceHallways>0.0f) {
             lBlockNum = lBlockNum - 1; 
             array<int> EmptyArray;
-            BlockedChunks = EmptyArray;
+            array<bool> EmptyBoolArray;
+            BlockedChunks = EmptyBoolArray;
+            while (BlockedChunks.length()<65) {
+                BlockedChunks.insertLast(false);
+            }
             AvailableChunks = EmptyArray;
             CornerChunks = EmptyArray;
             DeadEndChunks = EmptyArray;
@@ -402,7 +427,11 @@ int Building_FindRandomChunk(float afDeadEndChance=0.3f, float afPlaceHallways=0
         } else if ((afPlaceHallways>0.0f) || ((lBlockNum!=0) && afPlaceHallways<0.01f)) {
             lBlockNum = lBlockNum - 1; 
             array<int> EmptyArray;
-            BlockedChunks = EmptyArray;
+            array<bool> EmptyBoolArray;
+            BlockedChunks = EmptyBoolArray;
+            while (BlockedChunks.length()<65) {
+                BlockedChunks.insertLast(false);
+            }
             AvailableChunks = EmptyArray;
             CornerChunks = EmptyArray;
             DeadEndChunks = EmptyArray;
@@ -440,9 +469,6 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float
         if (alChunkNum == -1)
             return -1;
     }
-    
-    // Assign chunk as occupied
-    Chunk_SetContainsBuilding(alChunkNum, true);
 
     iLuxEntity@ pDoor = cLux_GetCurrentMap().GetEntityByName(asAreaName+"_Wall1_1", eLuxEntityType_LastEnum, "");
     iLuxEntity@ pDoor2 = cLux_GetCurrentMap().GetEntityByName(asAreaName+"_Wall1_5", eLuxEntityType_LastEnum, "");
@@ -557,10 +583,10 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float
         // Remove roof
         Entity_SetActive("roof_chunk_"+alChunkNum, false); 
         // Remove all walls
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
+        Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
         
         //Make doors static
         if (!(pDoor is null))
@@ -576,6 +602,9 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float
             if (!(pDoor2.GetBody(2) is null))
                 pDoor2.GetBody(2).SetMass(10);
         } else Error("Could not find the target entity "+asAreaName+"_Wall1_5");
+        
+        // Assign chunk as occupied
+        Chunk_SetContainsBuilding(alChunkNum, true);
 
         return alChunkNum;
     } else {
@@ -600,19 +629,90 @@ int Building_PlaceInChunk(const tString &in asAreaName, int alChunkNum=-1, float
             Entity_FaceToEntity(asAreaName, sDownWallName, false);
             cLux_AddDebugMessage("Down");
         }
-        
-        // Remove roof
-        //Entity_SetActive("roof_chunk_"+alChunkNum, false); 
-        // Remove all walls
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-1, false, true);
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+1, false, true);
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum-8, false, true);
-        //Chunk_SetWallBetweenCells(alChunkNum, alChunkNum+8, false, true);
+
+        // Assign chunk as occupied
+        Chunk_SetContainsBuilding(alChunkNum, true);
 
         return alChunkNum;
     }
     
     return -1;
+}
+
+/**
+ * Get cell behind this building, only call after building is placed
+ * Returns cell number, returns -1 if cell is on different level or doesn't exist.
+ * 
+ * @param asAreaName, the area name of the building.
+ * @param alCellNumber, the cell number the building is in.
+ * @param abShouldOutside, if it should return cells outside bounds, default is false.
+ **/
+int Building_GetCellBehind(tString asAreaName, int alCellNumber, bool abShouldOutside=false)
+{
+    cVector3f vAreaRotationRad = Entity_GetRotationEuler(asAreaName);
+    cVector3l vlAreaRotation = cMath_RoundToInt(cVector3f(vAreaRotationRad.x*(180/cMath_Pi), vAreaRotationRad.y*(180/cMath_Pi), vAreaRotationRad.z*(180/cMath_Pi)));
+
+    
+    int lLeftCell = (alCellNumber-1);
+    int lRightCell = (alCellNumber+1);
+    int lUpCell = (alCellNumber+8);
+    int lDownCell = (alCellNumber-8);
+    
+    cLux_AddDebugMessage(""+vlAreaRotation);
+    
+    // Left
+    if (cVector3l(0, 90, 0) == vlAreaRotation) {
+        if (((Chunk_GetLevel(lLeftCell) == Chunk_GetLevel(alCellNumber)) && (lLeftCell <= 64) && (lLeftCell >= 1)) || abShouldOutside)
+            return lLeftCell;
+    }
+    // Right
+    if ((cVector3l(0, 270, 0) == vlAreaRotation) || (cVector3l(0, -90, 0) == vlAreaRotation)) {
+        if (((Chunk_GetLevel(lRightCell) == Chunk_GetLevel(alCellNumber)) && (lRightCell <= 64) && (lRightCell >= 1)) || abShouldOutside)
+            return lRightCell;
+    }
+    // Up
+    if (cVector3l(0, 0, 0) == vlAreaRotation) {
+        if ((((Chunk_GetLevel(lUpCell)-1) == Chunk_GetLevel(alCellNumber)) && (lUpCell <= 64) && (lUpCell >= 1)) || abShouldOutside)
+            return lUpCell;
+    }
+    // Down
+    if (cVector3l(180, 0, 180) == vlAreaRotation) {
+        if ((((Chunk_GetLevel(lDownCell)+1) == Chunk_GetLevel(alCellNumber)) && (lDownCell <= 64) && (lDownCell >= 1)) || abShouldOutside)
+            return lDownCell;
+    }
+    
+    return -1;
+}
+
+//-------------------------------------------------
+
+/////////////////////////////////////////
+// WATCH FUNCTIONS
+/////////////////////////////////////////
+
+//-------------------------------------------------
+
+float mfGlobalTime = 0.0f;
+/**
+ * Add run time to map
+ * 
+ * @param afTimeToAdd, the time to add to the global time.
+ **/
+void Watch_AddRunTime(float afTimeToAdd)
+{
+    mfGlobalTime = mfGlobalTime + afTimeToAdd;
+    cScript_SetGlobalVarFloat("Watch_GlobalTime", mfGlobalTime);
+}
+
+
+/**
+ * Get run time of map
+ * Returns run time of map in float.
+ * 
+ **/
+float Watch_GetRunTime()
+{
+    return cScript_GetGlobalVarFloat("Watch_GlobalTime");
 }
 
 //-------------------------------------------------

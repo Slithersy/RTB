@@ -12,7 +12,7 @@
 #include "helpers/helper_ai.hps"
 #include "helpers/helper_player.hps"
 #include "helpers/helper_procedural.hps"
-#include "helpers/helper_rotation.hps"
+#include "helpers/helper_procedural.hps"
 
 //--------------------------------------------------
  
@@ -74,6 +74,11 @@ class cScrMap : iScrMap
     array<int> mvStack;
 	void OnStart()
 	{
+        // Make all fog invisible
+        for (int i=1;i<=64;i++) {
+            FogArea_SetVisible("FogArea_"+i, false);
+        }
+        
         // Give player stuff
         if (ItemType_GetCountInInventory("Lantern") < 1)
         {
@@ -95,6 +100,7 @@ class cScrMap : iScrMap
         
         //Reset everything to default
         Chunk_ResetArray();
+        Building_ResetArray();
         
         // Pick starting chunk
         int lChunkStart = cMath_RandRectl(1, 64);
@@ -113,42 +119,101 @@ class cScrMap : iScrMap
             mvStack.insertLast(lNeighbourCell);
             Chunk_SetBeenVisited(lNeighbourCell, true);
             
+        ///////////////////
+        // ENTERANCE
+        // First remove roof
+        Entity_SetActive("roof_chunk_"+lChunkStart, false);  
+        Chunk_SetContainsBuilding(lChunkStart, true);
+        
+        // Place Enterance
+        iLuxEntity@ pPlayerStart = Map_GetEntity("start_chunk_"+lChunkStart, eLuxEntityType_Area);
+        if (pPlayerStart is null)
+        {
+            Error("Could not find the target entity "+"start_chunk_"+lChunkStart);
+            return;
+        }
+        
+        iLuxEntity@ pEnterance = Map_GetEntity("Enterance", eLuxEntityType_Area);
+        if (pEnterance is null)
+        {
+            Error("Could not find the target entity Enterance");
+            return;
+        }
+        pEnterance.SetPosition(pPlayerStart.GetPosition());
+        
+        // Set rotation
+        Entity_FaceToEntity("Enterance", msFirstRemovedWall, false);
+            
         // For realism, make a chunk where the door is supposed to be unuseable
-        if ((lChunkStart+1) == lNeighbourCell) { //Right
-            tString sWall = Chunk_SetWallBetweenCells(lChunkStart,lChunkStart-1, true);
-            if (sWall != "") {
-                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], lChunkStart);
-                Chunk_SetBeenVisited(lChunk, true);
-                Chunk_SetContainsBuilding(lChunk, true);
-            }
-        } else if ((lChunkStart-1) == lNeighbourCell) { //Left
-            tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart+1, true);
-            if (sWall != "") {
-                array<tString> vWallSplit = cString_Split(sWall, "_");
-                if (vWallSplit.size()>3) {
-                    int lChunk = cString_ToInt(vWallSplit[3], lChunkStart);
-                    Chunk_SetBeenVisited(lChunk, true);
-                    Chunk_SetContainsBuilding(lChunk, true);
+        int lBehindChunk = Building_GetCellBehind("Enterance", lChunkStart);
+        if (lBehindChunk != -1) {
+            Chunk_SetBeenVisited(lBehindChunk, true);
+            Chunk_SetContainsBuilding(lBehindChunk, true);
+        }
+        
+        ///////////////////
+        // MONSTER STUFF
+        array<int> AvailableMonsterChunks;
+        for (int i=0;i<65;i++) {
+            if ((i!=lNeighbourCell) && (i!=lChunkStart))
+                AvailableMonsterChunks.insertLast(i);
+        }
+        if (AvailableMonsterChunks.length()>3) {
+            for (int i=1;i<4;i++) {
+                int lRanIndex = cMath_RandRectl(0,AvailableMonsterChunks.length()-1);
+                int lRanMonsterChunk = AvailableMonsterChunks[lRanIndex];
+                AvailableMonsterChunks.removeAt(lRanIndex);
+                Chunk_SetContainsBuilding(lRanMonsterChunk, true);
+                
+                // Place Monster chunk
+                iLuxEntity@ pPlayerMonsterStart = Map_GetEntity("start_chunk_"+lRanMonsterChunk, eLuxEntityType_Area);
+                if (pPlayerMonsterStart is null)
+                {
+                    Error("Could not find the target entity "+"start_chunk_"+lRanMonsterChunk);
+                    return;
                 }
-            }
-        } else if ((lChunkStart+8) == lNeighbourCell) { //Up
-            tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart-8, true);
-            if (sWall != "") {
-                int lChunk = cString_ToInt(cString_Split(sWall, "_")[2], lChunkStart);
-                Chunk_SetBeenVisited(lChunk, true);
-                Chunk_SetContainsBuilding(lChunk, true);
-            }
-        } else if ((lChunkStart-8) == lNeighbourCell) { //Down
-            tString sWall  = Chunk_SetWallBetweenCells(lChunkStart, lChunkStart+8, true);
-            if (sWall != "") {
-                array<tString> vWallSplit = cString_Split(sWall, "_");
-                if (vWallSplit.size()>3) {
-                    int lChunk = cString_ToInt(vWallSplit[3], lChunkStart);
-                    Chunk_SetBeenVisited(lChunk, true);
-                    Chunk_SetContainsBuilding(lChunk, true);
+                
+                iLuxEntity@ pMonsterChunk = Map_GetEntity("MonsterArea_"+i, eLuxEntityType_Area);
+                if (pMonsterChunk is null)
+                {
+                    Error("Could not find the target entity MonsterArea_"+i);
+                    return;
+                }
+                pMonsterChunk.SetPosition(pPlayerMonsterStart.GetPosition());
+                
+                // Make it face a random direction
+                int lRanNum = cMath_RandRectl(1,4);
+                tString sWall = "";
+                // Left
+                if (lRanNum==1) {
+                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk-1, false, false);
+                // Right
+                } else if (lRanNum==2) {
+                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk+1, false, false);
+                // Up
+                } else if (lRanNum==3) {
+                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk+8, false, false);
+                // Down
+                } else {
+                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk-8, false, false);
+                }
+                Entity_FaceToEntity("MonsterArea_"+i, sWall, false);
+                    
+                // For realism, make a chunk where the wall is supposed to be unuseable
+                int lBehindMonsterChunk = Building_GetCellBehind("MonsterArea_"+i, lRanMonsterChunk, true);
+                if (lBehindMonsterChunk != -1) {
+                    Chunk_SetBeenVisited(lBehindMonsterChunk, true);
+                    Chunk_SetContainsBuilding(lBehindMonsterChunk, true);
+                    Chunk_SetWallBetweenCells(lRanMonsterChunk, lBehindMonsterChunk, false, true);
+                    
+                    if ((lBehindMonsterChunk<=64) && (lBehindMonsterChunk>=1))
+                        FogArea_SetVisible("FogArea_"+lBehindMonsterChunk, true);
                 }
             }
         }
+        
+        ///////////////////
+        // BACK TO GENERATION
             
         int lSafetyCheck = 0;
         bool bNonVisistedExist = true;
@@ -193,32 +258,6 @@ class cScrMap : iScrMap
             lSafetyCheck++;
         }
         
-        ///////////////////
-        // ENTERANCE
-        
-        // First remove roof
-        Entity_SetActive("roof_chunk_"+lChunkStart, false);  
-        Chunk_SetContainsBuilding(lChunkStart, true);
-        
-        // Place Enterance
-        iLuxEntity@ pPlayerStart = Map_GetEntity("start_chunk_"+lChunkStart, eLuxEntityType_Area);
-        if (pPlayerStart is null)
-        {
-            Error("Could not find the target entity "+"start_chunk_"+lChunkStart);
-            return;
-        }
-        
-        iLuxEntity@ pEnterance = Map_GetEntity("Enterance", eLuxEntityType_Area);
-        if (pEnterance is null)
-        {
-            Error("Could not find the target entity Enterance");
-            return;
-        }
-        pEnterance.SetPosition(pPlayerStart.GetPosition());
-        
-        // Set rotation
-        Entity_FaceToEntity("Enterance", msFirstRemovedWall, false);
-        
         
         ///////////////////
         // EXIT/BUILDING GENERATION
@@ -229,7 +268,7 @@ class cScrMap : iScrMap
         Building_PlaceInChunk("ArmoryRoom", -1);
         
         // Generate Assets
-        for (int i=1;i<=5;i++) {
+        for (int i=1;i<=4;i++) {
             Building_PlaceInChunk("LampArea_"+i, -1, 0.2f, 0.8f);
         }
 	}
@@ -262,6 +301,11 @@ class cScrMap : iScrMap
         
 		Game_AutoSave();
 	}
+    
+    void Update(float afDeltaTime)
+    {
+        Watch_AddRunTime(afDeltaTime);
+    }
     
     //-------------------------------------------------------
     //GENERATOR SEQUENCE
@@ -483,52 +527,7 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
-            int Chunk = 28;
-            int lBlockNum = 1;
-            array<int> BlockedChunks;
-            // Find all unavailable chunks
-            int lLeft = 0;
-            int lRight = 0;
-            int lUp = 0;
-            int lDown = 0;
-            for (int i=1;i<=lBlockNum;i++) {
-                //Check left
-                if (Chunk_GetLevel(Chunk-i) == Chunk_GetLevel(Chunk))
-                    lLeft++;
-                //Check right
-                if (Chunk_GetLevel(Chunk+i) == Chunk_GetLevel(Chunk))
-                    lRight++;
-                //Check up
-                if ((Chunk+(8*i)) <= 64)
-                    lUp++;
-                //Check down
-                if ((Chunk-(8*i)) >= 1)
-                    lDown++;
-            }
-            
-            for (int i=(Chunk-lLeft);i<=(Chunk+lRight);i++) {
-                BlockedChunks.insertLast(i); //Insert current line into blocked
-                if (lUp>0) { //Insert all top lines
-                    for (int k=1;k<=lUp;k++) {
-                        BlockedChunks.insertLast(i+(8*k));
-                    }
-                }
-                if (lDown>0) { //Insert all bottom lines
-                    for (int k=1;k<=lDown;k++) {
-                        BlockedChunks.insertLast(i-(8*k));
-                    }
-                }
-            }
-            
-            cLux_AddDebugMessage("lLeft: "+ lLeft);
-            cLux_AddDebugMessage("lRight: "+ lRight);
-            cLux_AddDebugMessage("lUp: "+ lUp);
-            cLux_AddDebugMessage("lDown: "+ lDown);
-            
-            for (int Chunk=1;Chunk<65;Chunk++) {
-                if (BlockedChunks.find(Chunk) >= 0)
-                    cLux_AddDebugMessage("Blocked chunk: "+ Chunk);
-            }
+            cLux_AddDebugMessage(""+Watch_GetRunTime());
 		}
 	}
 
