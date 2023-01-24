@@ -39,15 +39,18 @@ class cScrPropWatch : cScrPropPickup
 	
 	//------------------------------------------------------------
 	
+    bool bTakingAwayWatch = false;
 	void _Global_OnItemTakenOut()
 	{
         Sound_CreateAtEntity("Watch_TakeOut", "custom/watch/takeout", mBaseObj.GetName(), 0.0f, false, 0.7f);
+        bTakingAwayWatch = false;
 	}
 	
 	//------------------------------------------------------------
 	
 	void _Global_OnItemStartPutAway()
 	{
+        bTakingAwayWatch = true;
         if (mbTimerOn)
             StopTimer();
 	}
@@ -65,8 +68,13 @@ class cScrPropWatch : cScrPropPickup
         cBoneState@ pSecBone = mBaseObj.GetMeshEntity().GetBoneStateFromName("Seconds");
         cMatrixf mtxSecBone = pSecBone.GetLocalMatrix();
         
+        if (!bCalledRotationSet) {
+            if (mbTimerOn)
+                StopTimer();
+        }
+        
         if (fLeftClickCooldown>0.1f) {
-            if (cInput_IsTriggered(eAction_MenuLeftMouse) && !bLeftTriggered && !MainMenu_IsShowing() && !Player_IsInteracting()) {
+            if (cInput_IsTriggered(eAction_MenuLeftMouse) && !bLeftTriggered && !MainMenu_IsShowing() && !Player_IsInteracting() && !bTakingAwayWatch) {
                 cLux_AddDebugMessage("Left click");
                 if (mbTimerOn) {
                     StopTimer();
