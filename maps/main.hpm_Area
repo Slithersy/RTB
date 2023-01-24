@@ -2349,7 +2349,7 @@
                     <Var ObjectId="268435540" Name="CustomInteractIcon" Value="Default" />
                 </UserVariables>
             </Area>
-            <Area ID="268435541" Name="Monster_SoundArea_1" CreStamp="1674487053" ModStamp="1674522851" WorldPos="-40 1.5 7.94494" Rotation="-0 3.14159 -0" Scale="5.84327 2.75 5.38534" Active="true" Mesh="" UID="16 7930 268435541" AreaType="Trigger">
+            <Area ID="268435541" Name="Monster_SoundArea_1" CreStamp="1674487053" ModStamp="1674523780" WorldPos="-40 1.5 7.94494" Rotation="-0 3.14159 -0" Scale="6.5904 2.75 5.97041" Active="true" Mesh="" UID="16 7930 268435541" AreaType="Trigger">
                 <UserVariables>
                     <Var ObjectId="268435541" Name="Note" Value="" />
                     <Var ObjectId="268435541" Name="BlocksLineOfSight" Value="false" />
@@ -2405,7 +2405,7 @@
                     <Var ObjectId="268435542" Name="CustomInteractIcon" Value="Default" />
                 </UserVariables>
             </Area>
-            <Area ID="268435543" Name="Monster_SoundArea_2" CreStamp="1674498093" ModStamp="1674522851" WorldPos="-46 1.5 7.94494" Rotation="-0 3.14159 -0" Scale="4.28687 2.75 5.38535" Active="true" Mesh="" UID="16 8009 268435543" AreaType="Trigger">
+            <Area ID="268435543" Name="Monster_SoundArea_2" CreStamp="1674498093" ModStamp="1674523853" WorldPos="-46 1.5 7.94494" Rotation="-0 3.14159 -0" Scale="5.94779 2.75 5.97041" Active="true" Mesh="" UID="16 8009 268435543" AreaType="Trigger">
                 <UserVariables>
                     <Var ObjectId="268435543" Name="Note" Value="" />
                     <Var ObjectId="268435543" Name="BlocksLineOfSight" Value="false" />
@@ -2489,7 +2489,7 @@
                     <Var ObjectId="268435545" Name="CustomInteractIcon" Value="Default" />
                 </UserVariables>
             </Area>
-            <Area ID="268435546" Name="Monster_SoundArea_3" CreStamp="1674498097" ModStamp="1674522851" WorldPos="-52.25 1.5 7.94494" Rotation="-0 3.14159 -0" Scale="5.84327 2.75 5.38535" Active="true" Mesh="" UID="16 7925 268435546" AreaType="Trigger">
+            <Area ID="268435546" Name="Monster_SoundArea_3" CreStamp="1674498097" ModStamp="1674523780" WorldPos="-52.25 1.5 7.94494" Rotation="-0 3.14159 -0" Scale="6.5904 2.75 5.97041" Active="true" Mesh="" UID="16 7925 268435546" AreaType="Trigger">
                 <UserVariables>
                     <Var ObjectId="268435546" Name="Note" Value="" />
                     <Var ObjectId="268435546" Name="BlocksLineOfSight" Value="false" />

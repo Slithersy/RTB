@@ -107,7 +107,6 @@ class cScrPropWatch : cScrPropPickup
             bCalledRotationSet = true;
         }
         
-        cLux_AddDebugMessage(""+fTimePassed);
         float fdeg2Rad = (cMath_Pi / 180.0f);
         if (mbTimerOn) {
             if (mtxDefault == mtxEmpty)
