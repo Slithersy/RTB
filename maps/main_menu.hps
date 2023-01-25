@@ -10,6 +10,9 @@
 #include "helpers/helper_game.hps"
 #include "helpers/helper_modules.hps"
 #include "helpers/helper_ai.hps"
+#include "helpers/helper_player.hps"
+#include "helpers/helper_areas.hps"
+#include "custom/helpers/helper_menu.hps"
 
 //--------------------------------------------------
  
@@ -35,7 +38,7 @@ class cScrMap : iScrMap
 	void Setup()
 	{
 		// Put display name entry in english.lang / Levels
-		GetBase().SetDisplayNameEntry("xx-xx-dummy-level");
+		GetBase().SetDisplayNameEntry("01-01-main");
 		
 		// Set up color grading etc.
 	}
@@ -78,7 +81,16 @@ class cScrMap : iScrMap
 	// Run when entering map
 	void OnEnter()
 	{	
-		Game_AutoSave();
+		PauseMenu_Enabled(false);
+        cLux_SetGamePaused(false, false, false, false);
+		MainMenu_Show(true);
+		cLux_GetGuiHandler().SetGameHudInputFocus(true);
+		Player_ShowCrossHairIcons(false);
+		Sketchbook_SetInventoryEnabled(false);
+
+		CameraAnimation_Begin("CameraAnimation", "", false);
+        //Doesn't work in practice but works for testing
+        Music_PlayExt("music/General/A2_MenuTheme.ogg", true, 0.35f, 1.0f, 3.0f, 0.0f, eMusicPrio_BigEvent, false);
 	}
 
 	//-------------------------------------------------------
@@ -87,6 +99,7 @@ class cScrMap : iScrMap
 	// Run when leaving map
 	void OnLeave()
 	{
+        Player_ShowCrossHairIcons(true);
 	}
 
 	//-------------------------------------------------------
@@ -103,13 +116,6 @@ class cScrMap : iScrMap
 	// Called when player HP reaches 0
 	bool OnDeath(const tString &in asSource)
 	{
-		cLux_AddTodoMessage("DEAD : SOURCE = " + asSource);
-		
-		if (asSource == "SomeReason")
-		{
-			Effect_Fade_Out(1.0f);
-			return true; // return true to completely override base behaviour
-		}
 		
 		// return false for default behaviour
 		return false;
@@ -135,6 +141,7 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
+			MainMenu_Show(false);
 		}
 	}
 

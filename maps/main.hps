@@ -35,6 +35,7 @@ class cScrMap : iScrMap
  
 	////////////////////////////
 	// Set up map environment
+    void Setup()
 	void Setup()
 	{
 		// Put display name entry in english.lang / Levels
@@ -44,6 +45,7 @@ class cScrMap : iScrMap
         Player_SetAllowCheckBaby(false);
 		
 		// Set up color grading etc.
+        Entity_SetActive("asdadasd_2", false);
 	}
 	
 	//-------------------------------------------------------
@@ -662,7 +664,8 @@ class cScrMap : iScrMap
 		if(alAction == eAction_Test2)
 		{
             //Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
-            Entity_SetActive("asdasdsa_3", false);
+            //@mpPathfinder = cLux_CreateEntityComponent_Pathfinder(mBaseObj);
+            //cLuxPathfinder@ mpPathfinder;
 		}
 	}
 

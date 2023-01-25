@@ -1,5 +1,50 @@
 <HPLMapTrack_Area ID="ED795DC16E69BDBD47C4F1E56288FB9E33383899" MajorVersion="1" MinorVersion="1">
     <Section Name="16776282910117362707">
-        <Objects />
+        <Objects>
+            <Area ID="268435456" Name="CameraAnimation_1" CreStamp="1674606603" ModStamp="1674612469" WorldPos="1.21895 1.82488 -2.5" Rotation="0.000501799 3.00913 0.00379921" Scale="0.5 0.5 0.75" Active="true" Mesh="" UID="16 8032 268435456" AreaType="CameraAnimation">
+                <UserVariables>
+                    <Var ObjectId="268435456" Name="Note" Value="" />
+                    <Var ObjectId="268435456" Name="MaxYaw" Value="2" />
+                    <Var ObjectId="268435456" Name="MaxPitch" Value="2" />
+                    <Var ObjectId="268435456" Name="LookSpeedMultiplier" Value="0.4" />
+                    <Var ObjectId="268435456" Name="ForwardTime" Value="0" />
+                    <Var ObjectId="268435456" Name="BackwardTime" Value="0" />
+                    <Var ObjectId="268435456" Name="AutoMovement" Value="0" />
+                    <Var ObjectId="268435456" Name="LookMoveDistance" Value="0" />
+                    <Var ObjectId="268435456" Name="LookMoveMaxAngle" Value="0" />
+                    <Var ObjectId="268435456" Name="InteractiveMovement" Value="false" />
+                    <Var ObjectId="268435456" Name="UseSpeedFading" Value="true" />
+                    <Var ObjectId="268435456" Name="CrouchOnExit" Value="false" />
+                    <Var ObjectId="268435456" Name="InitToCamera" Value="false" />
+                    <Var ObjectId="268435456" Name="UsePlayerEyeline" Value="false" />
+                    <Var ObjectId="268435456" Name="CallbackFunc" Value="" />
+                </UserVariables>
+            </Area>
+            <Area ID="268435555" Name="CameraAnimation_2" CreStamp="1674610067" ModStamp="1674610069" WorldPos="1.22398 1.82488 -2.65044" Rotation="0.000501799 3.00913 0.00379921" Scale="0.5 0.5 0.75" Active="true" Mesh="" UID="16 8020 268435555" AreaType="CameraAnimation">
+                <UserVariables>
+                    <Var ObjectId="268435555" Name="Note" Value="" />
+                    <Var ObjectId="268435555" Name="MaxYaw" Value="45" />
+                    <Var ObjectId="268435555" Name="MaxPitch" Value="45" />
+                    <Var ObjectId="268435555" Name="LookSpeedMultiplier" Value="1" />
+                    <Var ObjectId="268435555" Name="ForwardTime" Value="0" />
+                    <Var ObjectId="268435555" Name="BackwardTime" Value="0" />
+                    <Var ObjectId="268435555" Name="AutoMovement" Value="0" />
+                    <Var ObjectId="268435555" Name="LookMoveDistance" Value="0" />
+                    <Var ObjectId="268435555" Name="LookMoveMaxAngle" Value="0" />
+                    <Var ObjectId="268435555" Name="InteractiveMovement" Value="false" />
+                    <Var ObjectId="268435555" Name="UseSpeedFading" Value="true" />
+                    <Var ObjectId="268435555" Name="CrouchOnExit" Value="false" />
+                    <Var ObjectId="268435555" Name="InitToCamera" Value="false" />
+                    <Var ObjectId="268435555" Name="UsePlayerEyeline" Value="false" />
+                    <Var ObjectId="268435555" Name="CallbackFunc" Value="" />
+                </UserVariables>
+            </Area>
+            <Area ID="268435556" Name="Start_Begin" CreStamp="1674610136" ModStamp="1674610139" WorldPos="1.625 1.25 -1" Rotation="0 0 0" Scale="1.25 2 1" Active="true" Mesh="" UID="16 8031 268435556" AreaType="PlayerStart">
+                <UserVariables>
+                    <Var ObjectId="268435556" Name="Note" Value="" />
+                    <Var ObjectId="268435556" Name="Crouching" Value="false" />
+                </UserVariables>
+            </Area>
+        </Objects>
     </Section>
 </HPLMapTrack_Area>
