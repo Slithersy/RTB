@@ -12,7 +12,7 @@
 #include "helpers/helper_ai.hps"
 #include "helpers/helper_player.hps"
 #include "helpers/helper_procedural.hps"
-#include "helpers/helper_procedural.hps"
+#include "custom/helpers/helper_agent.hps"
 
 //--------------------------------------------------
  
@@ -195,7 +195,7 @@ class cScrMap : iScrMap
                     sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk+8, false, false);
                 // Down
                 } else {
-                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk-8, false, false);
+                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk+8, false, false);
                 }
                 Entity_FaceToEntity("MonsterArea_"+i, sWall, false);
                     
@@ -304,16 +304,50 @@ class cScrMap : iScrMap
     
     float lMonsterTime = 0.0f;
     float fRanTimeBetween = 30.0f;
+    float fMonsterGetOutChance = 0.1f;
+    bool bMonsterIsOut = false;
     void Update(float afDeltaTime)
     {
         Watch_AddRunTime(afDeltaTime);
-        
+
         // For monster, just need the global time
-        if ((Watch_GetRunTime() - lMonsterTime) > fRanTimeBetween) {
+        float GlobalTime = Watch_GetRunTime();
+        
+        if ((GlobalTime - lMonsterTime) > fRanTimeBetween) {
+            float fRanNum = cMath_RandRectf(0.01f,1.0f); 
+            if (bMonsterIsOut) {
+                if (fRanNum<fMonsterGetOutChance) {
+                    // Make monster retreat
+                    Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
+                } else
+                    fMonsterGetOutChance = fMonsterGetOutChance*1.2;
+                lMonsterTime = GlobalTime;
+                return;
+            }
+            
             Monster_PickSpot();
             
             fRanTimeBetween = cMath_RandRectf(30.0f, 60.0f);
-            lMonsterTime = Watch_GetRunTime();
+            lMonsterTime = GlobalTime;
+            
+            if (fRanNum<fMonsterGetOutChance) {
+                iLuxEntity@ pMonster = Map_GetEntity("ghoul_1", eLuxEntityType_Agent);
+                iLuxEntity@ pArea = Map_GetEntity("MonsterArea_"+lMonsterIndex, eLuxEntityType_Area);
+                if ((pMonster is null) || (pArea is null)) {
+                    Error("Could not find the target entity ghoul_1 or MonsterArea_"+lMonsterIndex);
+                } else {
+                    fMonsterGetOutChance = 0.1f;
+                    pMonster.SetPosition(pArea.GetPosition());
+                    Entity_SetActive("ghoul_1", true);
+                    Ghoul_CommandEmergeFromHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, true);
+                    Monster_PickSpot(false);
+                    Ghoul_CommandPatrol_Execute("ghoul_1", false, 20, true);
+                    bMonsterIsOut = true;
+                }
+            } else {
+                // Each time the monster doesn't come out, the chance for it to come out the next time increases
+                fMonsterGetOutChance = fMonsterGetOutChance*1.2;
+            }
         }
     }
     
@@ -334,10 +368,13 @@ class cScrMap : iScrMap
                 AvailableSpawnAreas.insertLast(i);
             }
         }
-        if (abNoSpot)
+        if (abNoSpot) {
             lMonsterIndex = -1;
+            //cScript_SetGlobalVarInt("Monster_Index", lMonsterIndex);
+        }
         else if (AvailableSpawnAreas.size()>0) {
             lMonsterIndex = AvailableSpawnAreas[cMath_RandRectl(0, AvailableSpawnAreas.length()-1)];
+            //cScript_SetGlobalVarInt("Monster_Index", lMonsterIndex);
         }
         
         cLux_AddDebugMessage("Picked area: "+lMonsterIndex);
@@ -381,6 +418,13 @@ class cScrMap : iScrMap
             Monster_PickSpot(false);
             cLux_AddDebugMessage("Perma fail");
         }
+        return true;
+    }
+    
+    bool Monster_EnterArea(const tString &in asParent, const tString &in asChild, int alState)
+    {
+        if (alState==1)
+            cLux_AddDebugMessage("Monster retreated");
         return true;
     }
     
@@ -604,7 +648,21 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
-            Monster_PickSpot();
+            iLuxEntity@ pMonster = Map_GetEntity("ghoul_1", eLuxEntityType_Agent);
+            iLuxEntity@ pArea = Map_GetEntity("MonsterArea_"+1, eLuxEntityType_Area);
+            if ((pMonster is null) || (pArea is null)) {
+                Error("Could not find the target entity ghoul_1 or MonsterArea_"+1);
+            } else {
+                pMonster.SetPosition(pArea.GetPosition());
+                Entity_SetActive("ghoul_1", true);
+                Monster_PickSpot(false);
+                bMonsterIsOut = true;
+            }
+		}
+		if(alAction == eAction_Test2)
+		{
+            //Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
+            Entity_SetActive("asdasdsa_3", false);
 		}
 	}
 
