@@ -724,7 +724,7 @@ class cScrMenuHandler : iScrUserModule, iScrUserModule_Interface, iScrMenuHandle
 
 		if(abX)
 		{
-			Sound_CreateAtEntity("MenuBGNoise", "special_fx/frontend/main_menu_bg", "Player", 6.0f, false, 1.0f);
+			Sound_CreateAtEntity("MenuBGNoise", "music/General/A2_MenuTheme.ogg", "Player", 6.0f, false, 1.0f);
 
 			////////////////////////////////
 			// Variable setup
@@ -8647,7 +8647,7 @@ class cScrMenuHandler : iScrUserModule, iScrUserModule_Interface, iScrMenuHandle
 				mbPremenuActive = false;
 				mbBackgroundShowTitle = true;
 				mbPremenuActive = false;
-				Sound_CreateAtEntity("MenuBGNoise", "special_fx/frontend/main_menu_bg", "Player", 6.0f, false, 1.0f);
+				Sound_CreateAtEntity("MenuBGNoise", "music/General/A2_MenuTheme.ogg", "Player", 6.0f, false, 1.0f);
 				//Sound_CreateAtEntity("MenuBGNoise", "special_fx/frontend/main_menu_bg", "Player", 6.0f, false, 1.0f);
 			}
 		}

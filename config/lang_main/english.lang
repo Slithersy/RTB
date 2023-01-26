@@ -214,7 +214,7 @@
 	It's 1937. Tasi Trianon is flying across the Algerian Desert as part of an expedition to French Sudan. With her is her husband, Salim Hannachi.
 	</Entry>
 	<Entry Name="01-01-main">
-	While exploring an abandoned WW1 bunker, the door you came from gets caved in. Overcome fear, persevere, and make your way out alive.
+	While exploring an abandoned WW1 bunker, the door you came from gets caved in. Overcome fear, persevere, and make your way out alive. Don't get close to noisy holes - Don't go insane - Find the key and escape.
 	</Entry>
 	<Entry Name="01-01-plane-wreckage">
 	After a plane crash, Tasi Trianon woke up in the desert in the wreckage of the plane. But something is wrong - she is ill, it seems several days have passed, and the rest of the crew is missing, including her husband Salim. She must find him.
@@ -476,8 +476,8 @@
 	<Entry Name="RelicRoomKey">Cage Key</Entry>
 	<Entry Name="RelicRoomKey_Desc">A key from the cage in the arsenal.</Entry>
 	
-	<Entry Name="ArsenalKey">Arsenal Key</Entry>
-	<Entry Name="ArsenalKey_Desc">A key found in the tank, with 'Arsenal' written on the label.</Entry>
+	<Entry Name="ArsenalKey">Key</Entry>
+	<Entry Name="ArsenalKey_Desc">A key found in the radio room, could this be used to escape?</Entry>
 	
 	<Entry Name="Charcoal_Solid">Lump of Charcoal</Entry>
 	<Entry Name="Charcoal_Solid_Desc">A lump of charcoal from the forge in the arsenal.</Entry>

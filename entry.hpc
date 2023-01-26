@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content Version="1.0"
+	UID="rtb.standardmode"
+	Type="StandAlone"
+	Title="Rebirth The Bunker"
+	Author="Slithersy"
+	Description_english="Play in a procedurally generated WW1 bunker. 
+    While exploring, the door you came from gets caved in. Overcome fear, persevere, and make your way out alive. 
+    
+    ==VERY IMPORTANT TO REMEMBER==
+    Don't get close to noisy holes - Don't go insane - Find the key and escape."
+	
+	LauncherPic="LauncherPic.png"
+    ResourcesCfg="resources.cfg"
+	InitCfg="config/main_init.cfg"
+  HotLoad="true"
+/>

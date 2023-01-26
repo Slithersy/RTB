@@ -81,7 +81,7 @@ class cScrMap : iScrMap
 	// Run when entering map
 	void OnEnter()
 	{	
-        Effect_Fade_Out(1.5f);
+        Effect_Fade_In(1.5f);
 		PauseMenu_Enabled(false);
         cLux_SetGamePaused(false, false, false, false);
 		MainMenu_Show(true);
