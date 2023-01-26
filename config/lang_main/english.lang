@@ -1266,5 +1266,11 @@
 		<Entry Name="Villager">Unknown</Entry>
 
 	</CATEGORY>
+    
+    <CATEGORY Name="CustomRTB">
+        <Entry Name="YouEscaped">You escaped</Entry>
+		<Entry Name="YourTime">Your time is: </Entry>
+		<Entry Name="ToContinue">Press % to continue</Entry>
+    </CATEGORY>
  
 </LANGUAGE>

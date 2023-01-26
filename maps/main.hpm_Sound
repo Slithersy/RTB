@@ -1,5 +1,11 @@
 <HPLMapTrack_Sound ID="F002F21D3E026F08E41427F438A2CDC5A4D63B0A" MajorVersion="1" MinorVersion="1">
     <Section Name="16776282910117362707">
-        <Objects />
+        <Objects>
+            <Sound ID="268436837" Name="Sound_1" CreStamp="1674691111" ModStamp="1674691998" WorldPos="28.25 10 -3.75" Rotation="0 0 0" Scale="1 1 1" SoundEntityFile="01_02_caves/sweeteners/far/step_ghoul" MinDistance="1" MaxDistance="5" Volume="0.5" Active="true" UseCustomProperties="false" UID="16 8041 268436837" />
+            <Sound ID="268436838" Name="Sound_2" CreStamp="1674691131" ModStamp="1674692013" WorldPos="15.25 13.25 -15.25" Rotation="0 0 0" Scale="1 1 1" SoundEntityFile="01_02_caves/sweeteners/far/step_ghoul" MinDistance="1" MaxDistance="5" Volume="0.6" Active="true" UseCustomProperties="false" UID="16 7704 268436838" />
+            <Sound ID="268436840" Name="Sound_4" CreStamp="1674691155" ModStamp="1674692012" WorldPos="9.75 12.25 -5.75" Rotation="0 0 0" Scale="1 1 1" SoundEntityFile="01_02_caves/sweeteners/far/steps" MinDistance="1" MaxDistance="5" Volume="0.6" Active="true" UseCustomProperties="false" UID="16 6708 268436840" />
+            <Sound ID="268436841" Name="Sound_3" CreStamp="1674691173" ModStamp="1674692010" WorldPos="29.25 8.5 -33" Rotation="0 0 0" Scale="1 1 1" SoundEntityFile="01_02_caves/sweeteners/specials/quake_warning" MinDistance="1" MaxDistance="5" Volume="1" Active="true" UseCustomProperties="false" UID="16 8042 268436841" />
+            <Sound ID="268436842" Name="Sound_5" CreStamp="1674691183" ModStamp="1674692027" WorldPos="-7.5 11.5 -27.5" Rotation="0 0 0" Scale="1 1 1" SoundEntityFile="01_02_caves/sweeteners/specials/deepcave_entry" MinDistance="1" MaxDistance="5" Volume="0.6" Active="true" UseCustomProperties="false" UID="16 6709 268436842" />
+        </Objects>
     </Section>
 </HPLMapTrack_Sound>

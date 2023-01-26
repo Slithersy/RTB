@@ -746,3 +746,15 @@ array<tString> cString_Split(const tString &in asString, const tString &in asSep
     
     return vSeperated;
 }
+
+
+/**
+ * Fully translate a string in a lang file 
+ * 
+ * @param asCatgory, Category.
+ * @param asEntry, Entry.
+ **/
+tString cString_FullyTranslate(const tString &in asCatgory, const tString &in asEntry)
+{
+    return cString_To8Char(cLux_Translate(asCatgory, asEntry));
+}

@@ -1,0 +1,41 @@
+// Render Text Fade
+//-------------------------------------------------------
+int CreateTextFade(const tString &in asText, cVector3f aCalPos, cVector2f aCalSize, float afSize=1.0f, float afFadeIn=0.0f, float afTime=1.0f,
+    float afFadeOut=0.0f, float afMaxAlpha=1.0f, const tString &in asFont="sansation_large_additive.fnt", int alID=-1)
+{
+    
+    cScript_SetGlobalArgString(0, asText);
+    cScript_SetGlobalArgVector3f(1, aCalPos);
+    cScript_SetGlobalArgVector2f(2, aCalSize);
+    cScript_SetGlobalArgFloat(3, afSize);
+    cScript_SetGlobalArgFloat(4, afFadeIn);
+    cScript_SetGlobalArgFloat(5, afTime);
+    cScript_SetGlobalArgFloat(6, afFadeOut);
+    cScript_SetGlobalArgFloat(7, afMaxAlpha);
+    cScript_SetGlobalArgString(8, asFont);
+    cScript_SetGlobalArgInt(9, alID);
+
+    cScript_RunGlobalFunc("TextHandler", "", "_Global_CreateTextFade");
+    return cScript_GetGlobalReturnInt();
+}
+
+// Render Text Fade
+//-------------------------------------------------------
+float GetTextFadeAlpha(int alID)
+{
+    cScript_SetGlobalArgInt(0, alID);
+    cScript_RunGlobalFunc("TextHandler", "", "_Global_GetTextFadeAlpha");
+   
+    return cScript_GetGlobalReturnFloat();
+}
+
+
+// Stop Text Fade
+//-------------------------------------------------------
+void StopTextFade(const tString &in asText, float afFade)
+{
+    cScript_SetGlobalArgString(0, asText);
+    cScript_SetGlobalArgFloat(1, afFade);
+    
+    cScript_RunGlobalFunc("TextHandler", "", "_Global_StopTextFade");
+}

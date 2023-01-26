@@ -1,0 +1,291 @@
+#include "interfaces/UserModule_Interface.hps"
+#include "modules/ModuleInterfaces.hps"
+#include "helpers/helper_modules.hps"
+#include "helpers/helper_imgui.hps"
+#include "custom/helpers/helper_menu.hps"
+
+//------------------------------------------------------------
+
+class cScrTextInstance
+{
+	int mlID;
+	float mfSecs;
+	float mfAlpha;
+	
+	tString msText;
+	cVector3f mCalPos;
+	cVector2f mCalSize;
+	float mfSize = 1.0f;
+	float mfFadeIn;
+	float mfTime;
+	float mfFadeOut;
+	float mfMaxAlpha;
+    tString msFont;
+}
+
+//------------------------------------------------------------
+
+
+class cScrTextHandler : iScrUserModule, iScrUserModule_Interface
+{
+	//------------------------------------------------------------
+	
+	/////////////////////////////////////////
+	// INIT
+	/////////////////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	void Init() {}
+	
+	//------------------------------------------------------------
+	
+	/////////////////////////////////////////
+	// USER SETTINGS
+	/////////////////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	void LoadUserConfig() {}
+	void SaveUserConfig() {}
+	
+	//------------------------------------------------------------
+	
+	/////////////////////////////////////////
+	// ENTER MAP
+	/////////////////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	void OnMapEnter(cLuxMap @apMap)
+	{
+		mvInstances.resize(0);
+	}
+	void OnMapLeave(cLuxMap @apMap) {}
+	
+	//------------------------------------------------------------
+	
+	void PreloadData(cLuxMap @apMap) {}
+	void CreateWorldEntities(cLuxMap @apMap) {}
+	void DestroyWorldEntities(cLuxMap @apMap) {}
+	
+	//------------------------------------------------------------
+	
+	/////////////////////////////////////////
+	// ACTIONS
+	/////////////////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	int AddInstance(int alID, const tString &in asText, cVector3f aCalPos, cVector2f aCalSize, float afSize, float afFadeIn, float afTime, float afFadeOut, 
+        float afMaxAlpha, const tString &in asFont)
+	{
+		for(int i=0; i<mvInstances.size();++i)
+		{
+			if(asText == mvInstances[i].msText)
+			{
+                mvInstances[i].msText = asText;
+				mvInstances[i].mCalPos = aCalPos;
+				mvInstances[i].mCalSize = aCalSize;
+				mvInstances[i].mfSize = afSize;
+                mvInstances[i].mfMaxAlpha = afMaxAlpha;
+				return mvInstances[i].mlID;
+			}
+		}
+		
+        alID = alID + 1;
+        
+		cScrTextInstance instance;
+		instance.mlID = alID;
+		instance.mfSecs = 0.0f;
+		instance.mfAlpha = 1.0f;
+		
+		instance.msText = asText;
+		instance.mCalPos = aCalPos;
+		instance.mCalSize = aCalSize;
+		instance.mfSize = afSize;
+		instance.mfFadeIn = afFadeIn;
+		instance.mfTime = afTime;
+		instance.mfFadeOut = afFadeOut;
+		instance.mfMaxAlpha = afMaxAlpha;
+        instance.msFont = asFont;
+		
+		mvInstances.push_back(instance);
+        return alID;
+	}
+	
+	//------------------------------------------------------------
+	
+	
+	void RemoveInstance(int alID)
+	{
+		for(int i=0; i<mvInstances.size();++i)
+		{
+			if(mvInstances[i].mlID == alID)
+			{
+				mvInstances[i] = mvInstances[mvInstances.size()-1];
+				mvInstances.pop_back();
+                break;
+			}
+		}
+	}
+			
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // ================
+    // GLOBAL FUNCTIONS
+    // ================
+    //{///////////////////////////////////////////////////////////////////////////////////////
+	
+	void _Global_CreateTextFade()
+	{
+		tString sText = cScript_GetGlobalArgString(0);
+		cVector3f CalPos = cScript_GetGlobalArgVector3f(1);
+		cVector2f CalSize = cScript_GetGlobalArgVector2f(2);
+		float fSize = cScript_GetGlobalArgFloat(3);
+		float fFadeIn = cScript_GetGlobalArgFloat(4);
+		float fTime = cScript_GetGlobalArgFloat(5);
+		float fFadeOut = cScript_GetGlobalArgFloat(6);
+		float fMaxAlpha = cScript_GetGlobalArgFloat(7);
+        tString sFont = cScript_GetGlobalArgString(8);
+        int lPrevID = cScript_GetGlobalArgInt(9);
+        
+        int lID = mvInstances.size();
+        if (lPrevID != -1)
+            lID = lPrevID;
+        
+		int lReturnID = AddInstance(lID, sText, CalPos, CalSize, fSize, fFadeIn, fTime, fFadeOut, fMaxAlpha, sFont);
+        cScript_SetGlobalReturnInt(lReturnID);
+	}
+    
+    //------------------------------------------------------------
+    
+	void _Global_GetTextFadeAlpha()
+	{
+		int lID = cScript_GetGlobalArgInt(0);
+		float fAlpha = -1;
+		for(int i=0; i<mvInstances.size();++i)
+		{
+			if(mvInstances[i].mlID == lID)
+			{
+				fAlpha = mvInstances[i].mfAlpha;
+                break;
+			}
+		}
+        
+        cScript_SetGlobalReturnFloat(fAlpha);
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_StopTextFade()
+	{
+		tString sText = cScript_GetGlobalArgString(0);
+		float fFade = cScript_GetGlobalArgFloat(1);
+		
+		for(int i=0; i<mvInstances.size();++i)
+		{
+			if (mvInstances[i].msText==sText) {
+				mvInstances[i].mfFadeIn = 0;
+				mvInstances[i].mfFadeOut = fFade;
+				mvInstances[i].mfSecs = 0;
+				mvInstances[i].mfTime = 0;
+				mvInstances[i].mfMaxAlpha = mvInstances[i].mfAlpha;
+			}
+		}
+	}
+	
+	
+	/////////////////////////////////////////
+	// GENERAL
+	/////////////////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	void Reset()
+	{
+		mvInstances.resize(0);
+	}
+	
+	//------------------------------------------------------------
+	
+	void SetActive(bool abX) {}
+	void Update(float afTimeStep) {}
+	void PostUpdate(float afTimeStep) {}
+	void VariableUpdate(float afDeltaTime) {}
+	void OnDraw(float){}
+	void OnPostRender(float){}
+	void OnEnterContainer(const tString&in){}
+	void OnLeaveContainer(const tString&in){}
+	void AppGotInputFocus(){}
+	void AppLostInputFocus(){}	
+	void OnAction(int alAction, bool abPressed){}
+	void OnAnalogInput(int alAnalogId, const cVector3f &in avAmount){}
+	void OnExitPressed(){}
+	
+	//------------------------------------------------------------
+	
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // =============
+    // GUI CALLBACKS
+    // =============
+    //{///////////////////////////////////////////////////////////////////////////////////////
+
+	// Render Gifs
+	//-------------------------------------------------------
+    
+    void OnGui(float afTimeStep) {
+		
+		for(int i=0; i<mvInstances.size();++i)
+		{
+			tString sText = mvInstances[i].msText;
+			cVector3f CalPos = mvInstances[i].mCalPos;
+			cVector2f CalSize = mvInstances[i].mCalSize;
+			float fSize = mvInstances[i].mfSize;
+			float fFadeIn = mvInstances[i].mfFadeIn;
+			float fTime = mvInstances[i].mfTime;
+			float fFadeOut = mvInstances[i].mfFadeOut;
+			float fMaxAlpha = mvInstances[i].mfMaxAlpha;
+            tString sFont = mvInstances[i].msFont;
+			
+			if (!MainMenu_IsShowing()) mvInstances[i].mfSecs = mvInstances[i].mfSecs + 0.015;
+			float fSecs = mvInstances[i].mfSecs;
+			int lID = mvInstances[i].mlID;
+
+			if (fFadeIn>0&&fSecs<=fFadeIn) {
+				mvInstances[i].mfAlpha = cMath_Clamp(fSecs/fFadeIn, 0.0f, fMaxAlpha);
+			} else mvInstances[i].mfAlpha = fMaxAlpha;
+			
+			//Fade out
+			if (fSecs>(fFadeIn+fTime)) {
+				if (fFadeOut>0&&mvInstances[i].mfAlpha>0)
+					mvInstances[i].mfAlpha = cMath_Clamp(fFadeOut - ((fSecs-(fFadeIn+fTime))/fFadeOut), 0.0f, fMaxAlpha);
+			}
+            
+            if (mvInstances[i].mfAlpha<=0.001f) {
+                mvInstances[i].mfAlpha = 0;
+                RemoveInstance(lID);
+                continue;
+            }
+			
+			cImGuiLabelData label;
+			label.mFont.SetFile(sFont);
+			label.mFontAlign = eFontAlign_Center;
+			label.mColorBase.a = mvInstances[i].mfAlpha;
+			ImGui_DoLabelExt(sText, label, CalPos, CalSize, fSize);
+		}
+	}
+    
+    //-------------------------------------------------------
+    
+    //} END GUI CALLBACKS
+	
+	/////////////////////////////////////////
+	// PROPERTIES
+	/////////////////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	array<cScrTextInstance> mvInstances;
+	
+	//------------------------------------------------------------
+}

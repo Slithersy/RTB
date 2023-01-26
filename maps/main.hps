@@ -13,6 +13,11 @@
 #include "helpers/helper_player.hps"
 #include "helpers/helper_procedural.hps"
 #include "custom/helpers/helper_agent.hps"
+#include "helpers/helper_texthandler.hps"
+#include "helpers/helper_imgui_options.hps"
+#include "helpers/helper_imgui.hps"
+#include "helpers/helper_menu.hps"
+
 
 //--------------------------------------------------
  
@@ -35,7 +40,6 @@ class cScrMap : iScrMap
  
 	////////////////////////////
 	// Set up map environment
-    void Setup()
 	void Setup()
 	{
 		// Put display name entry in english.lang / Levels
@@ -109,7 +113,7 @@ class cScrMap : iScrMap
         Chunk_SetStartingCell(lChunkStart);
         int lNeighbourCell = 1;
         cLux_AddDebugMessage("Start chunk - "+lChunkStart);
-        Player_PlaceAtEntity("start_chunk_"+lChunkStart, true);
+
         // Mark as visited
         Chunk_SetBeenVisited(lChunkStart, true);
         
@@ -142,6 +146,7 @@ class cScrMap : iScrMap
             return;
         }
         pEnterance.SetPosition(pPlayerStart.GetPosition());
+        Entity_FaceToEntity(pPlayerStart.GetName(), "msFirstRemovedWall");
         
         // Set rotation
         Entity_FaceToEntity("Enterance", msFirstRemovedWall, false);
@@ -157,7 +162,7 @@ class cScrMap : iScrMap
         // MONSTER STUFF
         array<int> AvailableMonsterChunks;
         for (int i=0;i<65;i++) {
-            if ((i!=lNeighbourCell) && (i!=lChunkStart))
+            if ((i!=lNeighbourCell) && (i!=lChunkStart) && (i!=(lChunkStart+8)) && (i!=(lChunkStart-8)) && (i!=(lChunkStart+1)) && (i!=(lChunkStart-1)))
                 AvailableMonsterChunks.insertLast(i);
         }
         if (AvailableMonsterChunks.length()>3) {
@@ -255,6 +260,7 @@ class cScrMap : iScrMap
             if (lSafetyCheck>70) {
                 bNonVisistedExist = false;
                 Error("While infinite loop in main!!!");
+                Map_ChangeMap("main.hpm", "Start_Begin", "", "");
             }
             
             lSafetyCheck++;
@@ -273,6 +279,75 @@ class cScrMap : iScrMap
         for (int i=1;i<=4;i++) {
             Building_PlaceInChunk("LampArea_"+i, -1, 0.2f, 0.8f);
         }
+        
+		if(!cLux_ScriptDebugOn())
+		{
+            /////////////
+            //Start scene
+            Effect_Fade_Out(0.0f);
+            Player_SetAllMoveSpeedMuls(0.0f);
+            Player_SetJumpDisabled(true);
+            Player_SetCrouchDisabled(true);
+            FearHandler_SetActive(false);
+            Seq_StartStart("");
+            /////////////
+        }
+        Player_PlaceAtEntity("start_chunk_"+lChunkStart, true);
+        Sound_Stop("Sound_*", 0.0f);
+	}
+    
+	cSequenceStatesData mSequenceStartStart;
+	void Seq_StartStart(const tString &in asTimer)
+	{
+		Sequence_Begin("Seq_StartStart", mSequenceStartStart);
+		if (Sequence_DoStepAndWait(0.5f))
+		{
+            Sound_PlayGui("level_entity_shared/doors/roman_door/roman_door_creak", 0.8f);
+		}
+		if (Sequence_DoStepAndWait(1.0f))
+		{
+            Sound_PlayGui("player/footsteps/default/rock_solid", 0.8f);
+		}
+		else if (Sequence_DoStepAndWait(0.7f))
+		{
+            Sound_StopGui("level_entity_shared/doors/roman_door/roman_door_creak", 2.0f, true);
+            Sound_PlayGui("level_entity_shared/doors/roman_door/roman_door_close", 1.0f);
+        }
+		else if (Sequence_DoStepAndWait(0.7f))
+		{
+            Sound_PlayGui("player/footsteps/default/rock_solid", 0.8f);
+        }
+		else if (Sequence_DoStepAndWait(0.3f))
+		{
+            Sound_PlayGui("01_02_caves/events/shadow_roar/quake_start_debris_01", 0.8f);
+        }
+		else if (Sequence_DoStepAndWait(0.2f))
+		{
+            Sound_PlayGui("player/vocalisations/fear/fear_scare", 0.8f);
+        }
+		else if (Sequence_DoStepAndWait(2.0f))
+		{
+            Sound_CreateAtEntity("Rock_Rumble", "01_02_caves/events/collapse/final_collapse", "medium_rock_02_10");
+            Sound_CreateAtEntity("Rock_Rumble2", "01_02_caves/events/shadow_roar/quake_end", "scatter_rock01_nonbreakable_2");
+        }
+		else if (Sequence_DoStepAndWait(0.7f))
+		{
+            Effect_Fade_In(2.0f);
+            ParticleSystem_CreateAtEntity("Rock_Collapse", "rock_collapse.ps", "Enterance_roof_1", true);
+        }
+		else if (Sequence_DoStepAndWait(5.2f))
+		{
+            Player_SetAllMoveSpeedMuls(1.0f);
+            Player_SetJumpDisabled(false);
+            Player_SetCrouchDisabled(false);
+        }
+		else if (Sequence_DoStepAndWait(0.2f))
+		{
+            if (!Item_IsHeld(eItemHandlerHand_Left))
+                Item_Equip(ItemType_GetFirstInInventory("Lantern"));
+            FearHandler_SetActive(true);
+        }
+		Sequence_End();
 	}
 
 	//-------------------------------------------------------
@@ -289,12 +364,13 @@ class cScrMap : iScrMap
         
         // Basic player stuff
         PlayerBody_SetActive(true);
-        FearHandler_SetActive(true);
         FearHandler_SetPaused(false);
         FearHandler_SetAllowLanternReminderHint(true);
         FearHandler_SetDarknessFactorActive(true);
 		FearHandler_SetUpdateInterval(0.1f);
         FearHandler_SetMaxLevel(2.0f);
+        FearHandler_SetPermaFailStruggleEnabled(true);
+        FearHandler_SetPermafailBabySceneEnabled(false, false);
         Player_SetMapDeepShadow(0.9f);
 		FearHandler_SetPermaFailEnabled(true);
         Heat_SetActive(false);
@@ -305,31 +381,74 @@ class cScrMap : iScrMap
 	}
     
     float lMonsterTime = 0.0f;
-    float fRanTimeBetween = 30.0f;
-    float fMonsterGetOutChance = 0.1f;
+    float fRanTimeBetween = 25.0f;
+    float fMonsterGetOutChance = 0.2f;
+    float CheckGhoulAggressive = 0.0f;
+    float CheckPermaFail = 0.0f;
     bool bMonsterIsOut = false;
+    
+    float PlaySoundTimer = 0.0f;
+    float PlaySoundTimerWait = 30.0f;
     void Update(float afDeltaTime)
     {
+        
+        PlaySoundTimer = PlaySoundTimer + afDeltaTime;
+        if (PlaySoundTimer > PlaySoundTimerWait) {
+            Sound_Play("Sound_"+cMath_RandRectl(1,5), 1.0f);
+            PlaySoundTimerWait = cMath_RandRectf(30.0f, 100.0f);
+            PlaySoundTimer = 0.0f;
+        }
+        
+        if (FearHandler_GetIsPermaFailing()) {
+            CheckPermaFail = CheckPermaFail + afDeltaTime;
+            if (CheckPermaFail > 10.0f) {
+                Player_SetHealth(0.0f);
+                CheckPermaFail = 0.0f;
+            }
+        }
+            
+        
         Watch_AddRunTime(afDeltaTime);
 
         // For monster, just need the global time
         float GlobalTime = Watch_GetRunTime();
         
+        if (bMonsterIsOut && Ghoul_IsAggressive("ghoul_1"))
+            CheckGhoulAggressive = CheckGhoulAggressive + 0.004f;
+        if (bMonsterIsOut && CheckGhoulAggressive > 30.0f) {
+            cLux_AddDebugMessage("Making monster go away");
+            Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, true, true);
+            fMonsterGetOutChance = 0.2f;
+            CheckGhoulAggressive = 0.0f;
+            bMonsterIsOut = false;
+        }
+        
         if ((GlobalTime - lMonsterTime) > fRanTimeBetween) {
+            cLux_AddDebugMessage("Calling func");
             float fRanNum = cMath_RandRectf(0.01f,1.0f); 
             if (bMonsterIsOut) {
                 if (fRanNum<fMonsterGetOutChance) {
-                    // Make monster retreat
-                    Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
-                } else
+                    cLux_AddDebugMessage("Making monster go away");
+                    // Make monster retreat doesn't work because pathfinding is broken
+                    // Yeah.. it sucks, I really tried to make nevmashes regenerate on map creation but it seems to be impossible
+                    // As it's engine code, so the monster is wonky.
+                    //Ghoul_CommandGoToSpecificHole_Execute(("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
+                    Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, true, true);
+                    fMonsterGetOutChance = 0.2f;
+                    CheckGhoulAggressive = 0.0f;
+                    bMonsterIsOut = false;
+                } else {
                     fMonsterGetOutChance = fMonsterGetOutChance*1.2;
+                    cLux_AddDebugMessage("Chance increased to make monster go away"+fMonsterGetOutChance);
+                }
+                fRanTimeBetween = cMath_RandRectf(10.0f, 20.0f);
                 lMonsterTime = GlobalTime;
                 return;
             }
             
             Monster_PickSpot();
             
-            fRanTimeBetween = cMath_RandRectf(30.0f, 60.0f);
+            fRanTimeBetween = cMath_RandRectf(7.0f, 25.0f);
             lMonsterTime = GlobalTime;
             
             if (fRanNum<fMonsterGetOutChance) {
@@ -338,18 +457,30 @@ class cScrMap : iScrMap
                 if ((pMonster is null) || (pArea is null)) {
                     Error("Could not find the target entity ghoul_1 or MonsterArea_"+lMonsterIndex);
                 } else {
-                    fMonsterGetOutChance = 0.1f;
+                    fMonsterGetOutChance = 0.3f;
                     pMonster.SetPosition(pArea.GetPosition());
                     Entity_SetActive("ghoul_1", true);
                     Ghoul_CommandEmergeFromHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, true);
                     Monster_PickSpot(false);
-                    Ghoul_CommandPatrol_Execute("ghoul_1", false, 20, true);
                     bMonsterIsOut = true;
+                    Ghoul_SetSuperHunt("ghoul_1", false);
+                    if(!cLux_ScriptDebugOn()) {
+                        Ghoul_SetAllowPlayerThrow("ghoul_1", true);
+                        Ghoul_SetInstantKill("ghoul_1", true);
+                    }
+                    cLux_AddDebugMessage("Spawned monster!");
                 }
             } else {
                 // Each time the monster doesn't come out, the chance for it to come out the next time increases
                 fMonsterGetOutChance = fMonsterGetOutChance*1.2;
+                cLux_AddDebugMessage("Chance increased to make monster spawn"+fMonsterGetOutChance);
             }
+        }
+        
+        if (cInput_IsTriggered(eAction_MenuLeftMouse) && !MainMenu_IsShowing() && bShouldAllowLeftClick && !Player_IsInteracting()) {
+            CallEndGame();
+            Music_StopAll(3.0f);
+            bShouldAllowLeftClick = false;
         }
     }
     
@@ -360,7 +491,6 @@ class cScrMap : iScrMap
     int lMonsterIndex = -1;
     void Monster_PickSpot(bool abNoSpot=false)
     {
-        lInSoundArea = -1;
         Sound_Stop("MonsterBreathe", 3.0f);
         FearHandler_StopStruggleSoundLoop(6.0f);
         
@@ -425,8 +555,7 @@ class cScrMap : iScrMap
     
     bool Monster_EnterArea(const tString &in asParent, const tString &in asChild, int alState)
     {
-        if (alState==1)
-            cLux_AddDebugMessage("Monster retreated");
+        //DEPRECATED
         return true;
     }
     
@@ -594,7 +723,54 @@ class cScrMap : iScrMap
     void OnExitLadder(const tString &in asEntity)
     {
         cLux_AddDebugMessage("Clicked on Exit Ladder");
+        Player_SetActive(false);
+        Effect_Fade_In(4.0f);
+        Entity_SetActive("ghoul_1", false);
+        bShouldCall = true;
     }
+    
+    cVector3f NrmPos;
+    bool bShouldCall = false;
+    bool bShouldAllowLeftClick = false;
+	void OnGui(float afTimeStep) {
+        NrmPos = ImGui_NrmPos(0.5f, 0.5f, 2.0f); //Can only be called here
+        
+        if (bShouldCall) {
+            cVector2f CalSize = OptionMenu_GetScaledSize(cVector2f(300, 244));
+            cVector3f CalPos = NrmPos-cVector3f(CalSize.x, CalSize.y,0)/2.0f+cVector3f(0, -50,0);
+            tString Text = cString_FullyTranslate("CustomRTB", "YouEscaped");
+            CreateTextFade(Text, CalPos, CalSize, 4.0f, 4.0f, 99999.0f, 1.0f, 1.0f, "default_medium_outline.fnt");
+            
+            CalSize = OptionMenu_GetScaledSize(cVector2f(300, 244));
+            CalPos = NrmPos-cVector3f(CalSize.x, CalSize.y,0)/2.0f+cVector3f(0, 0,0);
+            Text = cString_FullyTranslate("CustomRTB", "YourTime")+" "+cMath_CeilToInt(Watch_GetRunTime())+" seconds";
+            CreateTextFade(Text, CalPos, CalSize, 2.0f, 4.0f, 99999.0f, 1.0f, 1.0f, "default_medium_outline.fnt");
+            
+            CalSize = OptionMenu_GetScaledSize(cVector2f(300, 244));
+            CalPos = NrmPos-cVector3f(CalSize.x, CalSize.y,0)/2.0f+cVector3f(0, 150,0);
+            array<tString> ContineText = cString_Split(cString_FullyTranslate("CustomRTB", "ToContinue"), "%");
+            if (ContineText.size()>0) {
+                array<tString> ButtonSplit = cString_Split(cLux_GetKeyConfig().GetString("Interact", "Primary", ""), ".");
+                if (ButtonSplit.size()>0) {
+                    Text = ContineText[0]+ButtonSplit[1]+ContineText[1];
+                    CreateTextFade(Text, CalPos, CalSize, 2.0f, 4.0f, 99999.0f, 1.0f, 1.0f, "default_medium_outline.fnt");
+                }
+            }
+            bShouldCall = false;
+            Map_AddTimer("SetToTrueQuick", 2.0f, "SetToTrueQuick");
+            
+            Sound_FadeGlobalVolume(0.0f, 4.0f, eSoundEntryType_AllExceptGui);
+            Music_PlayExt("A2_Human_Piano_Music.ogg", true, 0.8, 1, 3.0f, 0, eMusicPrio_BigEvent, true);
+        }
+	}
+    
+    void SetToTrueQuick(const tString &in asTimer)
+    {
+        bShouldAllowLeftClick = true;
+    }
+        //YouEscaped = cString_FullyTranslate("CustomRTB", "YouEscaped");
+        //YourTime = cString_FullyTranslate("CustomRTB", "YourTime");
+        //ToContinue = cString_FullyTranslate("CustomRTB", "ToContinue");
 
 	//-------------------------------------------------------
 
@@ -620,15 +796,20 @@ class cScrMap : iScrMap
 	{
 		cLux_AddTodoMessage("DEAD : SOURCE = " + asSource);
 		
-		if (asSource == "SomeReason")
-		{
-			Effect_Fade_Out(1.0f);
-			return true; // return true to completely override base behaviour
-		}
-		
-		// return false for default behaviour
-		return false;
+        CallEndGame();
+        return true; // return true to completely override base behaviour
 	}
+    
+    void CallEndGame()
+    {
+        Effect_Fade_Out(1.0f);
+        Map_AddTimer("AfterDeathTimer", 3.0f, "AfterDeathTimer");
+    }
+    
+    void AfterDeathTimer(const tString &in asTimer)
+    {
+        Map_ChangeMap("main_menu.hpm", "Start_Begin", "", "");
+    }
 	
 	//-------------------------------------------------------
 	
@@ -650,22 +831,11 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
-            iLuxEntity@ pMonster = Map_GetEntity("ghoul_1", eLuxEntityType_Agent);
-            iLuxEntity@ pArea = Map_GetEntity("MonsterArea_"+1, eLuxEntityType_Area);
-            if ((pMonster is null) || (pArea is null)) {
-                Error("Could not find the target entity ghoul_1 or MonsterArea_"+1);
-            } else {
-                pMonster.SetPosition(pArea.GetPosition());
-                Entity_SetActive("ghoul_1", true);
-                Monster_PickSpot(false);
-                bMonsterIsOut = true;
-            }
+            fRanTimeBetween = 0.0f;
 		}
 		if(alAction == eAction_Test2)
 		{
-            //Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
-            //@mpPathfinder = cLux_CreateEntityComponent_Pathfinder(mBaseObj);
-            //cLuxPathfinder@ mpPathfinder;
+            Music_StopAll(0.0f);
 		}
 	}
 
