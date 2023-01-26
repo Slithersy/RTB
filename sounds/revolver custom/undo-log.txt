@@ -1,0 +1,14 @@
+23:51:02 c:\jk\workspace\build__4.44__designer_win\fmod4\tools\fmod_designer\src\eventform.ui.h:1529 HH: Add Simple Event
+23:51:13 ..\..\src\simpleeventcontroller.cpp:1741 IS: Add Sound to Playlist
+23:51:15 ..\..\src\simpleeventcontroller.cpp:1280 IK: Set Playlist Pitch Randomization
+23:51:20 ..\..\src\propertyeditor.cpp:4234 ER: Set Mode
+23:51:27 c:\jk\workspace\build__4.44__designer_win\fmod4\tools\fmod_designer\src\eventform.ui.h:1529 HH: Add Simple Event
+23:51:31 c:\jk\workspace\build__4.44__designer_win\fmod4\tools\fmod_designer\src\eventform.ui.h:2202 CH: Delete Events/Event Groups/Event Categories
+23:51:36 c:\jk\workspace\build__4.44__designer_win\fmod4\tools\fmod_designer\src\eventform.ui.h:1529 HH: Add Simple Event
+23:52:01 ..\..\src\simpleeventcontroller.cpp:1741 IS: Add Sound to Playlist
+23:52:03 ..\..\src\simpleeventcontroller.cpp:1280 IK: Set Playlist Pitch Randomization
+23:52:06 ..\..\src\propertyeditor.cpp:4234 ER: Set Mode
+23:52:11 ..\..\src\simpleeventcontroller.cpp:1280 IK: Set Playlist Pitch Randomization
+23:52:15 ..\..\src\simpleeventcontroller.cpp:1280 IK: Set Playlist Pitch Randomization
+23:52:15 ..\..\src\simpleeventcontroller.cpp:1280 IK: Set Playlist Pitch Randomization
+23:52:15 ..\..\src\simpleeventcontroller.cpp:1280 IK: Set Playlist Pitch Randomization

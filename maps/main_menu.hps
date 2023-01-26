@@ -81,6 +81,7 @@ class cScrMap : iScrMap
 	// Run when entering map
 	void OnEnter()
 	{	
+        Effect_Fade_Out(1.5f);
 		PauseMenu_Enabled(false);
         cLux_SetGamePaused(false, false, false, false);
 		MainMenu_Show(true);
@@ -90,7 +91,8 @@ class cScrMap : iScrMap
 
 		CameraAnimation_Begin("CameraAnimation", "", false);
         //Doesn't work in practice but works for testing
-        Music_PlayExt("music/General/A2_MenuTheme.ogg", true, 0.35f, 1.0f, 3.0f, 0.0f, eMusicPrio_BigEvent, false);
+        Sound_FadeGlobalVolume(1.0f, 2.0f, eSoundEntryType_All);
+        //Music_PlayExt("music/General/A2_MenuTheme.ogg", true, 0.35f, 1.0f, 3.0f, 0.0f, eMusicPrio_BigEvent, false);
 	}
 
 	//-------------------------------------------------------

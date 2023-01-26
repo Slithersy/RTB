@@ -1,0 +1,59 @@
+
+//---------------------------------------------------
+
+//CONSTS
+
+const float deg2Rad = (cMath_Pi / 180.0);
+
+//---------------------------------------------------
+
+/**
+ * Returns the rotation of an entity.
+ * 
+ * @param asEntity, The name of the entity.
+ * @return cQuaternion, The rotation quaternion of an entity. 
+ **/
+cQuaternion Entity_GetRotation(const tString &in asEntity)
+{
+	iLuxEntity @ent = cLux_GetCurrentMap().GetEntityByName(asEntity);
+	if (ent is null) return cQuaternion_Identity;
+ 
+	return cMath_QuaternionMatrix(ent.GetMatrix().GetRotation());
+}
+
+/**
+ * Sets the rotation of an entity.
+ * 
+ * @param asEntity, The name of the entity.
+ * @param qRotation, The rotation to set the entity to.
+ **/
+void Entity_SetRotation(const tString &in asEntity, cQuaternion qRotation)
+{
+	iLuxEntity @ent = cLux_GetCurrentMap().GetEntityByName(asEntity);
+	if (ent is null) return;
+ 
+	cMatrixf mTransform = ent.GetMatrix();
+	cMatrixf mRot = cMath_MatrixQuaternion(qRotation);
+	mTransform.SetRotation(mRot);
+	ent.SetMatrix(mTransform);
+}
+
+void Entity_SetRotationX(const tString &in asEntity, float afRotX, bool abKeepOtherAxis = true)
+{
+	iLuxEntity @ent = cLux_GetCurrentMap().GetEntityByName(asEntity);
+	if (ent is null) return;
+	
+	cMatrixf mtxRotation = cMath_MatrixRotateX(afRotX*deg2Rad);
+	
+	if(abKeepOtherAxis)
+	{
+		
+		cQuaternion entRot = Entity_GetRotation(asEntity);
+		
+		cLux_AddDebugMessage("FORWARD: "+mtxRotation.GetForward(), false);
+		cLux_AddDebugMessage("RIGHT: "+mtxRotation.GetRight(), false);
+		cLux_AddDebugMessage("UP: "+mtxRotation.GetUp(), false);
+	}
+	
+	cQuaternion rot = cMath_QuaternionMatrix(mtxRotation);
+}

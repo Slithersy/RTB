@@ -10,6 +10,8 @@
 
 //------------------------------------------------------------
 
+const int requiredLongPressTicks = 10;
+
 class cScrPlayerState_Normal_Custom : cScrPlayerState_Normal
 {	
 	//------------------------------------------------------------
@@ -17,6 +19,9 @@ class cScrPlayerState_Normal_Custom : cScrPlayerState_Normal
 	/////////////////////////////////////////
 	// GENERAL
 	/////////////////////////////////////////
+	
+	[volatile]bool RHeld = false;
+	[volatile]int RHeldTicks = 0;
 	
 	//------------------------------------------------------------
 	
@@ -52,6 +57,22 @@ class cScrPlayerState_Normal_Custom : cScrPlayerState_Normal
 		if (mfDisallowAmuletToggleCount > 0.f)
 			mfDisallowAmuletToggleCount -= afTimeStep;
 		
+		if(RHeld)
+		{
+			if(!(RHeldTicks >= requiredLongPressTicks))
+				RHeldTicks++;
+			
+			if(RHeldTicks == requiredLongPressTicks){
+				RHeldTicks++; //makes it only happen once
+				cLux_AddDebugMessage("Long R");
+				if(Item_GetHeldType(eItemHandlerHand_Right) != "Revolver") HandleMatch();
+				else{
+					//RELOADING REVOLVER
+					Item_UseHeldAsTool(eItemHandlerHand_Right, 2, true);
+				}
+			}
+		}
+		
 		cScrPlayerState_Normal::Update(afTimeStep);
 	}
 	
@@ -63,13 +84,45 @@ class cScrPlayerState_Normal_Custom : cScrPlayerState_Normal
 	
 	//------------------------------------------------------------
 	
+	bool HandleMatch(){
+		//////////
+		// Matches
+		if (IsSpecialStateActive() || Player_GetCanUseLightSource()==false) return false;
+		
+		if (Item_GetHeldType(eItemHandlerHand_Left)!="Match" && Matches_GetCount()==0)
+			Item_ShowMatchCount(true);
+			
+		if (Player_GetUnderwater()) 
+		{
+			Item_ToggleHeldItem("Match", eItemHandlerHand(Match_GetHand()));
+			return false;
+		}
+		
+		Item_ToggleMatch();
+		return false;
+	}
+	
+	//------------------------------------------------------------
+	
 	bool OnAction(int alAction, bool abPressed) override
 	{
-		if (!mbInteractionAllowed)
-			return true;
 
 		if (Sketchbook_IsOpen())
 			return true;
+		
+		if (alAction==eAction_Match){
+			RHeld = abPressed;
+			if(!RHeld) {
+				int thisPress = RHeldTicks;
+				RHeldTicks = 0;
+				if(thisPress < requiredLongPressTicks){
+					return HandleMatch();
+				}
+			}
+			
+		}
+		
+		if (alAction == eAction_InteractCancel && cLux_GetInputHandler().GetGamepadWasLastDeviceUsed()==false && Item_GetHeldType() == "Revolver") Item_UseHeldAsTool(eItemHandlerHand_Right, 1, abPressed);
 		
 		if (abPressed)
 		{
@@ -94,26 +147,18 @@ class cScrPlayerState_Normal_Custom : cScrPlayerState_Normal
 				Item_ToggleHeldItem("Watch");
                 return false;
             }
-            
-            //////////
-            // Matches
-			if (alAction==eAction_Match)
-			{
-				if (IsSpecialStateActive() || Player_GetCanUseLightSource()==false) return false;
-				
-				if (Item_GetHeldType(eItemHandlerHand_Left)!="Match" && Matches_GetCount()==0)
-					Item_ShowMatchCount(true);
+			
+			/////////
+            // Gun
+            if (abPressed && 
+				alAction == eAction_Gun && 
+				Item_GetHidden(ItemType_GetFirstInInventory("Revolver")) == false)
+            {
+				if(Item_GetHeldType() == "Revolver" && !Item_GetCanPutAwayHeldItem()) return false;
 					
-				if (Player_GetUnderwater()) 
-				{
-					Item_ToggleHeldItem("Match", eItemHandlerHand(Match_GetHand()));
-					return false;
-				}
-				
-				Item_ToggleMatch();
-				
-				return false;
-			}
+				Item_ToggleHeldItem("Revolver");
+                return false;
+            }
 		}
 			
 		if (Item_IsHeld())
@@ -139,12 +184,16 @@ class cScrPlayerState_Normal_Custom : cScrPlayerState_Normal
 				}
 
 				if (alAction == eAction_InteractCancel && cLux_GetInputHandler().GetGamepadWasLastDeviceUsed()==false)
-				{
+				{ 
+					if(Item_GetHeldType() == "Revolver") return false;
 					Item_PutAway();
 					return false;
 				}
 			}
 		}
+		
+		if (!mbInteractionAllowed)
+			return true;
 		
 		// Default behaviour
 		return cScrPlayerState_Normal::OnAction(alAction,abPressed);
@@ -175,6 +224,12 @@ class cScrPlayerState_Normal_Custom : cScrPlayerState_Normal
 		
 		///////////////////////////////////////////////
 		// If the item can be used on things in the map
+		if (pHandler.CanUseHeldItemAsTool(eItemHandlerHand_Right))
+		{
+			if(Item_UseHeldAsTool(eItemHandlerHand_Right, 0, true))
+			return true;
+		}
+		
 		cCamera @pCam = mBaseObj.mpPlayer.GetCamera();
 		if(mPickBasics.UpdatePickCheck(pCam, true))
 		{

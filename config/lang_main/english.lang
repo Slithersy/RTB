@@ -426,6 +426,9 @@
 	
 	<Entry Name="Watch">Pocket Watch</Entry>
 	<Entry Name="Watch_Desc">A pocket watch, useful as a timer.</Entry>
+    
+	<Entry Name="Revolver">Revolver</Entry>
+	<Entry Name="Revolver_Desc">An old revolver that still works. Long press R to reload.</Entry>
 	
 	<Entry Name="Radio">Radio</Entry>
 	<Entry Name="Radio_Desc">A handheld short-range radio from the Cassandra.</Entry>
@@ -509,8 +512,8 @@
 	<Entry Name="Bullet_Full">Unpacked Tank Shell</Entry>
 	<Entry Name="Bullet_Full_Desc">A tank shell filled with gunpowder, but the contents is not packed down.</Entry>
 	
-	<Entry Name="Bullet">Tank Shell</Entry>
-	<Entry Name="Bullet_Desc">A tank shell, ready to be loaded.</Entry>
+	<Entry Name="Bullet">Bullet</Entry>
+	<Entry Name="Bullet_Desc">An old bullet, ready to be loaded. May be faulty.</Entry>
 	
 	<Entry Name="Compass">Victor Trianon's Compass</Entry>
 	<Entry Name="Compass_Desc">A magnetic compass, given to me by my papa.</Entry>

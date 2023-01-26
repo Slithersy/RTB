@@ -1,0 +1,339 @@
+
+const float deg2Rad = (cMath_Pi / 180.0);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class cHitResult
+{
+	iLuxEntity@ mEntity;
+	iPhysicsBody@ mpBody;
+	
+	cVector3f mvPosition;
+	cVector3f mvDirection;
+	
+	cVector3f mvTargetPos;
+	
+	float mfForce;
+	
+	bool mbHit = false;
+	bool mbHadParticle = false;
+	
+	cHitResult()
+	{
+		
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Gun_PlayFireSfx(const tString &in asEntityName)
+{
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Create and play the sound.
+	
+	int i = 0;
+	
+	tString sSound = "Gun_Fire_Sound_"+asEntityName;
+	tString sSound_ext = sSound+"_"+i;
+	cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	while(pSound!=null){
+		//EMERGENCY BRAKES!
+		if(i > 100) break;
+		
+		i++;
+		sSound_ext = sSound+"_"+i;
+		@pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	}
+	
+	
+	if(pSound==null) Sound_CreateAtEntity(sSound_ext, "gun/gun/revolver_fire", asEntityName, 0.0f, false, 0.5f);
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Other logic like deafness should go here.
+}
+
+void Gun_PlayLoadSfx(const tString &in asEntityName)
+{
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Create and play the sound.
+	
+	int i = 0;
+	
+	tString sSound = "Gun_LoadBullet_Sound_"+asEntityName;
+	tString sSound_ext = sSound+"_"+i;
+	cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	while(pSound!=null){
+		cLux_AddDebugMessage("Sound already exists");
+		//EMERGENCY BRAKES!
+		if(i > 100) break;
+		
+		i++;
+		sSound_ext = sSound+"_"+i;
+		@pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	}
+	
+	
+	if(pSound==null) Sound_CreateAtEntity(sSound_ext, "revolver_test/revolver/bullet_load", asEntityName, 0.0f, false, 0.5f);
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+}
+
+void Gun_PlayEjectSfx(const tString &in asEntityName)
+{
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Create and play the sound.
+	
+	int i = 0;
+	
+	tString sSound = "Gun_EjectBullet_Sound_"+asEntityName;
+	tString sSound_ext = sSound+"_"+i;
+	cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	while(pSound!=null){
+		cLux_AddDebugMessage("Sound already exists");
+		//EMERGENCY BRAKES!
+		if(i > 100) break;
+		
+		i++;
+		sSound_ext = sSound+"_"+i;
+		@pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	}
+	
+	
+	if(pSound==null) Sound_CreateAtEntity(sSound_ext, "revolver_test/revolver/bullet_eject", asEntityName, 0.0f, false, 0.5f);
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+}
+
+void Gun_PlayDropSfx(const tString &in asEntityName)
+{
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Create and play the sound.
+	
+	int i = 0;
+	
+	tString sSound = "Gun_DropBullet_Sound_"+asEntityName;
+	tString sSound_ext = sSound+"_"+i;
+	cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	while(pSound!=null){
+		cLux_AddDebugMessage("Sound already exists");
+		//EMERGENCY BRAKES!
+		if(i > 100) break;
+		
+		i++;
+		sSound_ext = sSound+"_"+i;
+		@pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound_ext);
+	}
+	
+	
+	if(pSound==null) Sound_CreateAtEntity(sSound_ext, "revolver_test/revolver/bullet_drop", "Player", 0.0f, false, 0.5f);
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Thanks to crater for the base raycast function
+
+cHitResult@ Gun_Fire_Ray(cLuxProp@ mBaseObj)
+{
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Init variables
+	
+	cHitResult result = cHitResult();
+	
+	float fRayLength = 1000.0f;
+	float fForce = result.mfForce = 3.5f;
+	
+	cNode3D@ pSocket = mBaseObj.GetMeshEntity().GetSocket("Barrel");
+	
+	cVector3f vPosition = pSocket.GetWorldPosition();
+	cVector3f vDirection =  cLux_GetPlayer().GetCamera().GetForward();
+	
+	result.mvPosition = vPosition;
+	result.mvDirection = vDirection;
+	
+	float fDist = 0.f; // initialize variables
+	cVector3f vNrm = 0.0f;
+	cLuxClosestEntityData pData;
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	cLux_GetClosestEntity(vPosition, vDirection, fRayLength, 0, false, pData); // find closest entity and body
+	iPhysicsBody@ pBody = cLux_GetClosestBody(vPosition, vDirection, fRayLength, fDist, vNrm);
+	
+	if(pBody == null) { cLux_AddDebugMessage("Hit nothing!"); return result; }
+	
+	@result.mpBody = pBody;
+	
+	bool bAgent = pData.mfDistance < fDist; // a little hackier than i'd like. possibility of false positives?
+	fDist = fDist < pData.mfDistance ? fDist : pData.mfDistance; // find which is closer
+	
+	vDirection = cMath_Vector3Normalize(vDirection);
+	cVector3f vTargetPos = result.mvTargetPos = vPosition + (vDirection * fDist); // set hit position
+	
+	if(pData.mpEntity != null) {
+		
+		cLux_AddDebugMessage("Hit entity " + pData.mpEntity.GetName());
+		
+		///////////////////////////////////
+		
+		iLuxEntity@ pEntity = cLux_GetCurrentMap().GetEntityByName(pData.mpEntity.GetName());
+		
+		@result.mEntity = pEntity;
+		
+		if(pBody.GetEntityParent() != null)
+		if(@cLux_ID_Entity(pBody.GetEntityParent().GetID()) != @pData.mpEntity){
+			
+			cLux_AddDebugMessage("Hit body does not belong to hit entity " + pData.mpEntity.GetName());
+			
+			@pBody = pData.mpEntity.GetMainBody();
+			@result.mpBody = pBody;
+		}
+	}
+	
+	cSurfaceData@ pSurface = pBody.GetMaterial().GetSurfaceData();
+	cSurfaceImpactData@ pImpact = pSurface.GetImpactDataFromSpeed(100);
+	
+	result.mbHit = true;
+	
+	//if(!bAgent) // only use material particle if not hiting agent
+	//{
+		if(pImpact.GetSoundName()!="")
+		{
+			cLux_AddDebugMessage("Hit surface with impact sound " + pImpact.GetSoundName());
+			
+			cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().CreateSoundEntity("Impact_Sound",pImpact.GetSoundName(), true);
+			pSound.SetPosition(vTargetPos);
+		}
+		
+		if(pImpact.GetPSName()!="")
+		{
+			cLux_AddDebugMessage("Hit surface with impact particles " + pImpact.GetPSName());
+			
+			result.mbHadParticle = true;
+			
+			cParticleSystem@ pPS = cLux_GetCurrentMap().GetWorld().CreateParticleSystem("Impact_PS", pImpact.GetPSName(), cVector3f(1.f), true, false);
+			pPS.SetWorldPosition(vTargetPos);
+		}
+	//}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	if (pData.mpEntity is null) return result;
+	
+	
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	return result;
+	
+	/*
+	iPhysicsBody@ pEntityBody = pEntity.GetMainBody();
+	if (pEntityBody is null) return;
+	
+	if (pEntity.GetEntityType() != eLuxEntityType_Prop) return;
+	
+	cVector3f vForceDir = vDirection * 2 + cVector3f_Up * 1;
+	float fFinalImpulse = 0.5 * cMath_Max(pEntityBody.GetMass(), fForce);
+	pEntityBody.AddImpulse(vForceDir * fFinalImpulse);
+	*/
+}
+
+/*
+
+void Custom_RayDamage(cVector3f avStart, cVector3f avDirection, float afRayLength = 1000.0f, float afForce = 5.0f, tString asCallback = "", tString sNormalHitPS = "elec_spark_medium_bright_fast_oneshot", cColor acColor = cColor_White, float afBrightness = 5.0f, bool mbMaterialPS = true, bool mbMaterialSound = true)
+{
+	cVector3f vPos = avStart; // grab player data
+	cVector3f vDir = avDirection;
+	
+	float fDist = 0.f; // initialize variables
+	cVector3f vNrm = 0.0f;
+	cLuxClosestEntityData pData;
+	
+	cLux_GetClosestEntity(vPos, vDir, afRayLength, 0, false, pData); // find closest entity and body
+	iPhysicsBody@ pBody = cLux_GetClosestBody(vPos, vDir, afRayLength, fDist, vNrm);
+	
+	bool bAgent = pData.mfDistance < fDist; // a little hackier than i'd like. possibility of false positives?
+	fDist = fDist < pData.mfDistance ? fDist : pData.mfDistance; // find which is closer
+	
+	vDir = cMath_Vector3Normalize(vDir);
+	cVector3f vTargetPos = vPos + (vDir * fDist); // set hit position
+	
+	cSurfaceData@ pSurface = pBody.GetMaterial().GetSurfaceData();
+	cSurfaceImpactData@ pImpact = pSurface.GetImpactDataFromSpeed(10);
+	
+	if(!bAgent) // only use material particle if not hiting agent
+	{
+		if(mbMaterialSound)
+		{
+			if(pImpact.GetSoundName()!="")
+			{
+				cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().CreateSoundEntity("Impact_Sound",pImpact.GetSoundName(), true);
+				pSound.SetPosition(vTargetPos);
+			}
+		}
+		
+		if(mbMaterialPS)
+		{
+			if(pImpact.GetPSName()!="")
+			{
+				cParticleSystem@ pPS = cLux_GetCurrentMap().GetWorld().CreateParticleSystem("Impact_PS", pImpact.GetPSName(), cVector3f(1.f), true, false);
+				pPS.SetWorldPosition(vTargetPos);
+			}
+		}
+	}
+	if(sNormalHitPS!="")
+	{
+		cParticleSystem@ pHitPS = ParticleSystem_CreateAtEntityExt("RayDamage_PS", sNormalHitPS, "player", true, acColor, afBrightness);
+		pHitPS.SetWorldPosition(vTargetPos);
+	}
+	
+	if (pData.mpEntity is null) return;
+	iLuxEntity@ pEntity = cLux_GetCurrentMap().GetEntityByName(pData.mpEntity.GetName());   
+	cLuxAgent@ pAgent = cLux_ToAgent(pEntity);
+	iPhysicsBody@ pEntityBody = pEntity.GetMainBody();
+	if (pEntityBody is null) return;
+	
+	if(pAgent !is null) // prepare map callback if hit entity is agent
+	{
+		cLuxMap @pMap = cLux_GetCurrentMap();
+		tString sCallback = asCallback == "" ? "OnAgentHit" : asCallback;
+		tString sMethod = "void " + sCallback + "(const tString &in asAgentName)";
+		if (pMap.ScriptMethodExists(sMethod) && pMap.ScriptPrepare(sMethod))
+		{
+			tString sAgent = pAgent.GetName();
+			pMap.SetArgString(0, sAgent);
+			pMap.ScriptExecute();
+		}
+	}
+	
+	if (pEntity.GetEntityType() != eLuxEntityType_Prop) return;
+	
+	cVector3f vForceDir = avDirection * 2 + cVector3f_Up * 1;
+	float fFinalImpulse = 0.5 * cMath_Max(pEntityBody.GetMass(), afForce);
+	pEntityBody.AddImpulse(vForceDir * fFinalImpulse);
+}
+*/

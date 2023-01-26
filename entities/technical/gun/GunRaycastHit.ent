@@ -1,0 +1,28 @@
+<Entity>
+    <ModelData>
+        <Entities>
+            <PointLight ID="1" Name="Light_Point_1" CreStamp="1674551639" ModStamp="1674552004" WorldPos="0 0 0" Rotation="0 0 0" Scale="1 1 1" CastShadows="false" ShadowResolution="High" ShadowsAffectStatic="true" ShadowsAffectDynamic="true" Radius="1" Gobo="" GoboType="Diffuse" GoboAnimMode="None" GoboAnimFrameTime="1" GoboAnimStartTime="0" DiffuseColor="1 1 1 1" FlickerActive="false" FlickerOnMinLength="0" FlickerOnMaxLength="0" FlickerOnPS="" FlickerOnSound="" FlickerOffMinLength="0" FlickerOffMaxLength="0" FlickerOffPS="" FlickerOffSound="" FlickerOffColor="0 0 0 1" FlickerOffRadius="0" FlickerFade="false" FlickerOnFadeMinLength="0" FlickerOnFadeMaxLength="0" FlickerOffFadeMinLength="0" FlickerOffFadeMaxLength="0" CastDiffuseLight="true" CastSpecularLight="true" Brightness="1" Static="false" CulledByDistance="true" CulledByFog="true" FalloffPow="1" ConnectedLightMaskID="4294967295" />
+        </Entities>
+        <Mesh Filename="mods/StructureTest/entities/technical/gun/GunRaycastHit.dae">
+            <SubMesh ID="0" Name="Icosphere" CreStamp="0" ModStamp="1674552873" WorldPos="0 0 0" Rotation="0 0 0" Scale="1 1 1" TriCount="80" Material="textures/technical/simple_white_illum.mat" Static="false" />
+        </Mesh>
+        <Bones />
+        <Shapes>
+            <Shape ID="2" Name="ShapeSphere_1" CreStamp="1674551942" ModStamp="1674551942" WorldPos="0 0 0" Rotation="0 0 0" Scale="0.0180648 0 0" RelativeTranslation="0 0 0" RelativeRotation="0 -0 0" RelativeScale="1 1 1" ShapeType="Sphere" />
+        </Shapes>
+        <Bodies>
+            <Body ID="3" Name="Body_1" CreStamp="0" ModStamp="1674555649" WorldPos="0 0 0" Rotation="0 0 0" Scale="1 1 1" Material="" Mass="0" AngularDamping="0.5" LinearDamping="0.1" MaxAngularSpeed="20" MaxLinearSpeed="20" BuoyancyDensityMul="1" BlocksSound="false" ContinuousCollision="false" CanAttachCharacter="false" PushedByCharacterGravity="false" CollideCharacter="false" CollideNonCharacter="false" Volatile="false" UseSurfaceEffects="false" HasGravity="false" BlocksLight="false">
+                <Children>
+                    <Child ID="1" />
+                </Children>
+                <Shape ID="2" />
+            </Body>
+        </Bodies>
+        <Joints />
+        <Animations />
+        <ProcAnimations />
+    </ModelData>
+    <UserDefinedVariables EntityType="StaticProp">
+        <Var ObjectId="4294967295" Name="ShowMesh" Value="true" />
+    </UserDefinedVariables>
+</Entity>

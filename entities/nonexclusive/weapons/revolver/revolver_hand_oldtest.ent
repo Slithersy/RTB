@@ -1,0 +1,109 @@
+<Entity>
+    <ModelData>
+        <Entities />
+        <Mesh Filename="mods/StructureTest/entities/nonexclusive/weapons/revolver/revolver_hand.fbx">
+            <SubMesh ID="0" Name="Revolver" CreStamp="0" ModStamp="1671762789" WorldPos="0 0 0" Rotation="2.6226e-06 -0 0" Scale="1 1 1" TriCount="5023" Material="" Static="true" />
+        </Mesh>
+        <Bones>
+            <Bone ID="2" Name="j_revolver" />
+            <Bone ID="3" Name="j_trigger" />
+            <Bone ID="4" Name="j_hammer" />
+            <Bone ID="5" Name="j_cylinder" />
+            <Bone ID="6" Name="j_Bullet_000">
+                <Sockets>
+                    <Socket ID="27" Name="Bullet_5" CreStamp="0" ModStamp="1671768491" WorldPos="0.0170969 -0.090631 -0.0685373" Rotation="0 0 0" Scale="1 1 1" SourceBoneName="" />
+                </Sockets>
+            </Bone>
+            <Bone ID="7" Name="j_Bullet_001">
+                <Sockets>
+                    <Socket ID="22" Name="Bullet_0" CreStamp="0" ModStamp="1671768424" WorldPos="0.00392296 -0.0982481 -0.0692467" Rotation="0 0 0" Scale="1 1 1" SourceBoneName="" />
+                </Sockets>
+            </Bone>
+            <Bone ID="8" Name="j_Bullet_002">
+                <Sockets>
+                    <Socket ID="23" Name="Bullet_1" CreStamp="0" ModStamp="1671768450" WorldPos="-0.00925103 -0.0906311 -0.0699562" Rotation="0 0 0" Scale="1 1 1" SourceBoneName="" />
+                </Sockets>
+            </Bone>
+            <Bone ID="9" Name="j_Bullet_003">
+                <Sockets>
+                    <Socket ID="24" Name="Bullet_2" CreStamp="0" ModStamp="1671768465" WorldPos="-0.00925103 -0.075397 -0.0699562" Rotation="0 0 0" Scale="1 1 1" SourceBoneName="" />
+                </Sockets>
+            </Bone>
+            <Bone ID="10" Name="j_Bullet_004">
+                <Sockets>
+                    <Socket ID="25" Name="Bullet_3" CreStamp="0" ModStamp="1671768472" WorldPos="0.00392293 -0.06778 -0.0692467" Rotation="0 0 0" Scale="1 1 1" SourceBoneName="" />
+                </Sockets>
+            </Bone>
+            <Bone ID="11" Name="j_Bullet_005">
+                <Sockets>
+                    <Socket ID="26" Name="Bullet_4" CreStamp="0" ModStamp="1671768484" WorldPos="0.0170969 -0.075397 -0.0685373" Rotation="0 0 0" Scale="1 1 1" SourceBoneName="" />
+                </Sockets>
+            </Bone>
+            <Bone ID="12" Name="j_release" />
+            <Bone ID="13" Name="j_ring" />
+            <Bone ID="14" Name="j_cylinder_support" />
+            <Bone ID="15" Name="j_cylinder_charginghandle" />
+            <Bone ID="16" Name="Revolver" />
+        </Bones>
+        <Shapes />
+        <Bodies />
+        <Joints />
+        <Animations>
+            <Animation Name="revolver_hand_idle" File="mods/StructureTest/entities/nonexclusive/weapons/revolver/animations/revolver_hand_idle.fbx" Layer="Default" Speed="1" />
+        </Animations>
+        <ProcAnimations />
+    </ModelData>
+    <UserDefinedVariables EntityType="Prop_Pickup">
+        <Var ObjectId="4294967295" Name="Health" Value="100" />
+        <Var ObjectId="4294967295" Name="Toughness" Value="0" />
+        <Var ObjectId="4294967295" Name="MaxInteractDistance" Value="0" />
+        <Var ObjectId="4294967295" Name="EventTag" Value="" />
+        <Var ObjectId="4294967295" Name="ShowHints" Value="true" />
+        <Var ObjectId="4294967295" Name="LifeLength" Value="0" />
+        <Var ObjectId="4294967295" Name="DissolveDuringLifeDecrease" Value="true" />
+        <Var ObjectId="4294967295" Name="QuickSave" Value="false" />
+        <Var ObjectId="4294967295" Name="FullGameSave" Value="false" />
+        <Var ObjectId="4294967295" Name="BlocksLineOfSight" Value="MaterialBased" />
+        <Var ObjectId="4294967295" Name="MainPhysicsBody" Value="" />
+        <Var ObjectId="4294967295" Name="NoGravityWhenUnderwater" Value="false" />
+        <Var ObjectId="4294967295" Name="DisableFreezeAtStart" Value="false" />
+        <Var ObjectId="4294967295" Name="CustomScriptFile" Value="Prop_GunHand.hps" />
+        <Var ObjectId="4294967295" Name="CustomScriptClass" Value="cScrPropGun" />
+        <Var ObjectId="4294967295" Name="ShowMesh" Value="true" />
+        <Var ObjectId="4294967295" Name="DissolveOnDestruction" Value="false" />
+        <Var ObjectId="4294967295" Name="DissolveTime" Value="1.0" />
+        <Var ObjectId="4294967295" Name="RandomizeAnimationStart" Value="true" />
+        <Var ObjectId="4294967295" Name="RootMotionBone" Value="" />
+        <Var ObjectId="4294967295" Name="EffectsOnSound" Value="" />
+        <Var ObjectId="4294967295" Name="EffectsOffSound" Value="" />
+        <Var ObjectId="4294967295" Name="EffectsOnTime" Value="0.2" />
+        <Var ObjectId="4294967295" Name="EffectsOffTime" Value="0.2" />
+        <Var ObjectId="4294967295" Name="StaticMoveCheckCollision" Value="false" />
+        <Var ObjectId="4294967295" Name="StaticMoveStartSound" Value="" />
+        <Var ObjectId="4294967295" Name="StaticMoveStopSound" Value="" />
+        <Var ObjectId="4294967295" Name="StaticMoveLoopSound" Value="" />
+        <Var ObjectId="4294967295" Name="StaticMoveLoopSoundFade" Value="true" />
+        <Var ObjectId="4294967295" Name="BreakActive" Value="false" />
+        <Var ObjectId="4294967295" Name="CustomBreakBehaviour" Value="false" />
+        <Var ObjectId="4294967295" Name="BreakOnlyOnMainBody" Value="false" />
+        <Var ObjectId="4294967295" Name="BreakDestroyJoints" Value="false" />
+        <Var ObjectId="4294967295" Name="BreakMinEnergy" Value="100" />
+        <Var ObjectId="4294967295" Name="BreakEntity" Value="" />
+        <Var ObjectId="4294967295" Name="BreakEntityAlignBody" Value="" />
+        <Var ObjectId="4294967295" Name="BreakSound" Value="" />
+        <Var ObjectId="4294967295" Name="BreakParticleSystem" Value="" />
+        <Var ObjectId="4294967295" Name="BreakImpulse" Value="4" />
+        <Var ObjectId="4294967295" Name="ItemType" Value="Revolver" />
+        <Var ObjectId="4294967295" Name="ContentSubType" Value="" />
+        <Var ObjectId="4294967295" Name="ContentLevel" Value="0" />
+        <Var ObjectId="4294967295" Name="ContentColor" Value="0 0 0 0" />
+        <Var ObjectId="4294967295" Name="OnlyNeedOne" Value="false" />
+        <Var ObjectId="4294967295" Name="PutAwayAfter" Value="true" />
+        <Var ObjectId="4294967295" Name="AnimationName" Value="" />
+        <Var ObjectId="4294967295" Name="PickupSound" Value="" />
+        <Var ObjectId="4294967295" Name="IsMeat" Value="false" />
+        <Var ObjectId="4294967295" Name="MeatAttractDistance" Value="10" />
+        <Var ObjectId="4294967295" Name="MeatAttractDistanceMax" Value="20" />
+        <Var ObjectId="4294967295" Name="UseFullnessAnimation" Value="false" />
+    </UserDefinedVariables>
+</Entity>

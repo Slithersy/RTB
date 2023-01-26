@@ -1,0 +1,1388 @@
+#include "custom/props/Prop_Pickup.hps"
+#include "helper_modules_custom.hps"
+#include "helper_modules.hps"
+#include "helpers/helper_player.hps"
+#include "helpers/helper_audio.hps"
+#include "custom/helpers/helper_props_custom.hps"
+#include "helpers/helper_props.hps"
+//#include "customHelpers/RotationHelper.hps"
+#include "helpers/gun_helper.hps"
+#include "helpers/helper_effects.hps"
+#include "custom/helpers/helper_agent.hps"
+
+//------------------------------------------------------------
+
+const float gfAmuletAutoPutAwayTime = 40.f;
+const float gfAmuletActivationFlashTime = 1.5f;
+
+const cColor gAmuletEffectColor_Default = cColor(0.5, 0.75, 1);
+const cColor gAmuletEffectColor_OpenRift = cColor(0.6, 1.0, 0.4) * 1.4f;
+
+const tString[] gsAmuletDialBones = { "j_big_dial", "j_dial_1", "j_dial_2", "j_dial_3", "j_dial_4" };
+const float[] gfAmuletDialRotationSpeed = { 6.f, 1.25f, 2.25f, 3.75f, 3.f };
+
+const tString gsAmuletTrackingSound = "player/tools/amulet/amulet/amulet_glow_loop";
+const tString gsAmuletReminderSound = "player/tools/amulet/amulet/amulet_alert";
+
+const tString gsCylinderBone = "j_cylinder";
+const tString gsBulletSocketPrefix = "Bullet_";
+
+//gun_fire_dry
+
+//------------------------------------------------------------
+
+enum eGunLeftHandState
+{
+	eGunLeftHandState_None,
+	eGunLeftHandState_Aiming_In,
+	eGunLeftHandState_Aiming_Out,
+	eGunLeftHandState_Aimed,
+	eGunLeftHandState_Reloading_PutBullet
+}
+
+enum eGunRightHandAnimationState
+{
+	eGunRightHandAnimationState_Draw,
+	eGunRightHandAnimationState_Idle,
+	eGunRightHandAnimationState_Holster,
+	eGunRightHandAnimationState_Reload_Enter,
+	eGunRightHandAnimationState_Reload_Idle,
+	eGunRightHandAnimationState_Reload_DumpBullets,
+	eGunRightHandAnimationState_Reload_PutBullet,
+	eGunRightHandAnimationState_Reload_Exit,
+	eGunRightHandAnimationState_Aim_Enter,
+	eGunRightHandAnimationState_Aim_Idle,
+	eGunRightHandAnimationState_Aim_Fire,
+	eGunRightHandAnimationState_Aim_Exit
+}
+
+enum eGunFireResult
+{
+	eGunFireResult_Dryfire,
+	eGunFireResult_Fire,
+	
+	eGunFireResult_None
+}
+
+class cBulletChamber
+{
+	bool empty = true;
+	bool spent = false;
+	
+	cBulletChamber(){
+		empty = true;
+		spent = false;
+	}
+	
+	cBulletChamber(cBulletChamber clone){
+		empty = clone.empty;
+		spent = clone.spent;
+	}
+}
+
+class cSocketAttachment
+{
+	tID m_idEntity = tID_Invalid;
+	tString msSocket = "";
+	bool mbUseParentBoneRotation = false;
+}
+
+class cScrPropGun : cScrPropPickup
+{
+	//------------------------------------------------------------
+	
+	///////////////////////////////
+	// INIT
+	///////////////////////////////
+	
+	//------------------------------------------------------------
+
+	void Init()
+	{
+		cScrPropPickup::Init();
+		
+		mbEquipped = false;
+		mbInDreamSequence = false;		
+		mbTrackingActive = false;
+		mbTrackingSpecificTarget = false;
+		mbTutorialActive = false;
+		
+		mfEquippedCount = 0.f;	
+		mfIlluminationMul = 0.f;
+		mfActivationFlashCount = 0.f;
+		mfEffectMul = 1.f;
+		
+		mlReminderPlayedCount = 0;
+		mfReminderCount = 10.f;
+		
+		mlRunAnimState = -1;
+		mlAutoPutAwayState = -1;
+		mfAutoPutAwayCount = 0.f;
+		mbPlayerRunning = false;
+		
+		mfProximity = 0.f;
+		mfDialIntensity = 0.f;
+		mfActivationFlashCount = 0.f;
+		mfActivationFlashT = 0.f;
+	    		
+		m_idTrackingTargetId = tID_Invalid;
+		m_idTrackingSoundId = tID_Invalid;
+		m_idForceFieldId = tID_Invalid;
+		
+		curBullet = 0;
+		cylinderAngle = 0;
+		prevCylinderAngle = 0;
+		
+		chambers[0] = cBulletChamber();
+		chambers[1] = cBulletChamber();
+		chambers[2] = cBulletChamber();
+		chambers[3] = cBulletChamber();
+		chambers[4] = cBulletChamber();
+		chambers[5] = cBulletChamber();
+		
+		//mBaseObj.SetEffectsActive(false,true);
+	}
+	
+	//------------------------------------------------------------
+	
+	void SetupAfterLoad(cWorld @apWorld, cResourceVarsObject@ apVars, cResourceVarsObject@ apInstanceVars)
+	{
+		cScrPropPickup::SetupAfterLoad(apWorld, apVars, apInstanceVars);	
+		
+		mlReminderPlayedCount = 0;
+		mfReminderCount = 10.f;
+		
+		mBaseObj.SetEffectsActive(false,false);
+		mBaseObj.SetEffectsOffTime(0.05f);
+	}
+		
+	//------------------------------------------------------------
+	
+	///////////////////////////////
+	// GLOBAL
+	///////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	[volatile]int pos=0;
+	const int getPos(){return pos++;} //so long as everything is loaded in the same order, nothing should break.
+	void resetPos(){pos=0;} //REMEMBER TO CALL THIS BEFORE RUNNING GLOBAL FUNC AND AT THE END OF THE GLOBAL FUNC
+	
+	//------------------------------------------------------------
+	
+	void _Global_CopyFromItemEntity() override
+	{
+		cScrPropPickup::_Global_CopyFromItemEntity();
+		
+		tString sDest = cScript_GetGlobalArgString(0);
+		bool isSource = cScript_GetGlobalArgBool(1);
+		
+		cScript_SetGlobalArgInt(getPos(), curBullet);
+		cScript_SetGlobalArgFloat(getPos(), cylinderAngle);
+		cScript_SetGlobalArgFloat(getPos(), prevCylinderAngle);
+		
+		
+		//at least make this disgusting mess look acceptable
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			cScript_SetGlobalArgBool(getPos(), chambers[i].empty);
+			cScript_SetGlobalArgBool(getPos(), chambers[i].spent);
+		}
+		
+		resetPos();
+		cScript_RunGlobalFunc(sDest, "cScrPropGun", "_Global_CopyValues");
+	}
+	
+	//------------------------------------------------------------
+	
+	// Called to transfer values from another of these entities
+	// e.g. when spawning something from the inventory
+	
+	void _Global_CopyValues()
+	{
+		if(performingActionOnSource) return; //effective? workaround
+		curBullet = cScript_GetGlobalArgInt(getPos());
+		cylinderAngle = cScript_GetGlobalArgFloat(getPos());
+		prevCylinderAngle = cScript_GetGlobalArgFloat(getPos());
+		
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			chambers[i].empty = cScript_GetGlobalArgBool(getPos());
+			chambers[i].spent = cScript_GetGlobalArgBool(getPos());
+		}
+		
+		resetPos();
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_OnItemStartPutAway()
+	{		
+		mbEquipped = false;
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_OnItemPutAway()
+	{
+		cLux_AddDebugMessage("Destroy revolver bullets");
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			if(!chambers[i].empty) RemoveBullet(i);
+		}
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_IsBeingPutAway()
+	{
+		cScript_SetGlobalReturnBool(mbEquipped == false);
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_OnItemTakenOut()
+	{		
+		mbEquipped = true;
+		mfEquippedCount = 0.f;
+		mfIlluminationMul = 0.f;
+		curAnimState = eGunRightHandAnimationState_Draw;
+		
+		mBaseObj.SetAnimationCallbackActive(true);
+		
+		visible = false;
+		visTimer = 0.3f;
+		
+		//spawn bullets
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			if(!chambers[i].empty) MakeBullet(i);
+		}
+		
+		//Entity_SetRotationX(mBaseObj.GetName(),30);
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_SetEffectMul()
+	{
+		mfEffectMul = cScript_GetGlobalArgFloat(0);
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_GetAnimationName() override
+	{
+		cScript_SetGlobalReturnString("");
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_GetAnimationNameSpecific() override
+	{
+		tString state = cScript_GetGlobalArgString(1);
+		
+		msToolState = state;
+		msToolSubState = "none";
+		
+		bool firstFrame = false;
+		
+		if(prevAnimState != curAnimState) { OnChangeAnimation(); firstFrame = true; }
+		else prevAnimState = curAnimState;
+		
+		if(state == "draw") {
+			msToolSubState = "in";
+			ManageArmAnimation("gun_draw", false, true);
+			return;
+		}
+		else if(state == "idle") {
+			if(curAnimState == eGunRightHandAnimationState_Draw) curAnimState = eGunRightHandAnimationState_Idle;
+			msToolSubState = "set"; //assume set by default
+			cScript_SetGlobalReturnString("gun_idle");
+			
+			
+			
+			
+			
+			switch(curAnimState){
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Draw:
+				
+					msToolSubState = "in";
+					ManageArmAnimation("gun_draw", false);
+					
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Holster:
+				
+					msToolSubState = "out";
+					ManageArmAnimation("gun_holster", false);
+					
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Idle:
+				
+					ManageArmAnimation("gun_idle");
+					
+					if(aiming) curAnimState = eGunRightHandAnimationState_Aim_Idle; //TODO make the transitions.
+				
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Aim_Fire:
+					
+					switch(fireResult)
+					{
+						case eGunFireResult_None:
+						case eGunFireResult_Dryfire:
+						
+							if(firstFrame) ForceArmAnimation("gun_fire_dry");
+							else ManageArmAnimation("gun_fire_dry", false);
+							
+							if(IsArmAnimationDone("gun_fire_dry")){
+								curAnimState = eGunRightHandAnimationState_Aim_Idle;
+							}
+							
+						break;
+						////////////////////////
+						case eGunFireResult_Fire:
+							if(firstFrame) ForceArmAnimation("gun_fire");
+							else ManageArmAnimation("gun_fire", false);
+							
+							if(IsArmAnimationDone("gun_fire")){
+								curAnimState = eGunRightHandAnimationState_Aim_Idle;
+							}
+						
+						break;
+						////////////////////////
+					}
+					
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Aim_Idle:
+					
+					//Could not finish the crouched aim animations in time, sorry.
+					/*
+					if(!Player_GetCrouching())
+					{
+						ManageArmAnimation("gun_aim_idle");
+					}
+					*/
+					
+					ManageArmAnimation("gun_aim_idle");
+					
+					if(!aiming) {
+						if(!Player_GetInteractionAllowed()) ExitAimState(); //Bit hacky, but should work fine for the time being.
+						curAnimState = eGunRightHandAnimationState_Idle; //TODO make the transitions.
+					}
+				
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Reload_Enter:
+					
+					if(firstFrame) ForceArmAnimation("gun_reload_enter");
+					else ManageArmAnimation("gun_reload_enter", false);
+					
+					if(IsArmAnimationDone("gun_reload_enter")){
+						cLux_AddDebugMessage("Entered reload");
+						curAnimState = eGunRightHandAnimationState_Reload_Idle;
+					}
+				
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Reload_Idle:
+			
+					ManageArmAnimation("gun_reload_idle");
+					
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Reload_Exit:
+					
+					if(firstFrame) ForceArmAnimation("gun_reload_exit");
+					else ManageArmAnimation("gun_reload_exit", false);
+					
+					if(IsArmAnimationDone("gun_reload_exit")){
+						cLux_AddDebugMessage("Exited reload");
+						curAnimState = eGunRightHandAnimationState_Idle;
+						
+						curBullet = lastUsableBullet; //stop cylinder from spinning until last moment
+					}
+				
+				break;
+				///////////////////////////////////////////////////////////////////
+				case eGunRightHandAnimationState_Reload_DumpBullets:
+				
+					if(firstFrame) ForceArmAnimation("gun_reload_dumpBullets");
+					else ManageArmAnimation("gun_reload_dumpBullets", false);
+				
+					if(IsArmAnimationDone("gun_reload_dumpBullets")) {
+						DropBullets();
+						curAnimState = eGunRightHandAnimationState_Reload_Idle;
+					}
+				
+				break;
+				///////////////////////////////////////////////////////////////////
+				default: cLux_AddDebugMessage("ERROR: Bug with gun animation state.", true);
+					ManageArmAnimation("gun_idle");
+				break;
+				///////////////////////////////////////////////////////////////////
+			}
+			
+			return;
+		}
+		else if(state == "holster") {
+			curAnimState = eGunRightHandAnimationState_Holster;
+			
+			msToolSubState = "out";
+			ManageArmAnimation("gun_holster", false);
+			return;
+		}
+	
+		cScript_SetGlobalReturnString("");
+	}
+	
+	//------------------------------------------------------------
+	//Animation control
+	
+	void PlayRevolverAnimation(tString anim, bool loops = true)
+	{
+		if(mBaseObj.GetCurrentAnimationState() != null) mBaseObj.StopAllAnimations(0.05f); //force stop
+		mBaseObj.PlayAnimation(anim, 0.05f, loops);
+	}
+	
+	void ManageArmAnimation(tString name, bool loops = true, bool instant = false){
+		cScript_SetGlobalReturnString(name);
+		if(PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm) == null) return;
+		if(PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).GetName() != name) return;
+		
+		if(PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).IsLooping() != loops) PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).SetLoop(loops);
+		if(instant) PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).FadeSpeed(1, 0);
+	}
+	
+	void ForceArmAnimation(tString name){ //Forces animation to restart if it was already playing
+		cScript_SetGlobalReturnString(name);
+		
+		if(PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm) == null) return;
+		if(PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).GetName() != name) return;
+		
+		PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).SetTimePosition(0);
+	}
+	
+	bool IsArmAnimationDone(tString name){
+		if(PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm) == null) return false;
+		if(PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).GetName() != name) return false;
+		
+		return PlayerBody_GetAnimationStateInLayer(ePlayerBodyAnimationLayer_RightArm).IsOver();
+	}
+	
+	void OnChangeAnimation(){
+		prevAnimState = curAnimState;
+		
+		bool defaultGunAnim = true;
+		
+		switch(curAnimState){
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Draw:
+			
+				PlayRevolverAnimation("idle", true);
+				
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Holster:
+			
+				PlayRevolverAnimation("idle", true);
+				
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Idle:
+			
+				PlayRevolverAnimation("idle", true);
+				
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Aim_Fire:
+			
+				PlayRevolverAnimation("fire", false);
+				
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Aim_Idle:
+			
+				PlayRevolverAnimation("idle", true);
+				
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Reload_Enter:
+			
+				PlayRevolverAnimation("reload_enter", false);
+			
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Reload_Idle:
+			
+				if(!OnReloadIdle()) PlayRevolverAnimation("reload_idle", true);
+				
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Reload_Exit:
+			
+				PlayRevolverAnimation("reload_exit", false);
+			
+			break;
+			///////////////////////////////////////////////////////////////////
+			case eGunRightHandAnimationState_Reload_DumpBullets:
+			
+				PlayRevolverAnimation("reload_dumpBullets", true);
+				
+			break;
+			///////////////////////////////////////////////////////////////////
+			default: cLux_AddDebugMessage("ERROR: Bug with gun animation state. (ON SWITCH)", true);
+			
+			break;
+			///////////////////////////////////////////////////////////////////
+		}
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_SetTutorialActive()
+	{
+		mbTutorialActive = cScript_GetGlobalArgBool(0);
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_OnUseAsTool()
+	{
+		int context = cScript_GetGlobalArgInt(0);
+		bool pressed = cScript_GetGlobalArgBool(1);
+		cScript_SetGlobalReturnBool(OnUseAsTool(context, pressed));
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_CanPutAway(){
+		cScript_SetGlobalReturnBool(!aiming && !reloading);
+	}
+	
+	//------------------------------------------------------------
+	
+	void _Global_CanAnimate(){
+		cScript_SetGlobalReturnBool(false);
+	}
+	
+	//------------------------------------------------------------
+	
+	///////////////////////////////
+	// GENERAL
+	///////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	void MakeBullet(int atChamber){
+		iLuxEntity@ pEntity;
+		tString msSocket = (gsBulletSocketPrefix+atChamber);
+		
+		tString msName = "ChamberBullet_"+mBaseObj.GetName()+"_"+atChamber;
+		
+		cLux_GetCurrentMap().CreateEntity(msName, "Bullet_Chamber.ent", cMatrixf_Zero, cVector3f(1));
+		@pEntity = cLux_GetCurrentMap().GetLatestEntity();
+		
+		if ((pEntity is null))
+		{
+			Error("[Gun] Something went wrong creating bullet entity!");
+			return;
+		}
+		
+		AttachProp(msName, msSocket, true);
+	}
+	
+	//------------------------------------------------------------
+	
+	void RemoveBullet(int atChamber){
+		tString msSocket = (gsBulletSocketPrefix+atChamber);
+		bool success = false;
+		uint index = 0;
+		
+		for (uint i = 0; i < mvSocketAttachments.length(); i++)
+		{
+			if(mvSocketAttachments[i].msSocket != msSocket) continue;
+			
+			tID idProp = mvSocketAttachments[i].m_idEntity;
+			iLuxEntity@ pAttachProp = cLux_ID_Entity(idProp);
+			
+			if (idProp == tID_Invalid)
+				continue;			
+			if (pAttachProp is null)
+				continue;
+			
+			Entity_Destroy(pAttachProp.GetName());
+			success = true;
+			index = i;
+			break;
+		}
+		
+		if(!success) Error("[Gun] Something went wrong destroying bullet "+atChamber+" entity!");
+		else mvSocketAttachments.removeAt(index);
+	}
+	
+	//------------------------------------------------------------
+	
+	void AttachProp(tString sProp, tString sSocket, bool bUseParentBoneRotation){
+		if(!mbEquipped) return;
+		
+		if(sProp == "") return;
+		
+		iLuxEntity @pProp = cLux_GetCurrentMap().GetEntityByName(sProp);
+		if(pProp is null)
+		{
+			Error("Could not find entity '"+sProp+"' to be attached to revolver");
+			return;
+		}
+		
+		if(pProp.GetMainBody() !is null)
+		{
+			pProp.GetMainBody().SetCollideCharacter(false);
+			pProp.GetMainBody().SetCollide(false);
+		}
+		
+		pProp.AttachToSocket(mBaseObj, sSocket, true, true, true);
+		pProp.SetActive(true);
+		
+		cSocketAttachment attachment;
+		attachment.m_idEntity  = pProp.GetID();
+		attachment.msSocket = sSocket;
+		attachment.mbUseParentBoneRotation = bUseParentBoneRotation;
+		mvSocketAttachments.push_back(attachment);
+	}
+	
+	//------------------------------------------------------------
+	
+	void OnVariableUpdate(float afDeltaTime)
+	{
+		if(mbEquipped){
+			UpdateAutoPutAway(afDeltaTime);
+			
+			if(fireDelay > 0){
+				fireDelay -= afDeltaTime;
+			}
+			
+			if(aiming || reloading){
+				PlayerBody_AlignLowerBodyToCameraYaw();
+			}
+		}
+	}
+	
+	//------------------------------------------------------------
+	
+	void OnAfterAnimationUpdate(cMeshEntity@ apFunctions, float afTimeStep)
+	{
+		if(mbEquipped && !visible){
+			if(visTimer > 0) visTimer -= afTimeStep;
+			else{
+				visible = true;
+				cMeshEntity@ pMeshEnt = mBaseObj.GetMeshEntity();
+				if (pMeshEnt !is null)
+				{
+					pMeshEnt.SetRenderFlagBit(eRenderableFlag_VisibleInReflection, false);
+					pMeshEnt.SetRenderFlagBit(eRenderableFlag_VisibleInNonReflection, true);
+					pMeshEnt.SetRenderFlagBit(eRenderableFlag_ShadowCaster, true);
+				}
+			}
+		}
+		
+		// Only update cylinder when an animation is active, i.e the gun is held
+		UpdateCylinder(afTimeStep);
+		
+		for (uint i = 0; i < mvSocketAttachments.length(); i++)
+		{
+			tID idProp = mvSocketAttachments[i].m_idEntity;
+			iLuxEntity@ pAttachProp = cLux_ID_Entity(idProp);
+			
+			if (idProp == tID_Invalid)
+				continue;			
+			if (pAttachProp is null)
+				continue;
+			
+			pAttachProp.UpdateEntityAttachment();
+		
+			if (mvSocketAttachments[i].mbUseParentBoneRotation)
+			{
+				cNode3D@ pSocket = mBaseObj.GetMeshEntity().GetSocket(mvSocketAttachments[i].msSocket);
+				cNode3D@ pParent = pSocket.GetParent();
+						
+				cMatrixf mtxParentRot = pParent.GetWorldMatrix().GetRotation();
+				// Parent bone has a default scale of 0.01f, need to normalize it
+				mtxParentRot = cMath_MatrixMul(cMath_MatrixScale(100.f), mtxParentRot);
+						
+				cMatrixf mtxNew = pAttachProp.GetMatrix();
+				mtxNew.SetRotation(mtxParentRot);
+						
+				pAttachProp.SetMatrix(mtxNew);
+			}
+		}
+	}
+	
+	
+	
+	//------------------------------------------------------------
+	
+	void UpdateCylinder(float afDeltaTime){
+		//if(!mbEquipped) return;
+		cBoneState@ pBone = mBaseObj.GetMeshEntity().GetBoneStateFromName(gsCylinderBone);
+		cMatrixf mtxBone = pBone.GetWorldMatrix();
+		cMatrixf mtxBoneTranspose = mtxBone.GetTranspose();
+		
+		float goalAngle = (60 * curBullet) % 360;
+		if(cylinderAngle != goalAngle){
+			if(cylinderAngle == 0 && goalAngle == 300) { cylinderAngle = 350; prevCylinderAngle = 360;}
+			else if(cylinderAngle < goalAngle || (cylinderAngle >= 300 && goalAngle == 0)) cylinderAngle += 10;
+			else if(cylinderAngle > goalAngle) cylinderAngle -= 10;
+		}
+		cylinderAngle = cylinderAngle % 360;
+		
+		cMatrixf mtxRotation = cMath_MatrixRotateX(cylinderAngle*deg2Rad);
+		cMatrixf mtxNew = cMath_MatrixMul(mtxBone, mtxRotation);
+		pBone.SetWorldMatrix(mtxNew);
+		prevCylinderAngle = cylinderAngle;
+	}
+	
+	//------------------------------------------------------------
+	
+	void UpdateAutoPutAway(float afDeltaTime)
+	{
+		//////////////////////
+		// Setup vars
+		int lPutAwayType = -1;
+		
+		//////////////////////
+		// Interacting?
+		int lState = cLux_GetPlayer().GetCurrentStateId();
+		if (mbEquipped &&
+			(lState == ePlayerState_Grab || 
+			lState == ePlayerState_Tear || 
+			lState == ePlayerState_Lever || 
+			lState == ePlayerState_Push || 
+			lState == ePlayerState_Slide ||
+			lState == ePlayerState_SwingDoor ||
+			lState == ePlayerState_Wheel ||
+			lState == ePlayerState_MovingButton))
+		{
+			lPutAwayType = 0;
+			
+			if (mlAutoPutAwayState != 0)
+				mfAutoPutAwayCount = 0.f;
+			
+			mlAutoPutAwayState = 0;
+		}
+		
+		//////////////////////
+		// Put away!
+		if (lPutAwayType != -1)
+		{
+			//i know you shouldn't be able to interact with shit while aiming or reloading, but this is just in case.
+			if(aiming || reloading) return;
+			
+			//////////////////////
+			// Unequip
+			if (lPutAwayType == 0)
+			{
+				Item_PutAway(eItemHandlerHand_Right);
+			}
+		}
+		else
+		{
+			mlAutoPutAwayState = -1;
+		}
+	}
+	
+	/////////////////////////////////////////
+	// ACTIONS
+	/////////////////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	void OnRecieveMessage(int alMessageId, cLuxEntityMessageData @apData)
+	{
+		if(alMessageId == eLuxEntityMessage_AnimationMessageEvent){
+			
+			//BULLET DROP AND HIT NOISES!!
+			//70 - 75 : Drop noises.
+			//80 - 85 : Floor hit noises.
+			
+			int idx = 0;
+			
+			switch(apData.mlX){
+				case 99: Fire(); break;
+				case 98: mBaseObj.SetEffectsActive(false,true); break;
+				
+				case 70:
+				case 71:
+				case 72:
+				case 73:
+				case 74:
+				case 75:
+				
+				idx = apData.mlX - 70;
+				
+				//DROP
+				
+				if(!chambers[idx].empty) Gun_PlayEjectSfx(mBaseObj.GetName());
+				
+				break;
+				
+				case 80:
+				case 81:
+				case 82:
+				case 83:
+				case 84:
+				case 85:
+				
+				idx = apData.mlX - 80;
+				
+				//CRASH
+				
+				if(!chambers[idx].empty && chambers[idx].spent) Gun_PlayDropSfx(mBaseObj.GetName());
+				
+				break;
+			}
+		}
+	}
+	
+	//------------------------------------------------------------
+	
+	void OnSetActive(bool abX)
+	{
+		
+	}
+	
+	//------------------------------------------------------------
+	
+	[nosave]bool exitedReloadingThatFrame = false;
+	
+	bool OnUseAsTool(int context, bool pressed)
+	{
+		if(msToolState != "idle") return false;
+		
+		switch(context){
+			case 0: 
+				if(reloading) Reload(curBullet);
+				else return TriggerFire();
+				break;
+			case 1:
+				if(reloading){
+					ExitReloadState();
+					return true;
+					exitedReloadingThatFrame = true;
+				}
+				else{
+					if(!exitedReloadingThatFrame && LeftHandEmpty()){
+						if((aiming && !pressed) || (!aiming && pressed)) {
+							Aim();
+							return true;
+						}
+					}
+					exitedReloadingThatFrame = false;
+				}
+				break;
+			case 2:
+				if(reloading)
+					curAnimState = eGunRightHandAnimationState_Reload_DumpBullets;
+				else if(!aiming) EnterReloadState();
+				return true;
+				break;
+		}
+		
+		return false;
+	}
+	
+	bool LeftHandEmpty(){
+		return true; //TEMP
+		if(Item_GetHeldEntity(eItemHandlerHand_Left) != "") {
+			Item_PutAway(eItemHandlerHand_Left);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	//------------------------------------------------------------
+	
+	bool TriggerFire()
+	{
+		//Initial checks
+		if(curAnimState != eGunRightHandAnimationState_Aim_Idle) return false;
+		if(fireDelay > 0) return false; 
+		if(!aiming || msToolSubState != "set") return false;
+		
+		cLux_AddDebugMessage("Fire on chamber "+curBullet);
+		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		
+		curAnimState = eGunRightHandAnimationState_Aim_Fire;
+		
+		MoveBullet(1); //ik The bunker's revolver fires on the current chamber, but iirc revolvers move the chamber, then fire.
+		
+		///////////////////////////////////////////////////////////
+		
+		if(chambers[curBullet].empty || chambers[curBullet].spent)
+		{
+			// Can't fire gun, play dryfire animation.
+			//cLux_AddDebugMessage("Click.");
+			
+			fireResult = eGunFireResult_Dryfire;
+			fireDelay = 0.35f;
+		}
+		else
+		{
+			// Can fire gun, play fire animation.
+			//cLux_AddDebugMessage("Bang.");
+			
+			fireResult = eGunFireResult_Fire;
+			fireDelay = 1.45f;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		
+		return true;
+	}
+	
+	void Fire() // Actual fire function (assume checks have passed.)
+	{
+		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		
+		tString sItem = Item_GetHeld(eItemHandlerHand_Right);
+		
+		cHitResult@ hitResult = null;
+		
+		///////////////////////////////////////////////////////////
+		
+		switch (fireResult)
+		{
+			case eGunFireResult_None:
+			case eGunFireResult_Dryfire:
+				
+				//Do nothing?
+			
+			break;
+			case eGunFireResult_Fire:
+			
+			chambers[curBullet].spent = true;
+			
+			performingActionOnSource = true;
+			Item_DecreaseAmount(sItem,1);
+			performingActionOnSource = false;
+			
+			Gun_PlayFireSfx(mBaseObj.GetName());
+			
+			mBaseObj.SetEffectsActive(true,false);
+			
+			@hitResult = Gun_Fire_Ray(mBaseObj);
+			
+			break;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		
+		if(hitResult == null) return;
+		if(!hitResult.mbHit) return;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		
+		// CUSTOM BEHAVIOR
+		
+		if(hitResult.mEntity != null){
+			
+			//Do stuff with the hit entity
+		
+			iPhysicsBody@ pEntityBody = hitResult.mpBody;
+			if (pEntityBody != null){
+                
+                if (hitResult.mEntity.GetEntityType() == eLuxEntityType_Agent) {
+                    Effect_Flash_Start(0.1f, 0.7f, 2.0f);
+                    Sound_CreateAtEntity("Revolver_Ghoulrunning", "01_02_caves/sweeteners/near/steps", "ghoul_1");
+                    Sound_CreateAtEntity("Revolver_Ghoulscreaming", "creatures/vocalisations/creature/ghoul/permafail_scream", "ghoul_1");
+                    Sound_CreateAtEntity("Revolver_GhoulRun", "creatures/foley/creature/ghoul/ghoul_hole/ghoul_enter_hole", "ghoul_1");
+                    Entity_SetActive("ghoul_1", false);
+                }
+				
+				//////////////////////////////////////////////////////////////////////
+				
+				// Is prop?
+				
+				if (hitResult.mEntity.GetEntityType() != eLuxEntityType_Prop) return;
+				
+				tString sClass = hitResult.mEntity.GetClassName();
+				
+				bool damage = true;
+				bool addForce = true;
+				
+				//////////////////////////////////////////////////////////////////////
+				
+				if(sClass == "cScrPropSwingDoor"){
+					
+					damage = false; //it's a bit hacky but the gun shouldn't be able to obliterate doors because you hit the body that had no mass.
+					
+					if(!(SwingDoor_GetBlocked(hitResult.mEntity.GetName()) 
+						|| SwingDoor_GetLocked(hitResult.mEntity.GetName())) 
+						&& SwingDoor_GetClosed(hitResult.mEntity.GetName()))
+					{
+						
+						SwingDoor_SetClosed(hitResult.mEntity.GetName(), false, true);
+						
+					}
+				}
+				
+				//////////////////////////////////////////////////////////////////////
+				
+				// Apply damage
+				
+				if(damage && pEntityBody.GetMass() < 2.5) Prop_SetHealth(hitResult.mEntity.GetName(), Prop_GetHealth(hitResult.mEntity.GetName())-100); //obliterates anything with a mass less than 2.5
+
+				if(addForce){
+					cVector3f vForceDir = hitResult.mvDirection * 2 + cVector3f_Up * 1;
+					float fFinalImpulse = hitResult.mfForce - (0.1f * pEntityBody.GetMass());
+					pEntityBody.AddImpulse(vForceDir * fFinalImpulse);
+				}
+			}
+		}
+		
+		if(hitResult.mbHadParticle) return;
+		
+		iPhysicsBody@ pBody = hitResult.mpBody;
+		if (pBody != null)
+		{
+			////////////////////////////////////////////////////////////
+			
+			//IMPACT PARTICLES
+			
+			tString sMaterialStep = pBody.GetMaterial().GetSurfaceData().GetStepType();
+			
+			cLux_AddDebugMessage("Hit material is type '"+sMaterialStep+"'");
+			if (sMaterialStep == "") return;
+			
+			////////////////////////////////////////////////////////////
+			
+			tString sImpactParticle = "ps_impact_rock_high.ps";
+			
+			// Available particles
+			
+			//ps_impact_rock_high.ps (default)
+			//ps_impact_metal_high.ps
+			//ps_impact_dirt_high.ps
+			//ps_impact_sand_high.ps
+			//ps_impact_water_high.ps
+			
+			////-------------------------------------------
+			
+			if(cString_GetFirstStringPos(sMaterialStep, "metal") == 0) //good optimization, there's a lot of metal materials but they all start with "metal".
+				/* RESULT */ sImpactParticle = "ps_impact_metal_high.ps";
+			else if( sMaterialStep == "sand"
+				/* CASE */ || sMaterialStep == "carpet" )
+				/* RESULT */ sImpactParticle = "ps_impact_sand_high.ps";
+			else if(sMaterialStep == "dirt"
+				/* CASE */ || sMaterialStep == "wood_hollow"
+				/* CASE */ || sMaterialStep == "wood_solid" )
+				/* RESULT */ sImpactParticle = "ps_impact_dirt_high.ps";
+			
+			////-------------------------------------------
+			
+			cParticleSystem@ pPS = cLux_GetCurrentMap().GetWorld().CreateParticleSystem("Impact_PS", sImpactParticle, cVector3f(1.f), true, false);
+			pPS.SetWorldPosition(hitResult.mvTargetPos);
+			
+			cMatrixf newRot = pPS.GetWorldMatrix();
+			newRot.SetRotation(cMath_MatrixRotateXYZ(hitResult.mvDirection));
+			
+			pPS.SetWorldMatrix(newRot);
+			
+			////////////////////////////////////////////////////////////
+		}
+	}
+	
+	//------------------------------------------------------------
+	
+	//RELOADING STATE
+	
+	void EnterReloadState()
+	{
+		if(msToolSubState != "set") return;
+		
+		Player_SetCrossHairEnabled(false);
+		Player_SetInteractionAllowed(false, true);
+		Player_SetCanRun(false);
+		
+		cLux_AddDebugMessage("Entered Reload State");
+		
+		reloading = true;
+		
+		curAnimState = eGunRightHandAnimationState_Reload_Enter; //TODO make the transitions.
+		
+		//check state of chambers
+		int bulletsTotal = 0;
+		int spentBullets = 0;
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			if(!chambers[i].empty){
+				bulletsTotal++;
+				if(chambers[i].spent) spentBullets++;
+			}
+		}
+		
+		int firstEmptyBullet = curBullet;
+		int pos = curBullet;
+		
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			pos = (curBullet - i) % 6;
+			if(chambers[pos].empty){
+				firstEmptyBullet = pos;
+				break;
+			}
+		}
+		
+		curBullet = pos;
+		
+	}
+	
+	bool OnReloadIdle()
+	{
+		//check state of chambers
+		int bulletsTotal = 0;
+		int spentBullets = 0;
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			if(!chambers[i].empty){
+				bulletsTotal++;
+				if(chambers[i].spent) spentBullets++;
+			}
+		}
+		
+		///////////////////////////////////
+		//Drop bullets automatically
+		if(bulletsTotal > 0 && bulletsTotal == spentBullets) curAnimState = eGunRightHandAnimationState_Reload_DumpBullets;
+		else return false;
+		return true;
+	}
+	
+	void ExitReloadState(){
+		if(curAnimState != eGunRightHandAnimationState_Reload_Idle) return;
+		if(msToolSubState != "set") return;
+		
+		Player_SetCrossHairEnabled(true);
+		Player_SetInteractionAllowed(true, false);
+		Player_SetCanRun(true);
+		
+		cLux_AddDebugMessage("Exited Reload State");
+		
+		reloading = false;
+		
+		curAnimState = eGunRightHandAnimationState_Reload_Exit; //TODO make the transitions.
+	}
+	
+	void DropBullets()
+	{
+		cLux_AddDebugMessage("Try dropping all bullets");
+		int totalBullets = 0;
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			if(!chambers[i].empty) totalBullets++;
+		}
+		
+		if(totalBullets == 0) return;
+		
+		cLux_AddDebugMessage("Dropped all bullets");
+		
+		tString sItem = Item_GetHeld(eItemHandlerHand_Right);
+		
+		
+		performingActionOnSource = true;
+		
+		int bulletsDropped = 0;
+		for (int i = 0; i < chambers.length(); ++i)
+		{
+			if(!chambers[i].empty){
+				if(!chambers[i].spent) { Item_AddToInventory("Bullet", true); } //Give bullets back
+				else bulletsDropped++;
+				
+				chambers[i].empty = true;
+				chambers[i].spent = false;
+				RemoveBullet(i);
+			}
+		}
+		
+		Item_DecreaseAmount(sItem,totalBullets);
+		
+		performingActionOnSource = false;
+	}
+	
+	void Reload(int chamber) {
+		if(curAnimState != eGunRightHandAnimationState_Reload_Idle) return;
+		if(!ItemType_IsInInventory("Bullet")) return;
+		
+		
+		//More complex sequence in the future(first reload action dumps bullets/opens drum, second puts bullet in chamber and moves chamber.)
+		if(chamber >= chambers.length()) return;
+		if(!chambers[chamber].empty) return;
+		
+		cLux_AddDebugMessage("Reloaded chamber "+curBullet);
+		
+		tString sItem = Item_GetHeld(eItemHandlerHand_Right);
+		
+		chambers[chamber].empty = false;
+		chambers[chamber].spent = false;
+		
+		MakeBullet(chamber);
+		
+		performingActionOnSource = true;
+		
+		Item_RemoveFromInventory(ItemType_GetFirstInInventory("Bullet"));
+		Item_IncreaseAmount(sItem,1);
+		
+		MoveBullet(-1);
+		lastUsableBullet = curBullet;
+		
+		performingActionOnSource = false;
+		
+		Gun_PlayLoadSfx(mBaseObj.GetName());
+		
+		cLux_AddDebugMessage("Cur chamber = "+curBullet);
+	}
+	
+	//------------------------------------------------------------
+	
+	void Aim()
+	{
+		if(aiming && curAnimState == eGunRightHandAnimationState_Aim_Idle)
+		{
+			ExitAimState();
+		}
+		else if(!aiming){
+			EnterAimState();
+		}
+		
+		aiming = !aiming;
+	}
+	
+	void EnterAimState(){
+		
+		cLux_AddDebugMessage("Entered Aim State");
+		
+		tString sSound = "Gun_Sound_AimIn"+mBaseObj.GetName();
+		cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound);
+		if (pSound==null||pSound.IsStopped()) Sound_CreateAtEntity(sSound, "gun/gun/revolver_ads_in", mBaseObj.GetName(), 0.0f, false, 0.5f);
+		
+		PlayerBody_SetArmAnimationYawLimits(-0.3,0.25);
+		PlayerBody_SetArmAnimationPitchLimits(-60.f, 60.f);
+		Player_FadeFOVMulTo(0.8, 4);
+		Player_SetCrossHairEnabled(false);
+		Player_SetInteractionAllowed(false, true);
+		Player_SetCanRun(false);
+		
+		Player_SetLeanDisabled(true);
+		//PlayerBody_SetArmAnimationYaw(false, true, false);
+	}
+	
+	void ExitAimState(){
+
+		cLux_AddDebugMessage("Exited Aim State");
+		
+		tString sSound = "Gun_Sound_AimOut"+mBaseObj.GetName();
+		cSoundEntity@ pSound = cLux_GetCurrentMap().GetWorld().GetSoundEntity(sSound);
+		if (pSound==null||pSound.IsStopped()) Sound_CreateAtEntity(sSound, "gun/gun/revolver_ads_out", mBaseObj.GetName(), 0.0f, false, 0.5f);
+		
+		PlayerBody_ResetArmAnimationYawLimits();
+		PlayerBody_ResetArmAnimationPitchLimits();
+		Player_FadeFOVMulTo(1, 4);
+		Player_SetCrossHairEnabled(true);
+		Player_SetInteractionAllowed(true, false);
+		Player_SetCanRun(true);
+		
+		Player_SetLeanDisabled(false);
+		//PlayerBody_SetArmAnimationYaw(true, true, false);
+	}
+	
+	//------------------------------------------------------------
+	
+	void MoveBullet(int by)
+	{
+		curBullet += by;
+		if(curBullet < 0) curBullet = 5;
+		curBullet = curBullet % 6;
+	}
+	
+	//------------------------------------------------------------
+	
+	///////////////////////////////
+	// DEBUG
+	///////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	float DrawDebugOutput(cGuiSet @apSet,iFontData @apFont,float afY)
+	{
+		return afY;
+	}
+	
+	//------------------------------------------------------------
+	
+	///////////////////////////////
+	// PROPERTIES
+	///////////////////////////////
+	
+	//------------------------------------------------------------
+	
+	bool mbEquipped;
+	bool mbInDreamSequence;
+	bool mbTrackingActive;
+	bool mbTrackingSpecificTarget;
+	bool mbTutorialActive;
+	
+	float mfEquippedCount;
+	float mfIlluminationMul;
+	float mfActivationFlashCount;
+	float mfEffectMul;
+	float mfProximity;
+	float mfDialIntensity;
+	float mfActivationFlashT;
+	
+	int mlRunAnimState;
+	int mlReminderPlayedCount;
+	float mfReminderCount;
+	
+	int mlAutoPutAwayState;
+	float mfAutoPutAwayCount;
+	bool mbPlayerRunning;
+	
+	tID m_idTrackingTargetId;
+	tID m_idTrackingSoundId;	
+	tID m_idForceFieldId;
+	
+	tString msToolState;
+	tString msToolSubState;
+	
+	float[] mfDialAngleAdd(5, 0);
+	cMatrixf[] mtxPrevDialRotation(5, cMatrixf_Identity);
+	
+	int curBullet;
+	float cylinderAngle = 0;
+	float prevCylinderAngle = 0;
+	cBulletChamber[] chambers(6,cBulletChamber());
+	array<cSocketAttachment> mvSocketAttachments;
+	
+	bool performingActionOnSource = false;
+	bool reloading = false;
+	int lastUsableBullet = 0;
+	
+	bool aiming = false;
+	
+	eGunRightHandAnimationState curAnimState;
+	eGunRightHandAnimationState prevAnimState;
+	
+	eGunFireResult fireResult = eGunFireResult_None;
+	
+	float fireDelay = 0;
+	float visTimer = 0;
+	bool visible = false;
+	
+	//------------------------------------------------------------
+}

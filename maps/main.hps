@@ -80,6 +80,8 @@ class cScrMap : iScrMap
     array<int> mvStack;
 	void OnStart()
 	{
+        Music_StopAll(3.0f);
+        
         // Make all fog invisible
         for (int i=1;i<=64;i++) {
             FogArea_SetVisible("FogArea_"+i, false);
@@ -161,8 +163,51 @@ class cScrMap : iScrMap
         ///////////////////
         // MONSTER STUFF
         array<int> AvailableMonsterChunks;
+        array<bool> BlockedMonsterChunks;
+        while (BlockedMonsterChunks.length()<65) {
+            BlockedMonsterChunks.insertLast(false);
+        }
+        
+        // Find all unavailable chunks
+        for (int Chunk=1;Chunk<65;Chunk++) {
+            if ((Chunk == lChunkStart) || (Chunk == lNeighbourCell)) {
+                int lLeft = 0;
+                int lRight = 0;
+                int lUp = 0;
+                int lDown = 0;
+                for (int i=1;i<=2;i++) {
+                    //Check left
+                    if (Chunk_GetLevel(Chunk-i) == Chunk_GetLevel(Chunk))
+                        lLeft++;
+                    //Check right
+                    if (Chunk_GetLevel(Chunk+i) == Chunk_GetLevel(Chunk))
+                        lRight++;
+                    //Check up
+                    if ((Chunk+(8*i)) <= 64)
+                        lUp++;
+                    //Check down
+                    if ((Chunk-(8*i)) >= 1)
+                        lDown++;
+                }
+                
+                for (int i=(Chunk-lLeft);i<=(Chunk+lRight);i++) {
+                    BlockedMonsterChunks[i] = true; //Insert current line into blocked
+                    if (lUp>0) { //Insert all top lines
+                        for (int k=1;k<=lUp;k++) {
+                            BlockedMonsterChunks[i+(8*k)] = true;
+                        }
+                    }
+                    if (lDown>0) { //Insert all bottom lines
+                        for (int k=1;k<=lDown;k++) {
+                            BlockedMonsterChunks[i-(8*k)] = true;
+                        }
+                    }
+                }
+            }
+        }
+        
         for (int i=0;i<65;i++) {
-            if ((i!=lNeighbourCell) && (i!=lChunkStart) && (i!=(lChunkStart+8)) && (i!=(lChunkStart-8)) && (i!=(lChunkStart+1)) && (i!=(lChunkStart-1)))
+            if (!BlockedMonsterChunks[i])
                 AvailableMonsterChunks.insertLast(i);
         }
         if (AvailableMonsterChunks.length()>3) {
@@ -391,6 +436,13 @@ class cScrMap : iScrMap
     float PlaySoundTimerWait = 30.0f;
     void Update(float afDeltaTime)
     {
+        if (!Entity_IsActive("ghoul_1")) {
+            Entity_SetActive("ghoul_1", true);
+            Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, true, true, true);
+            fMonsterGetOutChance = 0.2f;
+            CheckGhoulAggressive = 0.0f;
+            bMonsterIsOut = false;
+        }
         
         PlaySoundTimer = PlaySoundTimer + afDeltaTime;
         if (PlaySoundTimer > PlaySoundTimerWait) {
@@ -433,6 +485,7 @@ class cScrMap : iScrMap
                     // Yeah.. it sucks, I really tried to make nevmashes regenerate on map creation but it seems to be impossible
                     // As it's engine code, so the monster is wonky.
                     //Ghoul_CommandGoToSpecificHole_Execute(("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
+                    Monster_PickSpot();
                     Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, true, true);
                     fMonsterGetOutChance = 0.2f;
                     CheckGhoulAggressive = 0.0f;
