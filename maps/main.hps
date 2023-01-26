@@ -215,6 +215,7 @@ class cScrMap : iScrMap
                 int lRanIndex = cMath_RandRectl(0,AvailableMonsterChunks.length()-1);
                 int lRanMonsterChunk = AvailableMonsterChunks[lRanIndex];
                 AvailableMonsterChunks.removeAt(lRanIndex);
+                //Chunk_SetBeenVisited(lRanMonsterChunk, true);
                 Chunk_SetContainsBuilding(lRanMonsterChunk, true);
                 
                 // Place Monster chunk
@@ -239,17 +240,20 @@ class cScrMap : iScrMap
                 // Left
                 if (lRanNum==1) {
                     sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk-1, false, false);
+                    Entity_FaceToEntity("MonsterArea_"+i, sWall, false);
                 // Right
                 } else if (lRanNum==2) {
                     sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk+1, false, false);
+                    Entity_FaceToEntity("MonsterArea_"+i, sWall, false);
                 // Up
                 } else if (lRanNum==3) {
                     sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk+8, false, false);
+                    Entity_FaceToEntity("MonsterArea_"+i, sWall, false);
                 // Down
                 } else {
-                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk+8, false, false);
+                    sWall = Chunk_SetWallBetweenCells(lRanMonsterChunk, lRanMonsterChunk-8, false, false);
+                    // Already pointing down, don't need to rotate
                 }
-                Entity_FaceToEntity("MonsterArea_"+i, sWall, false);
                     
                 // For realism, make a chunk where the wall is supposed to be unuseable
                 int lBehindMonsterChunk = Building_GetCellBehind("MonsterArea_"+i, lRanMonsterChunk, true);
@@ -451,10 +455,13 @@ class cScrMap : iScrMap
             PlaySoundTimer = 0.0f;
         }
         
-        if (FearHandler_GetIsPermaFailing()) {
+        if (FearHandler_GetIsPermaFailing() || (CheckPermaFail > 0.0f)) {
             CheckPermaFail = CheckPermaFail + afDeltaTime;
-            if (CheckPermaFail > 10.0f) {
+            cLux_AddDebugMessage("Player is permafailing "+CheckPermaFail);
+            if (CheckPermaFail > 2.5f) {
+                cLux_AddDebugMessage("Set health 0, dead");
                 Player_SetHealth(0.0f);
+                OnDeath("");
                 CheckPermaFail = 0.0f;
             }
         }
@@ -814,6 +821,7 @@ class cScrMap : iScrMap
             
             Sound_FadeGlobalVolume(0.0f, 4.0f, eSoundEntryType_AllExceptGui);
             Music_PlayExt("A2_Human_Piano_Music.ogg", true, 0.8, 1, 3.0f, 0, eMusicPrio_BigEvent, true);
+            Effect_Fade_Out(1.0f);
         }
 	}
     
@@ -861,7 +869,7 @@ class cScrMap : iScrMap
     
     void AfterDeathTimer(const tString &in asTimer)
     {
-        Map_ChangeMap("main_menu.hpm", "Start_Begin", "", "");
+        Map_ChangeMap("RTBmain_menu.hpm", "Start_Begin", "", "");
     }
 	
 	//-------------------------------------------------------
@@ -884,7 +892,7 @@ class cScrMap : iScrMap
 		
 		if(alAction == eAction_Test1)
 		{
-            fRanTimeBetween = 0.0f;
+            cLux_AddDebugMessage(""+Building_GetCellBehind("Enterance", Chunk_GetStartingCell(), true));
 		}
 		if(alAction == eAction_Test2)
 		{

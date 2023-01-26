@@ -2029,7 +2029,7 @@ class cScrMenuHandler : iScrUserModule, iScrUserModule_Interface, iScrMenuHandle
 		ImGui_SetTransCategory("GameModesMenu");
 		
 		array<tString> vMenuItems = {"GameMode", "StartGame", "Back"};
-		array<tString> vGameModes = {"Default", "Adventure"};
+		array<tString> vGameModes = {"Default"};
 		
 		for (int i=0; i<=vMenuItems.length()-1; i++)
 		{

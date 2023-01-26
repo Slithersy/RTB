@@ -2,7 +2,7 @@
     <Materials>
         <Material Path="d:/projects-abp11/02_project_anubis/06_telegraph_battery_box/substance/texture/new4/telegraph_battery_box.mat" DebugPos="-3.214700 : 1.370785 : -7.907819" />
         <Material Path="entities/arabic_fort/door/arabic_fort_door_01.mat" DebugPos="1.998633 : 1.980630 : -16.066555" />
-        <Material Path="entities/arabic_fort/door/arabic_fort_door_destroyed/barricade_4_less_soot.mat" DebugPos="1.388935 : 0.013228 : -4.334008" />
+        <Material Path="entities/arabic_fort/door/arabic_fort_door_destroyed/barricade_4_less_soot.mat" DebugPos="2.785363 : 0.013226 : -8.008433" />
         <Material Path="entities/archaeology/furniture/table_homemade_03/table_homemade_03.mat" DebugPos="3.430721 : 0.363671 : -17.998388" />
         <Material Path="entities/character/ghoul/ghoul_body_v2.mat" DebugPos="6.439619 : 1.285069 : -6.850304" />
         <Material Path="entities/character/ghoul/ghoul_face_v2.mat" DebugPos="6.439619 : 1.285069 : -6.850304" />
@@ -13,17 +13,17 @@
         <Material Path="entities/oceanbottom/gameplay/04_01_lever_blacksmokers/04_01_lever_blacksmokers.mat" DebugPos="1.956600 : 1.017920 : -19.040731" />
         <Material Path="entities/oceanbottom/gameplay/lever_wall/lever_wall.mat" DebugPos="1.956600 : 1.096108 : -19.004173" />
         <Material Path="entities/shipwreck/lamp/shipwreck_panel_buttons/shipwreck_bridge_panels_tech.mat" DebugPos="1.556400 : 0.854053 : -19.313707" />
-        <Material Path="entities/station/debris/pipe_turn_broken_slim/pipe_turn_broken_slim.mat" DebugPos="1.859936 : 1.329600 : -19.436399" />
-        <Material Path="entities/station/lamp/lamp_roof_large/lamp_roof_large.mat" DebugPos="2.000000 : 3.687500 : -17.933378" />
+        <Material Path="entities/station/debris/pipe_turn_broken_slim/pipe_turn_broken_slim.mat" DebugPos="0.536064 : 1.329600 : -19.436399" />
+        <Material Path="entities/station/lamp/lamp_roof_large/lamp_roof_large.mat" DebugPos="2.000000 : 2.937500 : -1.683378" />
         <Material Path="entities/station/ornaments_wall/sign_rectangle/sign_rectangle_burn/sign_rectangle_burn.mat" DebugPos="3.052751 : 0.500000 : -19.011919" />
-        <Material Path="entities/station/special/01_02_pipe_medium2_break/pipe_turn_broken_slim.mat" DebugPos="0.948000 : 1.472450 : -19.434566" />
+        <Material Path="entities/station/special/01_02_pipe_medium2_break/pipe_turn_broken_slim.mat" DebugPos="1.196649 : 1.472451 : -19.436399" />
         <Material Path="entities/tin_hinan/gameplay/portal_vitae_machine/machine_03.mat" DebugPos="1.200977 : 0.547249 : -19.384907" />
         <Material Path="entities/tin_hinan/machine/machine_01/machine_01.mat" DebugPos="1.948000 : 0.605720 : -19.436399" />
         <Material Path="entities/tin_hinan/machine/machine_02/machine_02.mat" DebugPos="2.948000 : 0.568723 : -19.436399" />
         <Material Path="static_objects/caves/cave_modules/caves_ground.mat" DebugPos="3.749993 : -0.000500 : -4.000007" />
-        <Material Path="static_objects/darkworld/darkworld_fancy/undercity_fancy_floor_tiles/undercity_fancy_floor_tiles.mat" DebugPos="4.006968 : 2.000000 : -18.000000" />
+        <Material Path="static_objects/darkworld/darkworld_fancy/undercity_fancy_floor_tiles/undercity_fancy_floor_tiles.mat" DebugPos="2.000000 : 3.986064 : -18.000000" />
         <Material Path="static_objects/tth/pillar/tth_pillar_basic_extension.mat" DebugPos="3.754732 : 2.252268 : -15.999332" />
-        <Material Path="static_objects/tth/tth_ceiling_basic_square_01.mat" DebugPos="4.000000 : 1.500000 : -2.000000" />
+        <Material Path="static_objects/tth/tth_ceiling_basic_square_01.mat" DebugPos="2.000000 : 3.000000 : -14.000000" />
         <Material Path="player_damage_screen.mat" DebugPos="Script" />
         <Material Path="player_damage_screen_minor.mat" DebugPos="Script" />
         <Material Path="player_damage_screen_major.mat" DebugPos="Script" />
@@ -36,7 +36,8 @@
         <Material Path="c:/users/aaron/documents/work/amnesia2/trunk/redist/billboards/special/matchflame/matchflame_large/matchflame_large.mat" DebugPos="Script" />
         <Material Path="e:/work/svn/amnesia2/redist/billboards/special/matchflame/matchflame_dying/matchflame_dying.mat" DebugPos="Script" />
         <Material Path="c:/users/aaron/documents/work/amnesia2/trunk/redist/billboards/halo/lampglow_large_no_depth.mat" DebugPos="Script" />
-        <Material Path="d:/work/studio/frictional games/amnesia2/trunk/redist/lights/lensflare/flare_star_simple.mat" DebugPos="Script" />
+        <Material Path="e:/steamlibrary/steamapps/common/amnesia rebirth/lights/lensflare/flare_star_simple.mat" DebugPos="Script" />
+        <Material Path="e:/steamlibrary/steamapps/common/amnesia rebirth/lights/lensflare/flare_star_simple.mat" DebugPos="Script" />
         <Material Path="d:/work/studio/frictional games/amnesia2/trunk/redist/lights/lensflare/multi_iris_simple.mat" DebugPos="Script" />
         <Material Path="baby_reduce_fear_screen.mat" DebugPos="Script" />
         <Material Path="entities/nonexclusive/gameplay/pf_tentacle/test_mul_tex_01.mat" DebugPos="Script" />
@@ -78,6 +79,7 @@
         <Material Path="entities/tin_hinan/storage/vitae_canister/smokey.mat" DebugPos="Script" />
         <Material Path="entities/tin_hinan/storage/vitae_canister/vitae_canister.mat" DebugPos="Script" />
         <Material Path="entities/survivors/ornaments/doll_monkey/doll_monkey.mat" DebugPos="Script" />
+        <Material Path="mods/structuretest/entities/nonexclusive/weapons/revolver/revolver.mat" DebugPos="Script" />
         <Material Path="entities/technical/block_box/block_box.mat" DebugPos="Script" />
         <Material Path="entities/technical/block_box/block_box.mat" DebugPos="Script" />
         <Material Path="entities/nonexclusive/gameplay/pf_tentacle/test_mul_tex_01.mat" DebugPos="Script" />
@@ -97,6 +99,7 @@
         <EntFile Path="match_lit.ent" DebugPos="Script" />
         <EntFile Path="vitae_canister.ent" DebugPos="Script" />
         <EntFile Path="doll_monkey_held.ent" DebugPos="Script" />
+        <EntFile Path="revolver_hand.ent" DebugPos="Script" />
         <EntFile Path="heat_effect_sun.ent" DebugPos="Script" />
         <EntFile Path="heat_effect_refraction.ent" DebugPos="Script" />
         <EntFile Path="pf_tentacle.ent" DebugPos="Script" />
