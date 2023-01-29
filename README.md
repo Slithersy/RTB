@@ -1,6 +1,6 @@
 # Rebirth: The Bunker
 
-This is a procedurally generated attempted reaction of the upcoming Amnesia: The Bunker which was made during the 2023 Frictional Winter Monster Jam.
+This is a procedurally generated attempted recreation of the upcoming Amnesia: The Bunker which was made during the 2023 Frictional Winter Monster Jam.
 
 Considering this uses a lot of procedural generation and random values, bugs are to be expected. Enemies have a broken navmesh as unfortunately navmesh edits after map creation are only available through source code which I do not have access to.
 
@@ -13,7 +13,7 @@ Don't get close to noisy holes - Don't go insane - Find the key and escape.
 If you enjoyed this mod and want to support me, you can check out my YouTube. Its link will be on my profile page on Steam. A like or award to the mod would also be gladly appreciated in the workshop!
 
 Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=2925447617
-Gameplay: SOON
+Gameplay: https://youtu.be/13V5ABonOZA
 ModDB: SOON
 
 This mod was made in collaboration with NutBoi (The gun)
