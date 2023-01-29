@@ -1,8 +1,8 @@
 <PreloadCache>
     <Materials>
-        <Material Path="d:/projects-abp11/02_project_anubis/06_telegraph_battery_box/substance/texture/new4/telegraph_battery_box.mat" DebugPos="-3.214700 : 1.370785 : -7.907819" />
-        <Material Path="entities/arabic_fort/door/arabic_fort_door_01.mat" DebugPos="1.998633 : 1.980630 : -16.066555" />
-        <Material Path="entities/arabic_fort/door/arabic_fort_door_destroyed/barricade_4_less_soot.mat" DebugPos="2.785363 : 0.013226 : -8.008433" />
+        <Material Path="d:/projects-abp11/02_project_anubis/06_telegraph_battery_box/substance/texture/new4/telegraph_battery_box.mat" DebugPos="-3.389673 : 1.502095 : -7.992420" />
+        <Material Path="entities/arabic_fort/door/arabic_fort_door_01.mat" DebugPos="-2.205000 : 1.378125 : -8.073600" />
+        <Material Path="entities/arabic_fort/door/arabic_fort_door_destroyed/barricade_4_less_soot.mat" DebugPos="1.388935 : 0.013228 : -4.334008" />
         <Material Path="entities/archaeology/furniture/table_homemade_03/table_homemade_03.mat" DebugPos="3.430721 : 0.363671 : -17.998388" />
         <Material Path="entities/character/ghoul/ghoul_body_v2.mat" DebugPos="6.439619 : 1.285069 : -6.850304" />
         <Material Path="entities/character/ghoul/ghoul_face_v2.mat" DebugPos="6.439619 : 1.285069 : -6.850304" />
@@ -21,9 +21,9 @@
         <Material Path="entities/tin_hinan/machine/machine_01/machine_01.mat" DebugPos="1.948000 : 0.605720 : -19.436399" />
         <Material Path="entities/tin_hinan/machine/machine_02/machine_02.mat" DebugPos="2.948000 : 0.568723 : -19.436399" />
         <Material Path="static_objects/caves/cave_modules/caves_ground.mat" DebugPos="3.749993 : -0.000500 : -4.000007" />
-        <Material Path="static_objects/darkworld/darkworld_fancy/undercity_fancy_floor_tiles/undercity_fancy_floor_tiles.mat" DebugPos="2.000000 : 3.986064 : -18.000000" />
+        <Material Path="static_objects/darkworld/darkworld_fancy/undercity_fancy_floor_tiles/undercity_fancy_floor_tiles.mat" DebugPos="4.006968 : 2.000000 : -18.000000" />
         <Material Path="static_objects/tth/pillar/tth_pillar_basic_extension.mat" DebugPos="3.754732 : 2.252268 : -15.999332" />
-        <Material Path="static_objects/tth/tth_ceiling_basic_square_01.mat" DebugPos="2.000000 : 3.000000 : -14.000000" />
+        <Material Path="static_objects/tth/tth_ceiling_basic_square_01.mat" DebugPos="6.000000 : 1.500000 : -4.000000" />
         <Material Path="player_damage_screen.mat" DebugPos="Script" />
         <Material Path="player_damage_screen_minor.mat" DebugPos="Script" />
         <Material Path="player_damage_screen_major.mat" DebugPos="Script" />

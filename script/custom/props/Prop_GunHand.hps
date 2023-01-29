@@ -924,7 +924,7 @@ class cScrPropGun : cScrPropPickup
 		
 		///////////////////////////////////////////////////////////
 		
-		if(chambers[curBullet].empty || chambers[curBullet].spent)
+		if(chambers[curBullet].empty || chambers[curBullet].spent || FearHandler_GetIsPermaFailing())
 		{
 			// Can't fire gun, play dryfire animation.
 			//cLux_AddDebugMessage("Click.");

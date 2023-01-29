@@ -416,7 +416,7 @@ class cScrMap : iScrMap
         FearHandler_SetPaused(false);
         FearHandler_SetAllowLanternReminderHint(true);
         FearHandler_SetDarknessFactorActive(true);
-		FearHandler_SetUpdateInterval(0.1f);
+		FearHandler_SetUpdateInterval(0.45f);
         FearHandler_SetMaxLevel(2.0f);
         FearHandler_SetPermaFailStruggleEnabled(true);
         FearHandler_SetPermafailBabySceneEnabled(false, false);
@@ -431,7 +431,7 @@ class cScrMap : iScrMap
     
     float lMonsterTime = 0.0f;
     float fRanTimeBetween = 25.0f;
-    float fMonsterGetOutChance = 0.2f;
+    float fMonsterGetOutChance = 0.3f;
     float CheckGhoulAggressive = 0.0f;
     float CheckPermaFail = 0.0f;
     bool bMonsterIsOut = false;
@@ -477,7 +477,7 @@ class cScrMap : iScrMap
         if (bMonsterIsOut && CheckGhoulAggressive > 30.0f) {
             cLux_AddDebugMessage("Making monster go away");
             Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, true, true);
-            fMonsterGetOutChance = 0.2f;
+            fMonsterGetOutChance = 0.3f;
             CheckGhoulAggressive = 0.0f;
             bMonsterIsOut = false;
         }
@@ -494,14 +494,14 @@ class cScrMap : iScrMap
                     //Ghoul_CommandGoToSpecificHole_Execute(("ghoul_1", "MonsterArea_"+lMonsterIndex, false, false, true);
                     Monster_PickSpot();
                     Ghoul_CommandGoToSpecificHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, false, true, true);
-                    fMonsterGetOutChance = 0.2f;
+                    fMonsterGetOutChance = 0.3f;
                     CheckGhoulAggressive = 0.0f;
                     bMonsterIsOut = false;
                 } else {
                     fMonsterGetOutChance = fMonsterGetOutChance*1.2;
                     cLux_AddDebugMessage("Chance increased to make monster go away"+fMonsterGetOutChance);
                 }
-                fRanTimeBetween = cMath_RandRectf(10.0f, 20.0f);
+                fRanTimeBetween = cMath_RandRectf(17.0f, 30.0f);
                 lMonsterTime = GlobalTime;
                 return;
             }
@@ -517,7 +517,7 @@ class cScrMap : iScrMap
                 if ((pMonster is null) || (pArea is null)) {
                     Error("Could not find the target entity ghoul_1 or MonsterArea_"+lMonsterIndex);
                 } else {
-                    fMonsterGetOutChance = 0.3f;
+                    fMonsterGetOutChance = 0.2f;
                     pMonster.SetPosition(pArea.GetPosition());
                     Entity_SetActive("ghoul_1", true);
                     Ghoul_CommandEmergeFromHole_Execute("ghoul_1", "MonsterArea_"+lMonsterIndex, true);
@@ -609,6 +609,7 @@ class cScrMap : iScrMap
             FearHandler_TriggerPermaFail_Fall();
             Monster_PickSpot(false);
             cLux_AddDebugMessage("Perma fail");
+            Hint_ShowHint("CustomRTB", "Hint_Holes", false, 3.0f, false);
         }
         return true;
     }

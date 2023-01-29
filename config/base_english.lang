@@ -579,9 +579,9 @@
   <CATEGORY Name="PreMenu">
     <Entry Name="WelcomeButtonPrompt">Press X to continue</Entry>
     <Entry Name="WelcomeButtonPrompt_PC">Click to continue</Entry>
-    <Entry Name="WelcomeMessage01">This game should not be played to win.</Entry>
-    <Entry Name="WelcomeMessage02">Immerse yourself in the world and the story.</Entry>
-    <Entry Name="WelcomeMessage03">Fear and darkness are your enemies.</Entry>
+    <Entry Name="WelcomeMessage01">Avoid noisy wall holes.</Entry>
+    <Entry Name="WelcomeMessage02">Keep your sanity using light.</Entry>
+    <Entry Name="WelcomeMessage03">Find the key and escape.</Entry>
     <Entry Name="Continue">Continue</Entry>
   </CATEGORY>
   <CATEGORY Name="Languages">

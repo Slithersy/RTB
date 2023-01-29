@@ -13,5 +13,5 @@
 	LauncherPic="LauncherPic.png"
     ResourcesCfg="resources.cfg"
 	InitCfg="config/main_init.cfg"
-  HotLoad="true"
+  HotLoad="false"
 />

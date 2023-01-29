@@ -1274,6 +1274,8 @@
         <Entry Name="YouEscaped">You escaped</Entry>
 		<Entry Name="YourTime">Your time is: </Entry>
 		<Entry Name="ToContinue">Press % to continue</Entry>
+        
+        <Entry Name="Hint_Holes">Careful around holes! Inch towards them and listen in before deciding.</Entry>
     </CATEGORY>
  
 </LANGUAGE>

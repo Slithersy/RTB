@@ -1,7 +1,7 @@
 <Entity>
     <ModelData>
         <Entities />
-        <Mesh Filename="../pipe_turn_broken_slim/pipe_turn_broken_slim.dae">
+        <Mesh Filename="entities/station/debris/pipe_turn_broken_slim/pipe_turn_broken_slim.dae">
             <SubMesh ID="0" Material="" Name="pipe_turn_broken_slim" Rotation="0 0 0" Scale="1 1 1" WorldPos="0 0 0" />
         </Mesh>
         <Bones />
