@@ -1,7 +1,5 @@
 # Rebirth: The Bunker
 
-[SPOILERS] - The endings include spoilers for SOMA. Though apart from that, the game is clean.
-
 This is a procedurally generated attempted reaction of the upcoming Amnesia: The Bunker which was made during the 2023 Frictional Winter Monster Jam.
 
 Considering this uses a lot of procedural generation and random values, bugs are to be expected. Enemies have a broken navmesh as unfortunately navmesh edits after map creation are only available through source code which I do not have access to.
