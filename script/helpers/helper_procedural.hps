@@ -715,6 +715,16 @@ float Watch_GetRunTime()
     return cScript_GetGlobalVarFloat("Watch_GlobalTime");
 }
 
+/**
+ * Reset run time of map
+ * 
+ **/
+void Watch_ResetRunTime()
+{
+    mfGlobalTime = 0.0f;
+    cScript_SetGlobalVarFloat("Watch_GlobalTime", 0.0f);
+}
+
 //-------------------------------------------------
 
 /////////////////////////////////////////

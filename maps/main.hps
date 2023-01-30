@@ -427,8 +427,7 @@ class cScrMap : iScrMap
 		Player_SetNightVisionRadius(5.5f);
         
         // So this is to reset the player's time because I noticed that might've been an issue
-        float fTimeToRemove = Watch_GetRunTime();
-        Watch_AddRunTime((-1*fTimeToRemove));
+        Watch_ResetRunTime();
 	}
     
     float lMonsterTime = 0.0f;
@@ -842,6 +841,7 @@ class cScrMap : iScrMap
 	// Run when leaving map
 	void OnLeave()
 	{
+        Watch_ResetRunTime();
 	}
 
 	//-------------------------------------------------------
@@ -872,6 +872,7 @@ class cScrMap : iScrMap
     
     void AfterDeathTimer(const tString &in asTimer)
     {
+        Watch_ResetRunTime();
         Map_ChangeMap("RTBmain_menu.hpm", "Start_Begin", "", "");
     }
 	
