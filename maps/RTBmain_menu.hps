@@ -81,6 +81,10 @@ class cScrMap : iScrMap
 	// Run when entering map
 	void OnEnter()
 	{	
+        // So this is to reset the player's time because I noticed that might've been an issue
+        float fTimeToRemove = Watch_GetRunTime();
+        Watch_AddRunTime((-1*fTimeToRemove));
+        
         Effect_Fade_In(1.5f);
 		PauseMenu_Enabled(false);
         cLux_SetGamePaused(false, false, false, false);
