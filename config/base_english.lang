@@ -579,7 +579,7 @@
   <CATEGORY Name="PreMenu">
     <Entry Name="WelcomeButtonPrompt">Press X to continue</Entry>
     <Entry Name="WelcomeButtonPrompt_PC">Click to continue</Entry>
-    <Entry Name="WelcomeMessage01">Avoid completely noisy wall holes until they're silent.</Entry>
+    <Entry Name="WelcomeMessage01">Avoid noisy wall holes until silence.</Entry>
     <Entry Name="WelcomeMessage02">Keep your sanity using light.</Entry>
     <Entry Name="WelcomeMessage03">Find the key and escape.</Entry>
     <Entry Name="Continue">Continue</Entry>
