@@ -260,6 +260,7 @@ class cScrPropGun : cScrPropPickup
 		}
 		
 		//Entity_SetRotationX(mBaseObj.GetName(),30);
+        Hint_ShowHint("CustomRTB", "Hint_Gun", true, 5.0f, true);
 	}
 	
 	//------------------------------------------------------------

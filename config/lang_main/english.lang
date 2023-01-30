@@ -428,7 +428,7 @@
 	<Entry Name="Watch_Desc">A pocket watch, useful as a timer.</Entry>
     
 	<Entry Name="Revolver">Revolver</Entry>
-	<Entry Name="Revolver_Desc">An old revolver that still works. Long press R to reload.</Entry>
+	<Entry Name="Revolver_Desc">An old revolver that still works. Press the reload key to reload.</Entry>
 	
 	<Entry Name="Radio">Radio</Entry>
 	<Entry Name="Radio_Desc">A handheld short-range radio from the Cassandra.</Entry>
@@ -1276,6 +1276,7 @@
 		<Entry Name="ToContinue">Press % to continue</Entry>
         
         <Entry Name="Hint_Holes">Careful around holes! Inch towards them and listen in before deciding.</Entry>
+        <Entry Name="Hint_Gun">Press $Input{Match} to reload the gun.</Entry>
     </CATEGORY>
  
 </LANGUAGE>
