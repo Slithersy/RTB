@@ -14,7 +14,7 @@ If you enjoyed this mod and want to support me, you can check out my YouTube. It
 
 Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=2925447617
 Gameplay: https://youtu.be/13V5ABonOZA
-ModDB: SOON
+ModDB: https://www.moddb.com/mods/rebirth-the-bunker
 
 This mod was made in collaboration with NutBoi (The gun)
 
