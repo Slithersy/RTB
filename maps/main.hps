@@ -426,7 +426,9 @@ class cScrMap : iScrMap
 		Player_SetNightVisionBrightness(2.3f);
 		Player_SetNightVisionRadius(5.5f);
         
-		Game_AutoSave();
+        // So this is to reset the player's time because I noticed that might've been an issue
+        float fTimeToRemove = Watch_GetRunTime();
+        Watch_AddRunTime((-1*fTimeToRemove));
 	}
     
     float lMonsterTime = 0.0f;
