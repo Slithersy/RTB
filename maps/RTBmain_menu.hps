@@ -88,8 +88,10 @@ class cScrMap : iScrMap
         cLux_SetGamePaused(false, false, false, false);
 		MainMenu_Show(true);
 		cLux_GetGuiHandler().SetGameHudInputFocus(true);
-		Player_ShowCrossHairIcons(false);
 		Sketchbook_SetInventoryEnabled(false);
+        FearHandler_StopPermaFailScenes();
+        FearHandler_SetPermaFailEnabled(false);
+        Player_ShowCrossHairIcons(false);
 
 		CameraAnimation_Begin("CameraAnimation", "", false);
         //Doesn't work in practice but works for testing
